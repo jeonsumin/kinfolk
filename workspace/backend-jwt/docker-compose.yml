@@ -1,0 +1,40 @@
+services:
+  backend:
+    build:
+      context: .
+    container_name: backend-container
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_URL: "jdbc:log4jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-backend_jwt}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+      DB_USERNAME: ${MYSQL_USER:-backend}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-backend_password}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env before starting Docker Compose}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.4
+    container_name: mysql-container
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-backend_jwt}
+      MYSQL_USER: ${MYSQL_USER:-backend}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-backend_password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./src/main/resources/core_schema_mysql.sql:/docker-entrypoint-initdb.d/core_schema_mysql.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  mysql-data:

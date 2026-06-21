@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinfolk Table - 제주도 우정 여행 플래너</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#515f74",
+                        "on-surface-variant": "#44474c",
+                        "surface-container-highest": "#e0e3e5",
+                        "tertiary": "#343e47",
+                        "error-container": "#ffdad6",
+                        "background": "#f7f9fb",
+                        "on-surface": "#191c1e",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "tertiary-fixed-dim": "#bdc8d3",
+                        "inverse-primary": "#b9c7df",
+                        "on-tertiary-fixed-variant": "#3e4852",
+                        "tertiary-container": "#4b555f",
+                        "surface-dim": "#d8dadc",
+                        "on-primary-fixed": "#0d1c2e",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#2d3133",
+                        "primary-fixed-dim": "#b9c7df",
+                        "secondary-container": "#d2e1f7",
+                        "inverse-on-surface": "#eff1f3",
+                        "secondary": "#516072",
+                        "tertiary-fixed": "#dae3f0",
+                        "outline-variant": "#c4c6cd",
+                        "on-secondary-fixed": "#0d1c2d",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#d4e4fa",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#191c1e",
+                        "surface": "#f7f9fb",
+                        "outline": "#75777d",
+                        "primary": "#303e51",
+                        "surface-bright": "#f7f9fb",
+                        "on-secondary-container": "#556477",
+                        "on-primary-container": "#bbcae1",
+                        "secondary-fixed-dim": "#b9c8de",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-container-high": "#e6e8ea",
+                        "on-primary-fixed-variant": "#3a485b",
+                        "on-secondary-fixed-variant": "#39485a",
+                        "on-tertiary-fixed": "#131d25",
+                        "surface-container": "#eceef0",
+                        "primary-container": "#475569",
+                        "on-tertiary-container": "#bfc9d5",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#d5e3fc"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "64px",
+                        "md": "24px",
+                        "lg": "48px",
+                        "gutter": "24px",
+                        "xs": "4px",
+                        "xl": "80px",
+                        "sm": "12px",
+                        "margin-mobile": "16px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f7f9fb; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(241, 245, 249, 0.5); }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="w-full h-16 sticky top-0 z-50 bg-surface border-b border-outline-variant flex justify-between items-center px-margin-desktop">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary">Kinfolk Table</span>
+<div class="h-6 w-px bg-outline-variant mx-2"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">게스트 플래너</span>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex gap-8">
+<a class="font-label-md text-label-md text-primary font-bold" href="#">여행 정보</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">투표</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">정산</a>
+</nav>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">notifications</span>
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden">
+<img alt="User" class="w-full h-full object-cover" data-alt="A professional headshot of a friendly man with a warm smile, set against a soft, out-of-focus interior background. The lighting is natural and diffuse, maintaining the Kinfolk Table's minimalist and calm aesthetic with muted tones and high-key brightness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuATS9V-kcXTqTgakPdfmw9sRksw7j6KkNYeNPiY7F1Ll-GzmAXssQH7q_819wpqRkoX6V3-4X3UqfsXqM_3Y9-V0_Mlqv9tO-R2x0wQOvnv4wYxQ1OiL-51SM0VU4cNlyhugzfUhcdwPzkcFMaoXWWlH39FTPC7TKu99b3jPOwARrVswgFAc9vwfV5MROcIaaQu_F_LkQ2UD11Rz9gIAGsMN9aAzrnLEnsO0YIoeg_FRPLpkI1ckFGvHvlWpVYU_X9dapkcqg7ba0g"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto px-margin-desktop py-lg space-y-lg">
+<!-- Hero Section / Title -->
+<section class="space-y-sm">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="font-headline-xl text-headline-xl text-primary">제주도 우정 여행 플래너</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2">함께 가는 사람들: 이주, 민지, 준호 + 게스트 3명</p>
+</div>
+<div class="flex gap-2">
+<div class="flex -space-x-3">
+<img alt="Avatar 1" class="w-10 h-10 rounded-full border-2 border-surface" data-alt="Close-up portrait of a cheerful woman with long dark hair, smiling warmly in a minimalist setting with soft, natural morning light. The color palette is composed of muted pastels, emphasizing a calm and sophisticated atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAc7sZTrcsn5aIjWgmhlavS98w5-nLeR6pFrEMXh0b10mkmMo41o9_i7aOT2xIbRau0Y90etbShLZ8DTlx8dbgscE6qGI053hWjpNNaEe8TjjetTR9NEMB7yolr3QOVW4b-qB5NMpUHfwDzTx66Ng6rghdtI-tV4CmBPGr9QPsMzot14TwLJfADG_LcrV2nGctJZVPMAQ-NSmp8MQCtOMKTc_O-6NGh3-RBp7UubMdOyyCsxc6bqgEa5WJdn3EmzBi9zw3dly5s6nk"/>
+<img alt="Avatar 2" class="w-10 h-10 rounded-full border-2 border-surface" data-alt="A clean, minimalist portrait of a man with short hair looking directly at the camera with a serene expression. The background is a soft beige, lit by gentle afternoon sun, creating a peaceful and intentional visual mood consistent with a high-end design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvIpO4NMUmwtxyJKLjnrB7cpUFohFD9vBeHqb8ff9XIX4LP1LhBgzygTo2GNw1PT7drZ-t1qg9ME4x0bmjNK65JxwvqeZBtNPmO7YSmbj4_bgi95ICObD6HO50JG5dny976ys3bLvJOuP5Itzt3fKWLcwnmEs6eECJ3bp61i2LL2on36AwUEtbxJ8-MPX_FHu7lIaALNm2fjGJ1QCALSzKKNj8jppa4P6pZbYYMiSAYRC39y0Ft2eADlb_5wEmdN3vvHp_CLzJeMQ"/>
+<img alt="Avatar 3" class="w-10 h-10 rounded-full border-2 border-surface" data-alt="Side profile of a woman with a clean aesthetic, wearing a neutral-toned linen shirt, standing against a pale grey wall. The scene is bright and airy, capturing a moment of tranquility and sophistication through its minimalist composition and soft shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArXX3iEqgnYM4yXaH-Njtj2xLbhofnO7uQE5aaIl152xhxNmRFdyWFjFCoWeXdfhDrpw_fNW4Pk0NFlIpGBp6vxr8kZyOCIz-ufAzOQwxeNWd5Vi0TWIYW7qNdwFOaxR-k7p2LNMA_npQXmDrGSYLnaqFhB0ei874-aaKzWGMhHJzFJpFHHLUvsCUlClnuRjC--OwGULCi74_yediPM2s0LQxaOBp61JOZoeBQOWnacRpvn-bplv0s0gqMebc2cdqIZxwcwLXf3QM"/>
+<div class="w-10 h-10 rounded-full border-2 border-surface bg-surface-container-highest flex items-center justify-center font-label-sm text-label-sm text-on-surface-variant">+3</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Shared Calendar Section -->
+<div class="md:col-span-8 glass-card rounded-xl p-md space-y-md">
+<div class="flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">calendar_today</span>
+                        희망 일정 투표
+                    </h2>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="p-2 rounded-lg hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+<div class="grid grid-cols-7 gap-2 text-center">
+<!-- Day Labels -->
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">SUN</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">MON</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">TUE</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">WED</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">THU</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">FRI</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">SAT</div>
+<!-- Calendar Days (Mockup) -->
+<script>
+                        const calendarEl = document.currentScript.parentElement;
+                        for(let i=28; i<=31; i++) calendarEl.insertAdjacentHTML('beforeend', `<div class="p-4 text-outline opacity-40 font-label-md">${i}</div>`);
+                        for(let i=1; i<=15; i++) {
+                            let statusClasses = "hover:bg-secondary-fixed cursor-pointer transition-colors";
+                            let badge = "";
+                            if(i === 10 || i === 11 || i === 12) {
+                                statusClasses = "bg-primary-container text-on-primary-container rounded-lg shadow-sm";
+                                if(i === 11) badge = '<div class="text-[10px] mt-1 font-bold">확정 가능성 높음</div>';
+                            }
+                            calendarEl.insertAdjacentHTML('beforeend', `
+                                <div class="p-4 rounded-lg flex flex-col items-center justify-center h-20 ${statusClasses} font-label-md">
+                                    ${i}
+                                    ${badge}
+                                </div>
+                            `);
+                        }
+                    </script>
+</div>
+<div class="flex items-center gap-4 p-sm bg-surface-container-low rounded-lg">
+<span class="material-symbols-outlined text-secondary">info</span>
+<p class="font-body-md text-body-md text-on-surface-variant">현재 10일-12일 일정에 6명 중 5명이 투표했습니다.</p>
+</div>
+</div>
+<!-- Expense Splitter (Quick View) -->
+<div class="md:col-span-4 space-y-gutter">
+<div class="bg-primary text-white rounded-xl p-md shadow-lg h-full">
+<div class="flex justify-between items-start mb-lg">
+<h2 class="font-headline-md text-headline-md">정산하기</h2>
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div class="space-y-md">
+<div class="flex justify-between items-center border-b border-white/20 pb-md">
+<span class="font-label-md opacity-80">총 지출</span>
+<span class="font-headline-md font-bold">₩1,240,000</span>
+</div>
+<div class="space-y-sm">
+<div class="flex justify-between items-center">
+<span class="font-body-md">항공권 (이주 결제)</span>
+<span class="font-label-md text-secondary-fixed">₩600,000</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-md">숙소 예약 (민지 결제)</span>
+<span class="font-label-md text-secondary-fixed">₩540,000</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-md">렌터카 (준호 결제)</span>
+<span class="font-label-md text-secondary-fixed">₩100,000</span>
+</div>
+</div>
+<button class="w-full bg-white text-primary font-label-md py-3 rounded-lg mt-md hover:bg-surface-container transition-colors">
+                            세부 내역 보기
+                        </button>
+</div>
+</div>
+</div>
+<!-- Suggestions & Voting Section -->
+<div class="md:col-span-12 space-y-md">
+<div class="flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">map</span>
+                        추천 장소 투표
+                    </h2>
+<button class="flex items-center gap-2 font-label-md text-primary px-4 py-2 border border-outline-variant rounded-full hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+                        장소 제안하기
+                    </button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Place Card 1 -->
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden group hover:shadow-xl transition-all duration-300">
+<div class="h-48 overflow-hidden relative">
+<img alt="Jeju Beach" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A breathtaking view of a pristine beach in Jeju Island, featuring turquoise crystal clear waters and dark volcanic rocks along the shore. The lighting is soft and golden from a setting sun, creating a calm, high-end vacation vibe. The style is minimalist with a spacious composition and natural, muted tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkOp9FNH3-2dnjoZY5XGBnxi8KDeN04ovCwryogWFKd4hqB5VNHg7ASDrjO7_GEapqdE8aLXIcf42HpdUzFyGwVmw9z_BxH7eX0gqNBCbRPDAMAY72RqVrnVRiFz32JqIVLsKOEcP1t2py9gp6pmpAR76S-_APsMKfCdIX4K6bvWdXOiWFXgQnGD9YY9EX31ZxrexdOYsDZ0c0Cwwmu8j7jws7g5FEPggYeuAbY_FCQAe5xbZ-68hDNJCTBRt_9OYcjj7SN6yHW0E"/>
+<div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded-full text-[10px] font-bold text-primary">자연/바다</div>
+</div>
+<div class="p-md space-y-sm">
+<h3 class="font-headline-md text-headline-md text-primary">함덕 해수욕장</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">에메랄드빛 바다에서 산책하기 좋은 곳이에요. 노을 맛집입니다!</p>
+<div class="flex justify-between items-center pt-2">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-secondary-fixed border-2 border-white"></div>
+<div class="w-6 h-6 rounded-full bg-primary-fixed border-2 border-white"></div>
+<span class="text-label-sm ml-4 text-on-surface-variant">+4 투표함</span>
+</div>
+<button class="flex items-center gap-1 font-label-md text-error px-3 py-1 rounded-full bg-error-container/30 hover:bg-error-container transition-colors">
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                                    좋아요
+                                </button>
+</div>
+</div>
+</div>
+<!-- Place Card 2 -->
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden group hover:shadow-xl transition-all duration-300">
+<div class="h-48 overflow-hidden relative">
+<img alt="Jeju Cafe" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A sophisticated, minimalist interior of a modern cafe in Jeju, showcasing large windows with a view of lush green tea fields. The furniture is made of light-colored wood, and the space is filled with soft, airy natural light. The aesthetic is serene and professional, focusing on negative space and architectural elegance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzg4s2Z_YOyZG-czshBN3Lx1qGkUC09h1iin9PMIBAZknr1WhUeS-xZBb517PP-HV-Nwis1CiNui-Gk28T6dsCkPinp14K8WsqIEbg73m_2AIMhMQOJm6gCZWexiVmLGVLElpqurj8I1slFvMBYmQwbHGA0us5rdQMRehkokbwXYQW07poy5pqS5B5TgmJiq-gs-3h6MtQzp634w5wpVCCvKFrB6-86f7ciJEJfcZns47wjLP1KHW3YJX9-JlxP6u0X8O_28fQTYQ"/>
+<div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded-full text-[10px] font-bold text-primary">맛집/카페</div>
+</div>
+<div class="p-md space-y-sm">
+<h3 class="font-headline-md text-headline-md text-primary">오설록 티 뮤지엄</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">녹차 아이스크림이랑 녹차밭 구경가요! 사진 잘 나올 것 같아요.</p>
+<div class="flex justify-between items-center pt-2">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-secondary-fixed border-2 border-white"></div>
+<span class="text-label-sm ml-4 text-on-surface-variant">+2 투표함</span>
+</div>
+<button class="flex items-center gap-1 font-label-md text-on-surface-variant px-3 py-1 rounded-full bg-surface-container hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-base">favorite</span>
+                                    좋아요
+                                </button>
+</div>
+</div>
+</div>
+<!-- Place Card 3 -->
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden group hover:shadow-xl transition-all duration-300">
+<div class="h-48 overflow-hidden relative">
+<img alt="Jeju Forest" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A lush, mysterious forest path in Bijarim Forest, Jeju Island, with sunlight filtering through the dense canopy of ancient nutmeg trees. The scene is calm and immersive, featuring deep greens and earthy browns. The lighting is ethereal and soft, maintaining a minimalist and high-quality artistic feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq_iTyTIRnPTquXVpgRH3qsLi7p_MZ7yUXNEySK6mCO13DerYHa8euW6Yfm5qwl6qjfiD5G3AdzfGz_wHEioBy1WN6luNDURawILyBPXyGn-oVH4pXrkIrfcfAlOZ547R7PmZnanpI3B1Y1tzdEwkG4JaEKrooIhgns_db3imqRDeFMVk_y29oYvq-nWwTyxLKIHNp18ObAE0wh2awTAa5SUeE2fTG1nhn7lpTaEAIy9zVM1JUTMCicT7DI8FsIugD2a-RMVPkBAM"/>
+<div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded-full text-[10px] font-bold text-primary">체험/산책</div>
+</div>
+<div class="p-md space-y-sm">
+<h3 class="font-headline-md text-headline-md text-primary">비자림 숲길</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">오전 일찍 산책하기 딱 좋은 곳! 힐링하고 와요.</p>
+<div class="flex justify-between items-center pt-2">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-tertiary-fixed border-2 border-white"></div>
+<div class="w-6 h-6 rounded-full bg-primary-fixed border-2 border-white"></div>
+<span class="text-label-sm ml-4 text-on-surface-variant">+3 투표함</span>
+</div>
+<button class="flex items-center gap-1 font-label-md text-error px-3 py-1 rounded-full bg-error-container/30 hover:bg-error-container transition-colors">
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                                    좋아요
+                                </button>
+</div>
+</div>
+</div>
+<!-- Add New Card -->
+<div class="border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center p-md text-on-surface-variant hover:bg-surface-container-low cursor-pointer transition-colors group">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">add</span>
+</div>
+<span class="font-label-md">장소 추가하기</span>
+</div>
+</div>
+</div>
+<!-- Expense Detail List -->
+<div class="md:col-span-12 glass-card rounded-xl p-md">
+<h2 class="font-headline-md text-headline-md text-primary mb-md flex items-center gap-2">
+<span class="material-symbols-outlined">receipt_long</span>
+                    정산 내역 상세
+                </h2>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="border-b border-outline-variant">
+<th class="pb-4 font-label-md text-on-surface-variant">날짜</th>
+<th class="pb-4 font-label-md text-on-surface-variant">항목</th>
+<th class="pb-4 font-label-md text-on-surface-variant">결제자</th>
+<th class="pb-4 font-label-md text-on-surface-variant">금액</th>
+<th class="pb-4 font-label-md text-on-surface-variant text-right">상태</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4 font-body-md">2024.10.01</td>
+<td class="py-4 font-body-md font-bold">단체 항공권</td>
+<td class="py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-primary-fixed"></div>
+<span class="font-label-md">이주</span>
+</div>
+</td>
+<td class="py-4 font-body-md">₩600,000</td>
+<td class="py-4 text-right"><span class="px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed text-[10px] font-bold">정산 진행중</span></td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4 font-body-md">2024.10.05</td>
+<td class="py-4 font-body-md font-bold">감성 숙소 예약</td>
+<td class="py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-secondary-fixed"></div>
+<span class="font-label-md">민지</span>
+</div>
+</td>
+<td class="py-4 font-body-md">₩540,000</td>
+<td class="py-4 text-right"><span class="px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed text-[10px] font-bold">정산 진행중</span></td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4 font-body-md">2024.10.10</td>
+<td class="py-4 font-body-md font-bold">렌터카 선결제</td>
+<td class="py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-tertiary-fixed"></div>
+<span class="font-label-md">준호</span>
+</div>
+</td>
+<td class="py-4 font-body-md">₩100,000</td>
+<td class="py-4 text-right"><span class="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-[10px] font-bold">미완료</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button for Group Chat (Task-Specific FAB) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined">forum</span>
+<div class="absolute -top-1 -right-1 w-5 h-5 bg-error text-white text-[10px] rounded-full flex items-center justify-center font-bold">3</div>
+</button>
+<!-- Footer -->
+<footer class="bg-surface border-t border-outline-variant py-lg px-margin-desktop mt-xl">
+<div class="flex flex-col md:flex-row justify-between items-start gap-8">
+<div class="space-y-4">
+<span class="font-headline-md text-headline-md font-bold text-primary">Kinfolk Table</span>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm">가족의 소중한 기록, 그리고 친구들과 함께 나누는 특별한 여행의 순간.</p>
+</div>
+<div class="flex gap-12">
+<div class="space-y-4">
+<h4 class="font-label-md text-label-md text-primary font-bold">플래너 메뉴</h4>
+<ul class="space-y-2 text-on-surface-variant font-label-md">
+<li><a class="hover:text-primary transition-colors" href="#">일정 투표</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">장소 추천</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">공동 비용</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h4 class="font-label-md text-label-md text-primary font-bold">지원</h4>
+<ul class="space-y-2 text-on-surface-variant font-label-md">
+<li><a class="hover:text-primary transition-colors" href="#">도움말</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">초대 코드 관리</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">개인정보 보호</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="mt-lg pt-md border-t border-surface-container flex justify-between items-center font-label-sm text-on-surface-variant opacity-60">
+<span>© 2024 Kinfolk Table. All rights reserved.</span>
+<div class="flex gap-4">
+<span>Privacy</span>
+<span>Terms</span>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interaction: Scale down on click for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => btn.classList.add('scale-[0.98]'));
+            btn.addEventListener('mouseup', () => btn.classList.remove('scale-[0.98]'));
+            btn.addEventListener('mouseleave', () => btn.classList.remove('scale-[0.98]'));
+        });
+
+        // Simple Toggle for Like Buttons
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.innerText.includes('좋아요')) {
+                btn.addEventListener('click', function() {
+                    const icon = this.querySelector('.material-symbols-outlined');
+                    const isFilled = icon.style.fontVariationSettings.includes("'FILL' 1");
+                    if (isFilled) {
+                        icon.style.fontVariationSettings = "'FILL' 0";
+                        this.classList.remove('bg-error-container/30', 'text-error');
+                        this.classList.add('bg-surface-container', 'text-on-surface-variant');
+                    } else {
+                        icon.style.fontVariationSettings = "'FILL' 1";
+                        this.classList.add('bg-error-container/30', 'text-error');
+                        this.classList.remove('bg-surface-container', 'text-on-surface-variant');
+                    }
+                });
+            }
+        });
+    </script>
+</body></html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="core">
+
+	<resultMap
+            type="com.terry.backend.api.admin.system.member.dto.MemberDTO" id="Member">
+		<id property="id" column="USER_ID" />
+		<result property="loginId" column="USER_LOGIN_ID" />
+		<result property="name" column="USER_NM" />
+		<result property="password" column="USER_PASSWORD" />
+		<result property="imageUrl" column="USER_IMAGE_URI" />
+		<result property="sex" column="USER_SEXDSTN" />
+		<result property="email" column="USER_EMAIL" />
+		<result property="remarks" column="USER_DC" />
+		<result property="use" column="USER_USE" />
+		<result property="lock" column="USER_LOCK" />
+		<result property="lastLoginDate" column="USER_LAST_LOGIN_DT" />
+		<result property="createDt" column="REGIST_DT" />
+		<result property="createId" column="REGIST_ID" />
+		<result property="updateDt" column="UPDT_DT" />
+		<result property="updateId" column="UPDT_ID" />
+		<result property="mobile" column="USER_MBTLNUM" />
+	</resultMap>
+
+</mapper>

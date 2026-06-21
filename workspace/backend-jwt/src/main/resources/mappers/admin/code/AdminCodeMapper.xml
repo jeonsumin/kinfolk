@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.terry.backend.api.admin.system.code.mapper.AdminCodeMapper">
+
+    <select id="getPathFromParentId" resultType="java.lang.String">
+<![CDATA[
+        SELECT (
+                   CASE
+                       WHEN #{parentId, jdbcType=VARCHAR} IS NULL
+                           THEN '/'
+                       ELSE (SELECT CONCAT(C.CODE_COURS, '/', C.CODE) AS CODE_COURS
+                             FROM SWC_CODE C
+                             WHERE C.CODE_ID = UPPER(#{parentId, jdbcType=VARCHAR}))
+                       END
+                   ) AS CODE_COURS
+        ]]>
+</select>
+
+    <select id="select" resultMap="core.Code">
+        <![CDATA[
+SELECT
+  C.CODE_ID
+, C.CODE_UPPER_ID
+, C.CODE
+, C.CODE_NM
+, C.CODE_DC
+, C.CODE_SORT
+, C.CODE_COURS
+, C.CODE_LEVEL
+, C.CODE_TY
+, C.CODE_VALUE1
+, C.CODE_VALUE2
+, C.CODE_VALUE3
+, C.CODE_USE
+, C.HIST_ID
+, C.REGIST_DT
+, C.REGIST_ID
+, C.UPDT_DT
+, C.UPDT_ID
+FROM
+  SWC_CODE C
+]]>
+        <where>
+            <if test='id != null'>
+                <![CDATA[
+    C.CODE_ID = UPPER(#{id, jdbcType=VARCHAR})
+]]>
+            </if>
+            <if test='id == null'>
+                <choose>
+                    <when test='parentId != null and parentId != ""'>
+                        <![CDATA[
+AND C.CODE_UPPER_ID = UPPER(#{parentId, jdbcType=VARCHAR})
+]]>
+                    </when>
+                    <otherwise>
+                        <![CDATA[
+AND C.CODE_UPPER_ID IS NULL
+]]>
+                    </otherwise>
+                </choose>
+            </if>
+            <if test='code != null and code != ""'>
+                <![CDATA[
+AND C.CODE LIKE CONCAT(UPPER(#{code, jdbcType=VARCHAR}), '%')
+]]>
+            </if>
+            <if test='name != null and name != ""'>
+                <![CDATA[
+AND C.CODE_NM LIKE CONCAT(UPPER(#{name, jdbcType=VARCHAR}), '%')
+]]>
+            </if>
+            <if test='matchCode != null and matchCode != ""'>
+                <![CDATA[
+AND C.CODE = UPPER(#{matchCode, jdbcType=VARCHAR})
+]]>
+            </if>
+        </where>
+        <![CDATA[
+ORDER BY
+  C.CODE_SORT
+, C.CODE
+]]>
+    </select>
+
+    <select id="selectById" resultMap="core.Code">
+<![CDATA[
+        SELECT C.CODE_ID
+             , C.CODE_UPPER_ID
+             , C.CODE
+             , C.CODE_NM
+             , C.CODE_DC
+             , C.CODE_SORT
+             , C.CODE_COURS
+             , C.CODE_LEVEL
+             , C.CODE_TY
+             , C.CODE_VALUE1
+             , C.CODE_VALUE2
+             , C.CODE_VALUE3
+             , C.CODE_USE
+             , C.HIST_ID
+             , C.REGIST_DT
+             , C.REGIST_ID
+             , C.UPDT_DT
+             , C.UPDT_ID
+        FROM SWC_CODE C
+        WHERE C.CODE_ID = UPPER(#{id, jdbcType=VARCHAR})
+        ]]>
+</select>
+
+    <insert id="insert">
+<![CDATA[
+        INSERT INTO SWC_CODE ( CODE_ID
+                             , CODE_UPPER_ID
+                             , CODE
+                             , CODE_NM
+                             , CODE_DC
+                             , CODE_SORT
+                             , CODE_COURS
+                             , CODE_LEVEL
+                             , CODE_TY
+                             , CODE_VALUE1
+                             , CODE_VALUE2
+                             , CODE_VALUE3
+                             , CODE_USE
+                             , REGIST_DT
+                             , REGIST_ID
+                             , UPDT_DT
+                             , UPDT_ID)
+        VALUES ( UPPER(#{id, jdbcType=VARCHAR})
+               , UPPER(#{parentId, jdbcType=VARCHAR})
+               , UPPER(#{code, jdbcType=VARCHAR})
+               , #{name, jdbcType=VARCHAR}
+               , #{description, jdbcType=VARCHAR}
+               , #{sort, jdbcType=INTEGER}
+               , NULL
+               , NULL
+               , #{type, jdbcType=VARCHAR}
+               , #{value1, jdbcType=VARCHAR}
+               , #{value2, jdbcType=VARCHAR}
+               , #{value3, jdbcType=VARCHAR}
+               , UPPER(#{use, jdbcType=VARCHAR})
+               , NOW()
+               , #{createId, jdbcType=VARCHAR}
+               , NOW()
+               , #{updateId, jdbcType=VARCHAR})
+        ]]>
+</insert>
+
+    <update id="update">
+        UPDATE SWC_CODE C
+        SET
+            C.CODE_NM = #{name, jdbcType=VARCHAR}
+          , C.CODE_DC = #{description, jdbcType=VARCHAR}
+          , C.CODE_SORT = #{sort, jdbcType=INTEGER}
+          , C.CODE_TY = #{type, jdbcType=VARCHAR}
+          , C.CODE_VALUE1 = #{value1, jdbcType=VARCHAR}
+          , C.CODE_VALUE2 = #{value2, jdbcType=VARCHAR}
+          , C.CODE_VALUE3 = #{value3, jdbcType=VARCHAR}
+          , C.CODE_USE = UPPER (#{use, jdbcType=VARCHAR})
+          , C.UPDT_DT = NOW()
+          , C.UPDT_ID = #{updateId, jdbcType=VARCHAR}
+        WHERE
+            C.CODE_ID = UPPER (#{id, jdbcType=VARCHAR})
+    </update>
+
+    <delete id="delete">
+        DELETE
+        FROM SWC_CODE
+        WHERE CODE_ID IN (WITH RECURSIVE CODE_TREE AS (SELECT C.CODE_ID
+                                                            , C.CODE_UPPER_ID
+                                                       FROM SWC_CODE C
+                                                       WHERE C.CODE_ID = #{id, jdbcType=VARCHAR}
+
+                                                       UNION ALL
+
+                                                       SELECT C.CODE_ID
+                                                            , C.CODE_UPPER_ID
+                                                       FROM SWC_CODE C
+                                                                INNER JOIN CODE_TREE CT ON CT.CODE_ID = C.CODE_UPPER_ID)
+                          SELECT CODE_ID
+                          FROM CODE_TREE)
+    </delete>
+
+    <update id="updateChildrenCodeType">
+<![CDATA[
+        UPDATE SWC_CODE C
+            INNER JOIN (
+            WITH RECURSIVE CODE_TREE AS (
+            SELECT
+            C.CODE_ID
+            , C.CODE_UPPER_ID
+            FROM
+            SWC_CODE C
+            WHERE
+            C.CODE_UPPER_ID = #{id, jdbcType=VARCHAR}
+            UNION ALL
+            SELECT
+            C.CODE_ID
+            , C.CODE_UPPER_ID
+            FROM
+            SWC_CODE C
+            INNER JOIN CODE_TREE CT ON CT.CODE_ID = C.CODE_UPPER_ID
+            )
+            SELECT CODE_ID FROM CODE_TREE
+            ) CT
+        ON CT.CODE_ID = C.CODE_ID
+            SET C.CODE_TY = #{type, jdbcType=VARCHAR}
+        ]]>
+</update>
+
+    <update id="updateCodeTreeStructure">
+        UPDATE SWC_CODE C
+            INNER JOIN (
+            WITH RECURSIVE CODE_TREE AS (
+            SELECT
+            C.CODE_ID
+            , C.CODE_UPPER_ID
+            , C.CODE
+            , CAST('/' AS CHAR(4000)) AS CODE_COURS
+            , CAST(CONCAT('/', C.CODE) AS CHAR(4000)) AS CODE_ALL_COURS
+            , 0 AS CODE_LEVEL
+            FROM
+            SWC_CODE C
+            WHERE
+            C.CODE_UPPER_ID IS NULL
+
+            UNION ALL
+
+            SELECT
+            C.CODE_ID
+            , C.CODE_UPPER_ID
+            , C.CODE
+            , CAST(CONCAT(
+            CT.CODE_COURS,
+            CASE WHEN CT.CODE_LEVEL > 0 THEN '/' ELSE '' END,
+            CT.CODE
+            ) AS CHAR(4000)) AS CODE_COURS
+            , CAST(CONCAT(CT.CODE_ALL_COURS, '/', C.CODE) AS CHAR(4000)) AS CODE_ALL_COURS
+            , CT.CODE_LEVEL + 1 AS CODE_LEVEL
+            FROM
+            SWC_CODE C
+            INNER JOIN CODE_TREE CT ON CT.CODE_ID = C.CODE_UPPER_ID
+            )
+            SELECT CODE_ID, CODE_COURS, CODE_ALL_COURS, CODE_LEVEL FROM CODE_TREE
+            ) CT ON CT.CODE_ID = C.CODE_ID
+            SET
+                C.CODE_COURS = CT.CODE_COURS
+                    , C.CODE_ALL_COURS = CT.CODE_ALL_COURS
+                    , C.CODE_LEVEL = CT.CODE_LEVEL
+    </update>
+</mapper>

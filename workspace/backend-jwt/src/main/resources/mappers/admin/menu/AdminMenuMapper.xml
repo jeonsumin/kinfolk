@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.terry.backend.api.admin.system.menu.mapper.AdminMenuMapper">
+    <resultMap id="Menu" type="com.terry.backend.api.admin.system.menu.dto.MenuDTO">
+        <id property="id" column="MENU_ID"/>
+        <result property="parentId" column="MENU_UPPER_ID"/>
+        <result property="code" column="MENU_CODE"/>
+        <result property="name" column="MENU_NM"/>
+        <result property="description" column="MENU_DC"/>
+        <result property="type" column="MENU_TY"/>
+        <result property="sort" column="MENU_SORT"/>
+        <result property="icon" column="MENU_ICON"/>
+        <result property="uri" column="MENU_URI"/>
+        <result property="level" column="MENU_LEVEL"/>
+        <result property="use" column="MENU_USE"/>
+        <result property="levelAuthor" column="LEVEL_AUTHOR"/>
+        <result property="createDt" column="REGIST_DT"/>
+        <result property="createId" column="REGIST_ID"/>
+        <result property="updateDt" column="UPDT_DT"/>
+        <result property="updateId" column="UPDT_ID"/>
+    </resultMap>
+
+    <select id="select" resultMap="Menu">
+SELECT
+      M.MENU_ID
+    , M.MENU_UPPER_ID
+    , M.MENU_NM
+    , M.MENU_URI
+    , M.MENU_SORT
+    , M.MENU_LEVEL
+    , M.MENU_ICON
+    , M.MENU_USE
+    , M.REGIST_ID
+    , M.UPDT_ID
+    , M.REGIST_DT
+    , M.UPDT_DT
+    , M.MENU_CODE
+    , M.MENU_TY
+    , M.MENU_DC
+    , M.LEVEL_AUTHOR
+FROM
+    SWC_MENU M
+<where>
+<if test='id != null and id != ""'>
+        M.MENU_ID = UPPER(#{id, jdbcType=VARCHAR})
+</if>
+<if test='code != null and code != ""'>
+        AND M.MENU_CODE = UPPER(#{code, jdbcType=VARCHAR})
+</if>
+<if test='use == "Y" or use == "N"'>
+        AND M.MENU_USE = UPPER(#{use, jdbcType=VARCHAR})
+</if>
+</where>
+    ORDER BY
+      M.MENU_LEVEL
+    , M.MENU_SORT
+    </select>
+    <insert id="insert">
+INSERT INTO SWC_MENU (
+   MENU_ID
+ , MENU_UPPER_ID
+ , MENU_NM
+ , MENU_URI
+ , MENU_SORT
+ , MENU_LEVEL
+ , MENU_ICON
+ , MENU_USE
+ , REGIST_ID
+ , UPDT_ID
+ , REGIST_DT
+ , UPDT_DT
+ , MENU_CODE
+ , MENU_TY
+ , MENU_DC
+ , LEVEL_AUTHOR
+) VALUES (
+  UPPER(#{id,jdbcType=VARCHAR})
+, UPPER(#{parentId, jdbcType=VARCHAR})
+, #{name, jdbcType=VARCHAR}
+, #{uri, jdbcType=VARCHAR}
+, #{sort, jdbcType=VARCHAR}
+, #{level, jdbcType=VARCHAR}
+, #{icon, jdbcType=VARCHAR}
+, UPPER(#{use, jdbcType=VARCHAR})
+, #{createId,jdbcType=VARCHAR}
+, #{updateId,jdbcType=VARCHAR}
+, NOW()
+, NOW()
+, UPPER(#{code, jdbcType=VARCHAR})
+, #{type,jdbcType=VARCHAR}
+, #{description,jdbcType=VARCHAR}
+, #{levelAuthor,jdbcType=VARCHAR}
+)
+    </insert>
+
+    <update id="update">
+UPDATE SWC_MENU SET
+  MENU_CODE = UPPER(#{code, jdbcType=VARCHAR})
+, MENU_NM = #{name, jdbcType=VARCHAR}
+, MENU_DC = #{description, jdbcType=VARCHAR}
+, MENU_TY = #{type, jdbcType=VARCHAR}
+, MENU_SORT = #{sort, jdbcType=INTEGER}
+, MENU_ICON = #{icon, jdbcType=VARCHAR}
+, MENU_URI = #{uri, jdbcType=VARCHAR}
+, MENU_USE = UPPER(#{use, jdbcType=VARCHAR})
+, UPDT_ID = UPPER(#{updateId, jdbcType=VARCHAR})
+, UPDT_DT = NOW()
+, LEVEL_AUTHOR = #{levelAuthor,jdbcType=VARCHAR}
+WHERE
+    MENU_ID = UPPER(#{id,jdbcType=VARCHAR})
+    </update>
+
+    <delete id="deleteAuthorityLink">
+WITH MENU_TREE AS (
+    SELECT
+        M.MENU_ID
+         , M.MENU_UPPER_ID
+    FROM
+        SWC_MENU M
+    WHERE
+        M.MENU_ID = UPPER(#{id, jdbcType=VARCHAR})
+    UNION ALL
+    SELECT
+        M.MENU_ID
+         , M.MENU_UPPER_ID
+    FROM
+        SWC_MENU M
+            INNER JOIN MENU_TREE MT
+                       ON  MT.MENU_ID = M.MENU_UPPER_ID
+)
+DELETE FROM SWC_AUTHOR_MENU
+WHERE
+    MENU_ID IN (
+        SELECT MENU_ID FROM MENU_TREE
+    )
+    </delete>
+    <delete id="delete">
+        DELETE
+        FROM
+            SWC_MENU
+        WHERE
+            MENU_ID IN (
+                WITH RECURSIVE MENU_TREE AS (
+                    SELECT
+                        M.MENU_ID
+                         , M.MENU_UPPER_ID
+                    FROM
+                        SWC_MENU M
+                    WHERE
+                        M.MENU_ID = #{id, jdbcType=VARCHAR}
+        UNION ALL
+        SELECT
+            M.MENU_ID
+             , M.MENU_UPPER_ID
+        FROM
+            SWC_MENU M
+                INNER JOIN MENU_TREE MT ON
+                MT.MENU_ID = M.MENU_UPPER_ID
+            )
+        SELECT
+            MENU_ID
+        FROM
+            MENU_TREE
+            )
+  </delete>
+</mapper>

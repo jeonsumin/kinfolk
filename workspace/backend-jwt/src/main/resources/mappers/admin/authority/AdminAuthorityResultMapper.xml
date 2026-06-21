@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="core">
+
+  <resultMap type="com.terry.backend.api.admin.system.authority.dto.AuthorityDTO" id="Authority">
+    <id property="id" column="AUTHOR_ID" />
+    <result property="code" column="AUTHOR_CODE" />
+    <result property="name" column="AUTHOR_NM" />
+    <result property="description" column="AUTHOR_DC" />
+    <result property="use" column="AUTHOR_USE" />
+    <result property="createDt" column="REGIST_DT" />
+    <result property="createId" column="REGIST_ID" />
+    <result property="updateDt" column="UPDT_DT" />
+    <result property="updateId" column="UPDT_ID" />
+  </resultMap>
+
+  <resultMap type="com.terry.backend.api.admin.system.authority.dto.AuthorityMemberDTO" id="AuthorityMember">
+    <id property="id" column="USER_ID" />
+    <result property="authorityId" column="AUTHOR_ID" />
+    <result property="authorityValue" column="AUTHOR_VALUE" />
+    <result property="map" column="AUTHOR_MAP" />
+    <result property="loginId" column="USER_LOGIN_ID" />
+    <result property="createDt" column="REGIST_DT" />
+    <result property="createId" column="REGIST_ID" />
+    <result property="updateDt" column="UPDT_DT" />
+    <result property="updateId" column="UPDT_ID" />
+  </resultMap>
+
+  <resultMap type="com.terry.backend.api.admin.system.authority.dto.AuthorityMenuDTO" id="AuthorityMenu">
+    <id property="id" column="MENU_ID" />
+    <result property="authorityId" column="AUTHOR_ID" />
+    <result property="authorityValue" column="AUTHOR_VALUE" />
+    <result property="map" column="AUTHOR_MAP" />
+    <result property="parentId" column="MENU_UPPER_ID" />
+    <result property="code" column="MENU_CODE" />
+    <result property="name" column="MENU_NM" />
+    <result property="description" column="MENU_DC" />
+    <result property="type" column="MENU_TY" />
+    <result property="sort" column="MENU_SORT" />
+    <result property="icon" column="MENU_ICON" />
+    <result property="uri" column="MENU_URI" />
+    <result property="level" column="MENU_LEVEL" />
+    <result property="use" column="MENU_USE" />
+    <result property="createDt" column="REGIST_DT" />
+    <result property="createId" column="REGIST_ID" />
+    <result property="updateDt" column="UPDT_DT" />
+    <result property="updateId" column="UPDT_ID" />
+  </resultMap>
+
+</mapper>

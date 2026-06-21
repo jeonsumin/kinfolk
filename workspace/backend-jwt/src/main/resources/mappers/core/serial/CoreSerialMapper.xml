@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.terry.backend.core.serial.mapper.CoreSerialMapper">
+
+    <resultMap id="serial" type="com.terry.backend.core.serial.dto.SerialDTO">
+        <result column="SERIAL_ID" property="id"/>
+        <result column="VALUE" property="value"/>
+        <result column="UPDATE_DT" property="datetime"/>
+    </resultMap>
+
+    <select id="findOne" resultMap="serial">
+        SELECT
+              SERIAL_ID
+            , VALUE
+        , UPDATE_DT
+        FROM
+            SWC_SERIAL
+        WHERE
+            serial_id = #{id, jdbcType=VARCHAR}
+    </select>
+
+    <insert id="save">
+        INSERT INTO SWC_SERIAL ( SERIAL_ID
+                                , VALUE
+                                , UPDATE_DT)
+        VALUES ( #{id, jdbcType=VARCHAR}
+               , #{value, jdbcType=INTEGER}
+               , NOW()) ON DUPLICATE KEY
+        UPDATE
+            VALUE =
+        VALUES (VALUE), UPDATE_DT = NOW();
+    </insert>
+</mapper>

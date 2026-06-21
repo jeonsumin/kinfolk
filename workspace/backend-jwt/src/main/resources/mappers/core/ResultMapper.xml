@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="core">
+
+	<resultMap type="com.terry.backend.api.code.dto.CodeDTO" id="Code">
+		<id property="id" column="CODE_ID" />
+		<result property="parentId" column="CODE_UPPER_ID" />
+		<result property="code" column="CODE" />
+		<result property="name" column="CODE_NM" />
+		<result property="description" column="CODE_DC" />
+		<result property="sort" column="CODE_SORT" />
+		<result property="path" column="CODE_COURS" />
+		<result property="level" column="CODE_LEVEL" />
+		<result property="type" column="CODE_TY" />
+		<result property="value1" column="CODE_VALUE1" />
+		<result property="value2" column="CODE_VALUE2" />
+		<result property="value3" column="CODE_VALUE3" />
+		<result property="use" column="CODE_USE" />
+		<result property="createDt" column="REGIST_DT" />
+		<result property="createId" column="REGIST_ID" />
+		<result property="updateDt" column="UPDT_DT" />
+		<result property="updateId" column="UPDT_ID" />
+	</resultMap>
+
+	<resultMap type="com.terry.backend.core.dto.BaseDTO" id="Base">
+		<result property="createDt" column="REGIST_DT" />
+		<result property="createId" column="REGIST_ID" />
+		<result property="updateDt" column="updt_dt" />
+		<result property="updateId" column="updt_id" />
+	</resultMap>
+
+	<resultMap type="com.terry.backend.web.file.dto.FileDTO" id="File">
+		<id property="fileId" column="FILE_ID" />
+		<result property="fileName" column="FILE_NM" />
+		<result property="filePath" column="FILE_COURS" />
+		<result property="fileSize" column="FILE_MG" />
+		<result property="fileType" column="FILE_TY" />
+		<result property="createDt" column="REGIST_DT" />
+		<result property="createId" column="REGIST_ID" />
+	</resultMap>
+
+
+</mapper>

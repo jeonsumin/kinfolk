@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.terry.backend.web.security.mapper.SecurityMapper">
+    <resultMap id="User"
+               type="com.terry.backend.core.security.dto.UserDTO">
+        <id property="id" column="USER_ID"/>
+        <result property="loginId" column="USER_LOGIN_ID"/>
+        <result property="password" column="USER_PASSWORD"/>
+        <result property="name" column="USER_NM"/>
+        <result property="profileImageUri" column="USER_IMAGE_URI"/>
+        <result property="sex" column="USER_SEXDSTN"/>
+        <result property="email" column="USER_EMAIL"/>
+        <result property="use" column="USER_USE"
+                typeHandler="com.terry.backend.thirdparty.handlers.BooleanToStringTypeHandler"/>
+        <result property="lock" column="USER_LOCK"
+                typeHandler="com.terry.backend.thirdparty.handlers.BooleanToStringTypeHandler"/>
+        <result property="mobile" column="USER_MBTLNUM"/>
+        <result property="createDt" column="REGIST_DT"/>
+        <result property="createId" column="REGIST_ID"/>
+        <result property="updateDt" column="UPDT_DT"/>
+        <result property="updateId" column="UPDT_ID"/>
+    </resultMap>
+
+
+    <select id="findByUserId" resultMap="User">
+        SELECT U.USER_ID
+             , U.USER_LOGIN_ID
+             , U.USER_NM
+             , U.USER_PASSWORD
+             , U.USER_IMAGE_URI
+             , U.USER_EMAIL
+             , U.USER_SEXDSTN
+             , U.USER_USE
+             , U.USER_LOCK
+             , U.USER_MBTLNUM
+        FROM SWC_USER U
+        where upper(U.USER_ID) = upper(#{id, jdbcType=VARCHAR})
+    </select>
+
+    <select id="selectByUsername" resultMap="User">
+<![CDATA[
+        SELECT U.USER_ID
+             , U.USER_LOGIN_ID
+             , U.USER_NM
+             , U.USER_PASSWORD
+             , U.USER_IMAGE_URI
+             , U.USER_EMAIL
+             , U.USER_SEXDSTN
+             , U.USER_USE
+             , U.USER_LOCK
+             , U.USER_MBTLNUM
+        FROM SWC_USER U
+        WHERE UPPER(U.USER_LOGIN_ID) = UPPER(#{username, jdbcType=VARCHAR})
+        ]]>
+	</select>
+
+
+    <select id="selectUserAuthorities"
+            resultType="com.terry.backend.core.security.dto.AuthorityDTO">
+        SELECT A.AUTHOR_ID   AS AUTHORITY_ID
+             , A.AUTHOR_CODE AS AUTHORITY_CODE
+             , A.AUTHOR_CODE AS AUTHORITY
+        FROM SWC_AUTHOR A
+                 INNER JOIN SWC_USER_AUTHOR UA ON UA.AUTHOR_ID = A.AUTHOR_ID
+            AND UA.USER_ID = UPPER(#{username, jdbcType=VARCHAR})
+        WHERE A.AUTHOR_USE = 'Y'
+        GROUP BY A.AUTHOR_ID
+        ORDER BY A.AUTHOR_CODE
+    </select>
+    <select id="selectUserMenuAuthority" resultType="com.terry.backend.web.security.MenuAuthority">
+        SELECT A.AUTHOR_ID
+             , MAX(A.AUTHOR_CODE)   AS AUTHORITY
+             , MAX(AM.AUTHOR_VALUE) AS AUTHORITY_VALUE
+        FROM SWC_USER U
+                 INNER JOIN SWC_USER_AUTHOR UA
+                            ON UA.USER_ID = U.USER_ID
+                 INNER JOIN SWC_AUTHOR A
+                            ON A.AUTHOR_ID = UA.AUTHOR_ID
+                                AND A.AUTHOR_USE = 'Y'
+                 INNER JOIN SWC_AUTHOR_MENU AM
+                            ON AM.AUTHOR_ID = A.AUTHOR_ID
+                 INNER JOIN SWC_MENU M
+                            ON M.MENU_ID = AM.MENU_ID
+                                AND M.MENU_CODE = UPPER(#{menuCode, jdbcType=VARCHAR})
+                                AND M.MENU_USE = 'Y'
+        WHERE U.USER_ID = UPPER(#{username, jdbcType=VARCHAR})
+        GROUP BY A.AUTHOR_ID
+    </select>
+
+
+    <update id="updateLastLogin">
+        UPDATE SWC_USER
+        SET USER_LAST_LOGIN_DT = NOW()
+        WHERE USER_ID = UPPER(#{username, jdbcType=VARCHAR})
+    </update>
+
+    <!-- Refresh Token -->
+    <insert id="upsertRefreshToken">
+        INSERT INTO SWC_REFRESH_TOKEN (USER_ID, REFRESH_TOKEN, EXPIRE_DT, UPDT_DT)
+        VALUES (#{userId, jdbcType=VARCHAR}, #{refreshToken, jdbcType=VARCHAR}, #{expireDt, jdbcType=TIMESTAMP}, NOW())
+            ON DUPLICATE KEY UPDATE
+                                 REFRESH_TOKEN = VALUES(REFRESH_TOKEN),
+                                 EXPIRE_DT = VALUES(EXPIRE_DT),
+                                 UPDT_DT = NOW()
+    </insert>
+
+    <select id="findRefreshTokenByUserId"
+            resultType="com.terry.backend.web.security.dto.RefreshTokenDTO">
+        SELECT USER_ID      AS userId
+             , REFRESH_TOKEN AS refreshToken
+             , EXPIRE_DT    AS expireDt
+        FROM SWC_REFRESH_TOKEN
+        WHERE USER_ID = #{userId, jdbcType=VARCHAR}
+    </select>
+
+    <delete id="deleteRefreshTokenByUserId">
+        DELETE FROM SWC_REFRESH_TOKEN
+        WHERE USER_ID = #{userId, jdbcType=VARCHAR}
+    </delete>
+</mapper>

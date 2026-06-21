@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.terry.backend.web.setup.mapper.SetupMapper">
+
+    <!-- 관리자 권한을 가진 사용자 수 조회 -->
+    <select id="countAdminUsers" resultType="int">
+        SELECT COUNT(*)
+        FROM SWC_USER u
+        INNER JOIN SWC_USER_AUTHOR ua ON u.USER_ID = ua.USER_ID
+        INNER JOIN SWC_AUTHOR a ON ua.AUTHOR_ID = a.AUTHOR_ID
+        WHERE a.AUTHOR_CODE = 'ROLE_ADMIN'
+        AND u.USER_USE = 'Y'
+        AND a.AUTHOR_USE = 'Y'
+    </select>
+
+    <!-- 로그인 아이디 중복 확인 -->
+    <select id="existsByLoginId" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM SWC_USER
+        WHERE USER_LOGIN_ID = #{loginId}
+    </select>
+
+    <!-- 사용자 생성 -->
+    <insert id="insertUser">
+        INSERT INTO SWC_USER (
+            USER_ID,
+            USER_LOGIN_ID,
+            USER_NM,
+            USER_PASSWORD,
+            USER_EMAIL,
+            USER_USE,
+            USER_LOCK,
+            REGIST_DT,
+            UPDT_DT
+        ) VALUES (
+            #{userId},
+            #{loginId},
+            #{userName},
+            #{password},
+            #{email},
+            #{userUse},
+            #{userLock},
+            #{registDt},
+            #{registDt}
+        )
+    </insert>
+
+    <!-- 사용자 권한 부여 -->
+    <insert id="insertUserAuthority">
+        INSERT INTO SWC_USER_AUTHOR (
+            USER_ID,
+            AUTHOR_ID,
+            REGIST_DT,
+            UPDT_DT
+        ) VALUES (
+            #{userId},
+            #{authorId},
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP
+        )
+    </insert>
+
+</mapper>

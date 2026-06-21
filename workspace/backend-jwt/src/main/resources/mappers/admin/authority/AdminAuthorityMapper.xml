@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.terry.backend.api.admin.system.authority.mapper.AdminAuthorityMapper">
+
+    <select id="select" resultMap="core.Authority">
+        SELECT
+        A.AUTHOR_ID
+        , A.AUTHOR_CODE
+        , A.AUTHOR_NM
+        , A.AUTHOR_DC
+        , A.AUTHOR_USE
+        , A.REGIST_DT
+        , A.REGIST_ID
+        , A.UPDT_DT
+        , A.UPDT_ID
+        FROM
+        SWC_AUTHOR A
+        <where>
+            <if test='id != null and id != ""'>
+                A.AUTHOR_ID = UPPER(#{id, jdbcType=VARCHAR})
+            </if>
+            <if test='code != null'>
+                AND A.AUTHOR_CODE = UPPER(#{code, jdbcType=VARCHAR})
+            </if>
+            <if test='name != null and name != ""'>
+                AND A.AUTHOR_NM LIKE UPPER(#{name, jdbcType=VARCHAR}) + '%'
+            </if>
+        </where>
+        ORDER BY
+        A.AUTHOR_CODE
+        , A.AUTHOR_NM
+    </select>
+
+    <select id="selectAuthorityMembers" resultMap="core.AuthorityMember">
+        SELECT U.USER_ID
+             , IFNULL(UA.AUTHOR_ID, UPPER(#{authorityId, jdbcType=VARCHAR}))          AS AUTHOR_ID
+             , IFNULL(UA.AUTHOR_VALUE, 0)                                              AS AUTHOR_VALUE
+             , CASE WHEN UA.AUTHOR_ID IS NULL THEN 0 ELSE 1 END                        AS AUTHOR_MAP
+             , U.USER_LOGIN_ID
+             , U.USER_NM
+             , U.USER_IMAGE_URI
+             , U.USER_SEXDSTN
+             , U.USER_EMAIL
+             , U.USER_USE
+             , U.USER_LOCK
+             , U.USER_LAST_LOGIN_DT
+             , U.USER_DC
+             , UA.REGIST_DT
+             , UA.REGIST_ID
+             , UA.UPDT_DT
+             , UA.UPDT_ID
+        FROM SWC_USER U
+                 LEFT JOIN SWC_USER_AUTHOR UA
+                           ON UA.USER_ID = U.USER_ID
+                               AND UA.AUTHOR_ID = UPPER(#{authorityId, jdbcType=VARCHAR})
+                 LEFT JOIN SWC_AUTHOR A
+                           ON A.AUTHOR_ID = UA.AUTHOR_ID
+        ORDER BY U.USER_LOGIN_ID, U.USER_NM
+    </select>
+
+
+    <select id="selectAuthorityMenues" resultMap="core.AuthorityMenu">
+        SELECT M.MENU_ID
+             , IFNULL(AM.AUTHOR_ID, UPPER(#{authorityId, jdbcType=VARCHAR}))          AS AUTHOR_ID
+             , IFNULL(AM.AUTHOR_VALUE, 0)                                              AS AUTHOR_VALUE
+             , CASE WHEN AM.AUTHOR_ID IS NULL THEN 0 ELSE 1 END                        AS AUTHOR_MAP
+             , M.MENU_UPPER_ID
+             , M.MENU_CODE
+             , M.MENU_NM
+             , M.MENU_DC
+             , M.MENU_TY
+             , M.MENU_SORT
+             , M.MENU_ICON
+             , M.MENU_URI
+             , M.MENU_LEVEL
+             , M.MENU_USE
+             , AM.REGIST_DT
+             , AM.REGIST_ID
+             , AM.UPDT_DT
+             , AM.UPDT_ID
+        FROM SWC_MENU M
+                 LEFT JOIN SWC_AUTHOR_MENU AM
+                           ON AM.MENU_ID = M.MENU_ID
+                               AND AM.AUTHOR_ID = UPPER(#{authorityId, jdbcType=VARCHAR})
+        ORDER BY M.MENU_LEVEL, M.MENU_SORT
+    </select>
+
+
+    <insert id="save">
+        INSERT INTO SWC_AUTHOR (AUTHOR_ID,
+                                AUTHOR_CODE,
+                                AUTHOR_NM,
+                                AUTHOR_DC,
+                                AUTHOR_USE,
+                                REGIST_DT,
+                                REGIST_ID,
+                                UPDT_DT,
+                                UPDT_ID)
+        VALUES (UPPER(#{id, jdbcType=VARCHAR}),
+                UPPER(#{code, jdbcType=VARCHAR}),
+                #{name, jdbcType=VARCHAR},
+                #{description, jdbcType=VARCHAR},
+                UPPER(#{use, jdbcType=VARCHAR}),
+                NOW(),
+                #{createId, jdbcType=VARCHAR},
+                NOW(),
+                #{updateId, jdbcType=VARCHAR}) ON DUPLICATE KEY
+        UPDATE
+            AUTHOR_CODE =
+        VALUES (AUTHOR_CODE), AUTHOR_NM =
+        VALUES (AUTHOR_NM), AUTHOR_DC =
+        VALUES (AUTHOR_DC), AUTHOR_USE =
+        VALUES (AUTHOR_USE), UPDT_DT = NOW(), UPDT_ID =
+        VALUES (UPDT_ID)
+    </insert>
+
+
+    <delete id="delete">
+        DELETE
+        FROM SWC_AUTHOR
+        WHERE AUTHOR_ID = UPPER(#{id, jdbcType=VARCHAR})
+    </delete>
+
+    <delete id="deleteMembersById">
+        DELETE FROM SWC_USER_AUTHOR
+        WHERE
+        AUTHOR_ID = UPPER(#{authorityId, jdbcType=VARCHAR})
+        <if test='memberId != null and memberId != ""'>
+            AND USER_ID = UPPER(#{memberId, jdbcType=VARCHAR})
+        </if>
+    </delete>
+
+    <delete id="deleteMenuesById">
+        DELETE FROM SWC_AUTHOR_MENU
+        WHERE
+        AUTHOR_ID = UPPER(#{authorityId, jdbcType=VARCHAR})
+        <if test='menuId != null and menuId != ""'>
+            AND MENU_ID = UPPER(#{menuId, jdbcType=VARCHAR})
+        </if>
+    </delete>
+
+    <insert id="saveMember">
+        INSERT INTO SWC_USER_AUTHOR (
+            USER_ID,
+            AUTHOR_ID,
+            AUTHOR_VALUE,
+            REGIST_DT,
+            REGIST_ID,
+            UPDT_DT,
+            UPDT_ID
+        ) VALUES (
+                     UPPER(#{id, jdbcType=VARCHAR}),
+                     UPPER(#{authorityId, jdbcType=VARCHAR}),
+                     #{authorityValue, jdbcType=INTEGER},
+                     NOW(),
+                     #{createId, jdbcType=VARCHAR},
+                     NOW(),
+                     #{updateId, jdbcType=VARCHAR}
+                 )
+            ON DUPLICATE KEY UPDATE
+             AUTHOR_VALUE = VALUES(AUTHOR_VALUE),
+             UPDT_DT = NOW(),
+             UPDT_ID = VALUES(UPDT_ID);
+    </insert>
+
+    <insert id="saveMenu">
+        INSERT INTO SWC_AUTHOR_MENU (MENU_ID,
+                                     AUTHOR_ID,
+                                     AUTHOR_VALUE,
+                                     REGIST_DT,
+                                     REGIST_ID,
+                                     UPDT_DT,
+                                     UPDT_ID)
+        VALUES (UPPER(#{id, jdbcType=VARCHAR}),
+                UPPER(#{authorityId, jdbcType=VARCHAR}),
+                #{authorityValue, jdbcType=INTEGER},
+                NOW(),
+                #{createId, jdbcType=VARCHAR},
+                NOW(),
+                #{updateId, jdbcType=VARCHAR}) ON DUPLICATE KEY
+        UPDATE
+            AUTHOR_VALUE = VALUES (AUTHOR_VALUE)
+            , UPDT_DT = NOW(), UPDT_ID = VALUES (UPDT_ID);
+
+    </insert>
+
+
+</mapper>

@@ -255,3 +255,105 @@ log.error("Error creating first admin account", e);
 - [ ] 요청 DTO에 검증과 `@Valid`가 적용되었는가?
 - [ ] 예외 메시지 키와 HTTP 상태가 정의되어 있는가?
 - [ ] 민감정보와 `System.out` 없이 적절한 수준의 로그가 남는가?
+
+## 13. 1:N 관계 조회와 컬렉션 매핑
+
+부모-자식 1:N 관계는 JOIN 한 번으로 조회하고, `<collection>`을 이용해 MyBatis가 자동으로 목록을 조립하도록 한다. Service나 코드에서 반복 조회하는 방식(N+1)은 허용하지 않는다.
+
+### DTO 설계
+부모 DTO 안에 자식 DTO의 `List` 필드를 선언한다.
+
+```java
+public class CalendarDTO {
+    private String id;
+    // ... 부모 필드 ...
+    private List<EventAttendeesDTO> attendees; // 참석자 목록 (1:N 관계)
+}
+```
+
+### resultMap
+`<id>` 태그로 부모의 기본 키를 반드시 선언한다. MyBatis는 이 값을 기준으로 같은 부모 행을 묶어 자식 목록을 합친다. 자식 테이블 컬럼과 부모 컬럼 이름이 겹치면 SQL에서 `AS ATTENDEE_xxx` 형태로 별칭을 부여한다.
+
+```xml
+<resultMap id="eventDetailMap" type="com.terry.backend.api.calendar.dto.CalendarDTO">
+    <id property="id" column="ID" />
+    <result property="userId" column="USER_ID" />
+    <!-- 부모 컬럼들 ... -->
+
+    <!-- 조인으로 가져온 자식 리스트 매핑 -->
+    <collection property="attendees" ofType="com.terry.backend.api.calendar.dto.EventAttendeesDTO">
+        <result property="eventId" column="ATTENDEE_EVENT_ID"/>
+        <result property="userId" column="ATTENDEE_USER_ID"/>
+        <result property="status" column="STATUS"/>
+    </collection>
+</resultMap>
+```
+
+### SQL
+```sql
+SELECT
+      e.ID
+    , e.USER_ID
+    , a.EVENT_ID AS ATTENDEE_EVENT_ID
+    , a.USER_ID  AS ATTENDEE_USER_ID
+    , a.STATUS
+FROM
+    CALENDAR_EVENTS e
+    LEFT JOIN EVENT_ATTENDEES a ON e.ID = a.EVENT_ID
+WHERE
+    e.ID = #{id}
+```
+
+## 14. 동적 List 파라미터와 Enum 타입 처리
+
+### `<foreach>` — IN 절 동적 생성
+`List` 파라미터로 IN 절을 만들 때 `<foreach>`를 사용한다. null 또는 빈 리스트가 전달될 경우를 항상 guard한다.
+
+```java
+// Mapper 인터페이스
+List<CalendarDTO> selectWorkspaceEventsByMonth(
+        @Param("workspaceId") String workspaceId,
+        @Param("userIds") List<String> userIds,
+        @Param("startOfMonth") String startOfMonth,
+        @Param("endOfMonth") String endOfMonth
+);
+```
+
+```xml
+<if test="userIds != null and userIds.size() > 0">
+    AND wu.USER_ID IN
+    <foreach collection="userIds" item="uid" open="(" separator="," close=")">
+        #{uid}
+    </foreach>
+</if>
+```
+
+### Enum 필드 DB 저장·조회
+Enum 타입을 문자열 그대로 DB에 저장하고 읽을 때는 MyBatis의 `EnumToStringTypeHandler`를 inline으로 지정한다.
+
+```xml
+<!-- INSERT / UPDATE: Enum → 문자열 -->
+<insert id="insertAttendee">
+    INSERT INTO EVENT_ATTENDEES (EVENT_ID, USER_ID, STATUS)
+    VALUES (#{eventId},
+            #{userId},
+            #{status, typeHandler=org.apache.ibatis.type.EnumToStringTypeHandler})
+</insert>
+```
+
+`<result>` 태그에서 Enum을 읽을 때도 문자열로 저장된 값이면 동일하게 `typeHandler`를 명시한다. 기본 `EnumTypeHandler`는 ordinal을 저장하므로 혼용을 피한다.
+
+### 단순 상태 Enum
+코드 API로 노출할 필요 없이 내부 상태만 표현하는 Enum은 필드와 유틸 메서드 없이 선언한다. 관련 DTO와 같은 `dto` 패키지에 둔다.
+
+```java
+// api/calendar/dto/AttendeesType.java
+public enum AttendeesType {
+    PENDING,
+    ACCEPTED,
+    DECLINED,
+    TENTATIVE
+}
+```
+
+코드 목록 API로 노출해야 하는 Enum은 `String code` 필드와 `toCodeList()` 유틸 메서드를 추가하는 기존 `MenuType` 패턴을 따른다.

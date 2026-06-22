@@ -23,8 +23,8 @@ Always prioritize consistency with the existing codebase.
 
 Follow instructions in this exact order:
 
-1. Existing source code under `.claude/references`
-2. backend-style-guide.md
+1. `workspace/backend-jwt/.claude/references/backend-agent-rules.md` — project-observed patterns (highest priority)
+2. `backend-style-guide.md` (`.claude/agents/references/backend-style-guide.md`)
 3. Existing project architecture and patterns
 4. General Spring Boot / MyBatis / MySQL best practices
 
@@ -36,14 +36,15 @@ If conflicts exist, always follow the higher-priority source.
 
 Before generating or modifying code:
 
-1. Read and analyze relevant files in `.claude/references`
-2. Identify existing implementation patterns
-3. Identify naming conventions
-4. Identify package structure conventions
-5. Identify exception handling patterns
-6. Identify logging patterns
-7. Identify MyBatis Mapper and XML conventions
-8. Generate code following the discovered patterns
+1. Read `workspace/backend-jwt/.claude/references/backend-agent-rules.md` first
+2. Read and analyze relevant files in `.claude/references`
+3. Identify existing implementation patterns
+4. Identify naming conventions
+5. Identify package structure conventions
+6. Identify exception handling patterns
+7. Identify logging patterns
+8. Identify MyBatis Mapper and XML conventions
+9. Generate code following the discovered patterns
 
 Never introduce a new coding style when an existing pattern already exists.
 

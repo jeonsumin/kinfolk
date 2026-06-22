@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.terry.backend.api.calendar.mapper.CalendarMapper">
+
+
+    <!-- 1. 1대N 관계 매핑을 위한 ResultMap (일정 상세 + 참석자 목록) -->
+    <resultMap id="eventDetailMap" type="com.terry.backend.api.calendar.dto.CalendarDTO">
+        <id property="id" column="ID" />
+        <result property="userId" column="USER_ID" />
+        <result property="title" column="TITLE" />
+        <result property="description" column="DESC" />
+        <result property="startDt" column="START_DT" />
+        <result property="endDt" column="END_DT" />
+        <result property="isAllDay" column="IS_ALL_DAY" />
+        <result property="location" column="LOCATION" />
+        <result property="color" column="COLOR" />
+        <result property="registDt" column="REGIST_DT" />
+        <result property="updateDt" column="UPDT_DT" />
+
+        <!-- 테이블 조인으로 가져온 참석자 리스트 매핑 -->
+        <collection property="attendees" ofType="com.terry.backend.api.calendar.dto.EventAttendeesDTO">
+            <result property="eventId" column="ATTENDEE_EVENT_ID"/>
+            <result property="userId" column="ATTENDEE_USER_ID"/>
+            <!-- 이늄 타입을 문자열로 안전하게 처리하기 위한 타입핸들러 지정 -->
+            <result property="status" column="STATUS"/>
+        </collection>
+    </resultMap>
+
+
+    <!-- ================================================================= -->
+    <!-- [조회 기능] 월간 / 주간 / 일간 / 단건 상세 조회                      -->
+    <!-- ================================================================= -->
+
+    <!-- 2. 워크스페이스 팀원 월간 조회 (전체 팀원 혹은 특정 팀원 필터링) -->
+    <select id="selectWorkspaceEventsByMonth" resultMap="eventDetailMap">
+        SELECT
+            e.ID
+            , e.USER_ID
+            , e.TITLE
+            , e.DESC
+            , e.START_DT
+            , e.END_DT
+            , e.IS_ALL_DAY
+            , e.LOCATION
+            , e.COLOR
+            , e.REGIST_DT
+            , e.UPDT_DT
+            , a.EVENT_ID AS ATTENDEE_EVENT_ID
+            , a.USER_ID AS ATTENDEE_USER_ID
+            , a.STATUS
+        FROM
+            CALENDAR_EVENTS e
+            LEFT JOIN EVENT_ATTENDEES a ON e.ID = a.EVENT_ID
+        WHERE
+            e.USER_ID IN (
+                SELECT
+                    wu.USER_ID
+                FROM
+                    WORKSPACE_USER wu
+                WHERE
+                    wu.WS_ID = #{workspaceId}
+                    <if test="userIds != null and userIds.size() > 0">
+                        AND wu.USER_ID IN
+                        <foreach collection="userIds" item="uid" open="(" separator="," close=")">
+                            #{uid}
+                        </foreach>
+                    </if>
+        )
+        <![CDATA[
+        AND e.START_DT >= #{endOfMonth}
+        AND e.END_DT >= #{startOfMonth}
+        ORDER BY e.START_DT ASC, e.IS_ALL_DAY DESC
+        ]]>
+    </select>
+
+    <!-- 3. 워크스페이스 팀원 주간 조회 (전체 팀원 혹은 특정 팀원 필터링) -->
+    <select id="selectWorkspaceEventsByWeek" resultMap="eventDetailMap">
+        SELECT
+              e.ID
+            , e.USER_ID
+            , e.TITLE
+            , e.DESC
+            , e.START_DT
+            , e.END_DT
+            , e.IS_ALL_DAY
+            , e.LOCATION
+            , e.COLOR
+            , e.REGIST_DT
+            , e.UPDT_DT
+            , a.EVENT_ID AS ATTENDEE_EVENT_ID
+            , a.USER_ID AS ATTENDEE_USER_ID
+            , a.STATUS
+        FROM
+            CALENDAR_EVENTS e
+            LEFT JOIN EVENT_ATTENDEES a ON e.ID = a.EVENT_ID
+        WHERE
+            e.USER_ID IN (
+                SELECT
+                    wu.USER_ID
+                FROM
+                    WORKSPACE_USER wu
+                WHERE
+                    wu.WS_ID = #{workspaceId}
+                    <if test="userIds != null and userIds.size() > 0">
+                        AND wu.USER_ID IN
+                        <foreach collection="userIds" item="uid" open="(" separator="," close=")">
+                            #{uid}
+                        </foreach>
+                    </if>
+            )
+        <![CDATA[
+        AND e.START_DT >= CONCAT(#{endOfWeek}, ' 23:59:59')
+        AND e.END_DT >= CONCAT(#{startOfWeek}, ' 00:00:00')
+        ORDER BY e.START_DT ASC, e.IS_ALL_DAY DESC
+        ]]>
+    </select>
+
+    <!-- 4. 워크스페이스 팀원 일간 조회 (전체 팀원 혹은 특정 팀원 필터링) -->
+    <select id="selectWorkspaceEventsByDay" resultMap="eventDetailMap">
+        SELECT
+              e.ID
+            , e.USER_ID
+            , e.TITLE
+            , e.DESC
+            , e.START_DT
+            , e.END_DT
+            , e.IS_ALL_DAY
+            , e.LOCATION
+            , e.COLOR
+            , e.REGIST_DT
+            , e.UPDT_DT
+            , a.EVENT_ID AS ATTENDEE_EVENT_ID
+            , a.USER_ID AS ATTENDEE_USER_ID
+            , a.STATUS
+        FROM
+            CALENDAR_EVENTS e
+            LEFT JOIN EVENT_ATTENDEES a ON e.ID = a.EVENT_ID
+        WHERE
+            e.USER_ID IN (
+                SELECT
+                    wu.USER_ID
+                FROM
+                    WORKSPACE_USER wu
+                WHERE
+                    wu.WS_ID = #{workspaceId}
+                    <if test="userIds != null and userIds.size() > 0">
+                        AND wu.USER_ID IN
+                        <foreach collection="userIds" item="uid" open="(" separator="," close=")">
+                            #{uid}
+                        </foreach>
+                    </if>
+        )
+        <![CDATA[
+        AND DATE(e.START_DT) >= #{targetDate}
+        AND DATE(e.END_DT) >= #{targetDate}
+        ORDER BY e.IS_ALL_DAY DESC, e.START_DT ASC
+        ]]>
+    </select>
+
+    <!-- 5. 특정 일정 단건 상세 조회 -->
+    <select id="selectEventDetail" resultMap="eventDetailMap">
+        SELECT
+              e.ID
+            , e.USER_ID
+            , e.TITLE
+            , e.DESC
+            , e.START_DT
+            , e.END_DT
+            , e.IS_ALL_DAY
+            , e.LOCATION
+            , e.COLOR
+            , e.REGIST_DT
+            , e.UPDT_DT
+            , a.EVENT_ID AS ATTENDEE_EVENT_ID
+            , a.USER_ID AS ATTENDEE_USER_ID
+            , a.STATUS
+        FROM
+            CALENDAR_EVENTS e
+            LEFT JOIN EVENT_ATTENDEES a ON e.ID = a.EVENT_ID
+        WHERE
+            e.ID = #{id}
+    </select>
+
+
+
+    <!-- 일정 신규 등록 (String 타입 고유 ID 사용하므로 useGeneratedKeys는 제외) -->
+    <insert id="insertEvent">
+        INSERT INTO CALENDAR_EVENTS ( ID
+                                    , USER_ID
+                                    , WS_ID
+                                    , TITLE
+                                    , `DESC`
+                                    , START_DT
+                                    , END_DT
+                                    , IS_ALL_DAY
+                                    , LOCATION
+                                    , COLOR)
+        VALUES ( #{id}
+               , #{userId}
+               , #{wsId}
+               , #{title}
+               , #{desc}
+               , #{startDt}
+               , #{endDt}
+               , #{isAllDay}
+               , #{location}
+               , #{color})
+    </insert>
+
+    <!-- 일정 상세 수정 -->
+    <update id="updateEvent">
+        UPDATE CALENDAR_EVENTS
+        SET TITLE      = #{title},
+            `DESC`     = #{desc},
+            START_DT   = #{startDt},
+            END_DT     = #{endDt},
+            IS_ALL_DAY = #{isAllDay},
+            LOCATION   = #{location},
+            COLOR      = #{color}
+        WHERE ID = #{id}
+          AND WS_ID = #{wsId}
+    </update>
+
+    <!-- 일정 삭제 (CASCADE 설정으로 EVENT_ATTENDEES 데이터도 자동 삭제됨) -->
+    <delete id="deleteEvent">
+        DELETE
+        FROM CALENDAR_EVENTS
+        WHERE ID = #{id}
+          AND WS_ID = #{wsId}
+    </delete>
+
+    <!-- 일정에 참가자 초대 등록 -->
+    <insert id="insertAttendee">
+        INSERT INTO EVENT_ATTENDEES (EVENT_ID, USER_ID, STATUS)
+        VALUES (#{eventId},
+                #{userId},
+                #{status, typeHandler=org.apache.ibatis.type.EnumToStringTypeHandler})
+    </insert>
+
+    <!-- 참석자의 참여 상태 변경 (수락 / 거절 / 미정 등) -->
+    <update id="updateAttendeeStatus">
+        UPDATE EVENT_ATTENDEES
+        SET STATUS = #{status, typeHandler=org.apache.ibatis.type.EnumToStringTypeHandler}
+        WHERE EVENT_ID = #{eventId}
+          AND USER_ID = #{userId}
+    </update>
+
+    <!-- 11. 특정 일정의 참석자 전원 초기화 (수정 시 초기화 후 재등록 용도) -->
+    <delete id="deleteAttendeesByEventId">
+        DELETE
+        FROM EVENT_ATTENDEES
+        WHERE EVENT_ID = #{eventId}
+    </delete>
+</mapper>

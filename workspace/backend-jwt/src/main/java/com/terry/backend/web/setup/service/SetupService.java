@@ -52,6 +52,12 @@ public class SetupService {
             String userId = "admin-" + UUID.randomUUID().toString();
             String hashedPassword = passwordEncoder.encode(request.getPassword());
 
+            //초기 권한 설정
+            String authoAdminId = "author-" + UUID.randomUUID().toString();
+            String authoUserId = "author-" + UUID.randomUUID().toString();
+            setupMapper.insertCurrentAuthority(authoAdminId,"ADMIN","관리자",userId);
+            setupMapper.insertCurrentAuthority(authoUserId,"USER","사용자",userId);
+
             // 사용자 생성
             setupMapper.insertUser(
                 userId,
@@ -65,7 +71,7 @@ public class SetupService {
             );
 
             // 관리자 권한 부여
-            setupMapper.insertUserAuthority(userId, "auth-002"); // ROLE_ADMIN
+            setupMapper.insertUserAuthority(userId, authoAdminId); // ROLE_ADMIN
 
             log.info("First admin account created successfully: {}", request.getLoginId());
 

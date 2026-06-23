@@ -19,6 +19,7 @@ public class CalendarDTO {
 
     private String id;
     private String userId;
+    private String wsId;
     private String title;
     private String description;
     private Date startDt;

@@ -134,6 +134,38 @@ CREATE TABLE IF NOT EXISTS `SWC_FILE` (
 `REGIST_DT`     datetime DEFAULT NULL       COMMENT '생성일시'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='파일 테이블';
 
+-- SHOPPING_CATEGORY definition
+
+CREATE TABLE IF NOT EXISTS `SHOPPING_CATEGORY` (
+`CATEGORY_ID`  VARCHAR(255) NOT NULL,
+`WS_ID`        VARCHAR(255) NOT NULL                         COMMENT '워크스페이스 ID',
+`CATEGORY_NM`  VARCHAR(100) NOT NULL                         COMMENT '카테고리명',
+`SORT_ORDER`   INT          DEFAULT 0                        COMMENT '정렬 순서',
+`REGIST_DT`    DATETIME     DEFAULT NOW()                    COMMENT '생성일시',
+`REGIST_ID`    VARCHAR(255) DEFAULT NULL                     COMMENT '생성자',
+PRIMARY KEY (`CATEGORY_ID`),
+KEY `idx_shopping_category_ws_id` (`WS_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='장보기 카테고리';
+
+-- SHOPPING_ITEM definition
+
+CREATE TABLE IF NOT EXISTS `SHOPPING_ITEM` (
+`ITEM_ID`           VARCHAR(255) NOT NULL,
+`WS_ID`             VARCHAR(255) NOT NULL                    COMMENT '워크스페이스 ID',
+`CATEGORY_ID`       VARCHAR(255) DEFAULT NULL                COMMENT '카테고리 ID',
+`ITEM_NM`           VARCHAR(255) NOT NULL                    COMMENT '아이템명',
+`QUANTITY`          INT          DEFAULT 1                   COMMENT '수량',
+`IS_CHECKED`        TINYINT(1)   DEFAULT 0                   COMMENT '구매완료 여부',
+`ASSIGNED_USER_ID`  VARCHAR(255) DEFAULT NULL                COMMENT '담당자 ID',
+`REGIST_DT`         DATETIME     DEFAULT NOW()               COMMENT '생성일시',
+`REGIST_ID`         VARCHAR(255) DEFAULT NULL                COMMENT '생성자',
+`UPDT_DT`           DATETIME     DEFAULT NOW() ON UPDATE NOW() COMMENT '수정일시',
+`UPDT_ID`           VARCHAR(255) DEFAULT NULL                COMMENT '수정자',
+PRIMARY KEY (`ITEM_ID`),
+KEY `idx_shopping_item_ws_id` (`WS_ID`),
+KEY `idx_shopping_item_category_id` (`CATEGORY_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='장보기 아이템';
+
 -- Refresh Token 저장 테이블
 CREATE TABLE IF NOT EXISTS SWC_REFRESH_TOKEN
 (

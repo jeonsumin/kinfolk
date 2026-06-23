@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/shared/ui/sidebar";
-import { BottomNav } from "@/shared/ui/bottom-nav";
+import { ConditionalShell } from "./conditional-shell";
+import { Providers } from "./providers";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -22,12 +22,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={`${plusJakartaSans.variable} h-full`}>
-      <body className="h-full flex antialiased">
-        <Sidebar />
-        <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden pb-16 lg:pb-0">
-          {children}
-        </div>
-        <BottomNav />
+      <body className="h-full antialiased">
+        <Providers>
+          <ConditionalShell>{children}</ConditionalShell>
+        </Providers>
       </body>
     </html>
   );

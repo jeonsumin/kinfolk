@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.terry.backend.api.workspace.mapper.WorkspaceMapper">
+
+    <resultMap id="WorkspaceResult" type="com.terry.backend.api.workspace.dto.WorkspaceDTO">
+        <id     property="id"         column="ID"/>
+        <result property="wsNm"       column="WS_NM"/>
+        <result property="wsDesc"     column="WS_DESC"/>
+        <result property="wsOwnerId"  column="WS_OWNER_ID"/>
+        <result property="authority"  column="AUTHORITY"/>
+        <result property="registDt"   column="REGIST_DT"/>
+    </resultMap>
+
+    <insert id="insertWorkspace">
+        INSERT INTO WORKSPACE ( ID
+                              , WS_NM
+                              , WS_DESC
+                              , WS_OWNER_ID
+                              , REGIST_DT)
+        VALUES ( #{id,        jdbcType=VARCHAR}
+               , #{wsNm,      jdbcType=VARCHAR}
+               , #{wsDesc,    jdbcType=VARCHAR}
+               , #{wsOwnerId, jdbcType=VARCHAR}
+               , NOW())
+    </insert>
+
+    <insert id="insertWorkspaceUser">
+        INSERT INTO WORKSPACE_USER ( ID
+                                   , WS_ID
+                                   , USER_ID
+                                   , AUTHORITY
+                                   , REGIST_DT)
+        VALUES ( #{id,        jdbcType=VARCHAR}
+               , #{wsId,      jdbcType=VARCHAR}
+               , #{userId,    jdbcType=VARCHAR}
+               , #{authority,  jdbcType=VARCHAR}
+               , NOW())
+    </insert>
+
+    <select id="selectMyWorkspaces" resultMap="WorkspaceResult">
+        SELECT W.ID
+             , W.WS_NM
+             , W.WS_DESC
+             , W.WS_OWNER_ID
+             , WU.AUTHORITY
+             , W.REGIST_DT
+        FROM WORKSPACE W
+                 INNER JOIN WORKSPACE_USER WU ON WU.WS_ID = W.ID
+        WHERE WU.USER_ID = #{userId, jdbcType=VARCHAR}
+        ORDER BY W.REGIST_DT ASC
+    </select>
+
+    <select id="selectWorkspaceWithAuthority" resultMap="WorkspaceResult">
+        SELECT W.ID
+             , W.WS_NM
+             , W.WS_DESC
+             , W.WS_OWNER_ID
+             , WU.AUTHORITY
+             , W.REGIST_DT
+        FROM WORKSPACE W
+                 INNER JOIN WORKSPACE_USER WU ON WU.WS_ID = W.ID
+        WHERE W.ID = #{workspaceId, jdbcType=VARCHAR}
+          AND WU.USER_ID = #{userId, jdbcType=VARCHAR}
+    </select>
+
+    <resultMap id="WorkspaceMemberResult" type="com.terry.backend.api.workspace.dto.WorkspaceMemberDTO">
+        <result property="memberId"        column="MEMBER_ID"/>
+        <result property="name"            column="USER_NM"/>
+        <result property="profileImageUri" column="USER_IMAGE_URI"/>
+        <result property="authority"       column="AUTHORITY"/>
+    </resultMap>
+
+    <select id="selectWorkspaceMembers" resultMap="WorkspaceMemberResult">
+        SELECT WU.USER_ID       AS MEMBER_ID
+             , U.USER_NM
+             , U.USER_IMAGE_URI
+             , WU.AUTHORITY
+        FROM WORKSPACE_USER WU
+                 INNER JOIN SWC_USER U ON U.USER_ID = WU.USER_ID
+        WHERE WU.WS_ID = #{workspaceId, jdbcType=VARCHAR}
+        ORDER BY WU.REGIST_DT ASC
+    </select>
+
+</mapper>

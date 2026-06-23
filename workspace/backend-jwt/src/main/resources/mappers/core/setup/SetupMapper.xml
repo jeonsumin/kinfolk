@@ -45,6 +45,31 @@
         )
     </insert>
 
+    <!-- 가본 권한 생성 -->
+    <insert id="insertCurrentAuthority">
+        INSERT INTO SWC_AUTHOR (
+              AUTHOR_ID
+            , AUTHOR_CODE
+            , AUTHOR_NM
+            , AUTHOR_DC
+            , AUTHOR_USE
+            , REGIST_DT
+            , REGIST_ID
+            , UPDT_DT
+            , UPDT_ID
+        ) VALUES(
+                 #{authorId}
+                , #{code}
+                , #{codeNm}
+                , NULL
+                , 'Y'
+                , NOW()
+                , #{registId}
+                , NOW()
+                , #{registId}
+        )
+    </insert>
+
     <!-- 사용자 권한 부여 -->
     <insert id="insertUserAuthority">
         INSERT INTO SWC_USER_AUTHOR (

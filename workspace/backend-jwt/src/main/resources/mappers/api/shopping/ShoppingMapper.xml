@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.terry.backend.api.shopping.mapper.ShoppingMapper">
+
+    <resultMap id="ShoppingItemResult" type="com.terry.backend.api.shopping.dto.ShoppingItemDTO">
+        <id     property="itemId"           column="ITEM_ID"/>
+        <result property="wsId"             column="WS_ID"/>
+        <result property="categoryId"       column="CATEGORY_ID"/>
+        <result property="itemNm"           column="ITEM_NM"/>
+        <result property="quantity"         column="QUANTITY"/>
+        <result property="isChecked"        column="IS_CHECKED"/>
+        <result property="assignedUserId"   column="ASSIGNED_USER_ID"/>
+        <result property="assignedUserName" column="ASSIGNED_USER_NM"/>
+    </resultMap>
+
+    <resultMap id="ShoppingCategoryResult" type="com.terry.backend.api.shopping.dto.ShoppingCategoryDTO">
+        <id     property="categoryId" column="CATEGORY_ID"/>
+        <result property="categoryNm" column="CATEGORY_NM"/>
+        <result property="sortOrder"  column="SORT_ORDER"/>
+        <collection property="items" ofType="com.terry.backend.api.shopping.dto.ShoppingItemDTO">
+            <id     property="itemId"           column="ITEM_ID"/>
+            <result property="itemNm"           column="ITEM_NM"/>
+            <result property="quantity"         column="QUANTITY"/>
+            <result property="isChecked"        column="IS_CHECKED"/>
+            <result property="assignedUserId"   column="ASSIGNED_USER_ID"/>
+            <result property="assignedUserName" column="ASSIGNED_USER_NM"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="ShoppingCategoryOnlyResult" type="com.terry.backend.api.shopping.dto.ShoppingCategoryDTO">
+        <id     property="categoryId" column="CATEGORY_ID"/>
+        <result property="categoryNm" column="CATEGORY_NM"/>
+        <result property="sortOrder"  column="SORT_ORDER"/>
+    </resultMap>
+
+    <!-- 장보기 목록 조회: 카테고리별 아이템 그룹화 -->
+    <select id="selectShoppingList" resultMap="ShoppingCategoryResult">
+        SELECT c.CATEGORY_ID
+             , c.CATEGORY_NM
+             , c.SORT_ORDER
+             , i.ITEM_ID
+             , i.ITEM_NM
+             , i.QUANTITY
+             , i.IS_CHECKED
+             , i.ASSIGNED_USER_ID
+             , u.USER_NM AS ASSIGNED_USER_NM
+        FROM SHOPPING_CATEGORY c
+                 LEFT JOIN SHOPPING_ITEM i ON i.CATEGORY_ID = c.CATEGORY_ID
+                 LEFT JOIN SWC_USER u ON u.USER_ID = i.ASSIGNED_USER_ID
+        WHERE c.WS_ID = #{workspaceId, jdbcType=VARCHAR}
+        ORDER BY c.SORT_ORDER ASC, i.REGIST_DT ASC
+    </select>
+
+    <!-- 카테고리 목록만 조회 -->
+    <select id="selectCategories" resultMap="ShoppingCategoryOnlyResult">
+        SELECT CATEGORY_ID
+             , CATEGORY_NM
+             , SORT_ORDER
+        FROM SHOPPING_CATEGORY
+        WHERE WS_ID = #{workspaceId, jdbcType=VARCHAR}
+        ORDER BY SORT_ORDER ASC
+    </select>
+
+    <!-- 카테고리 수 조회 (lazy-seed 판별) -->
+    <select id="countCategories" resultType="int">
+        SELECT COUNT(*)
+        FROM SHOPPING_CATEGORY
+        WHERE WS_ID = #{workspaceId, jdbcType=VARCHAR}
+    </select>
+
+    <!-- 카테고리 등록 -->
+    <insert id="insertCategory">
+        INSERT INTO SHOPPING_CATEGORY ( CATEGORY_ID
+                                      , WS_ID
+                                      , CATEGORY_NM
+                                      , SORT_ORDER
+                                      , REGIST_DT
+                                      , REGIST_ID)
+        VALUES ( #{categoryId, jdbcType=VARCHAR}
+               , #{wsId,       jdbcType=VARCHAR}
+               , #{categoryNm, jdbcType=VARCHAR}
+               , #{sortOrder,  jdbcType=INTEGER}
+               , NOW()
+               , #{registId,   jdbcType=VARCHAR})
+    </insert>
+
+    <!-- 아이템 단건 조회 -->
+    <select id="selectItemById" resultMap="ShoppingItemResult">
+        SELECT ITEM_ID
+             , WS_ID
+             , CATEGORY_ID
+             , ITEM_NM
+             , QUANTITY
+             , IS_CHECKED
+             , ASSIGNED_USER_ID
+        FROM SHOPPING_ITEM
+        WHERE ITEM_ID = #{itemId, jdbcType=VARCHAR}
+    </select>
+
+    <!-- 아이템 등록 -->
+    <insert id="insertItem">
+        INSERT INTO SHOPPING_ITEM ( ITEM_ID
+                                  , WS_ID
+                                  , CATEGORY_ID
+                                  , ITEM_NM
+                                  , QUANTITY
+                                  , IS_CHECKED
+                                  , ASSIGNED_USER_ID
+                                  , REGIST_DT
+                                  , REGIST_ID)
+        VALUES ( #{itemId,          jdbcType=VARCHAR}
+               , #{wsId,            jdbcType=VARCHAR}
+               , #{categoryId,      jdbcType=VARCHAR}
+               , #{itemNm,          jdbcType=VARCHAR}
+               , #{quantity,        jdbcType=INTEGER}
+               , 0
+               , #{assignedUserId,  jdbcType=VARCHAR}
+               , NOW()
+               , #{registId,        jdbcType=VARCHAR})
+    </insert>
+
+    <!-- 아이템 수정: null 필드는 UPDATE 제외 -->
+    <update id="updateItem">
+        UPDATE SHOPPING_ITEM
+        <set>
+            <if test="itemNm != null">ITEM_NM = #{itemNm, jdbcType=VARCHAR},</if>
+            <if test="quantity != null">QUANTITY = #{quantity, jdbcType=INTEGER},</if>
+            <if test="isChecked != null">IS_CHECKED = #{isChecked, jdbcType=BOOLEAN},</if>
+            <if test="assignedUserId != null">ASSIGNED_USER_ID = #{assignedUserId, jdbcType=VARCHAR},</if>
+            <if test="categoryId != null">CATEGORY_ID = #{categoryId, jdbcType=VARCHAR},</if>
+            UPDT_DT = NOW(),
+            UPDT_ID = #{updtId, jdbcType=VARCHAR}
+        </set>
+        WHERE ITEM_ID = #{itemId, jdbcType=VARCHAR}
+    </update>
+
+    <!-- 아이템 삭제 -->
+    <delete id="deleteItem">
+        DELETE FROM SHOPPING_ITEM
+        WHERE ITEM_ID = #{itemId, jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 워크스페이스 멤버십 확인 -->
+    <select id="existsWorkspaceMember" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM WORKSPACE_USER
+        WHERE WS_ID = #{workspaceId, jdbcType=VARCHAR}
+          AND USER_ID = #{userId, jdbcType=VARCHAR}
+    </select>
+
+</mapper>

@@ -20,7 +20,7 @@ public class AdminSetupRequest {
     @Size(max = 50, message = "사용자 이름은 50자를 초과할 수 없습니다.")
     private String userName;
 
-    @Schema(description = "비밀번호", example = "admin123!@#")
+    @Schema(description = "비밀번호", example = "123qweasd")
     @NotBlank(message = "비밀번호는 필수입니다.")
     @Size(min = 8, max = 100, message = "비밀번호는 8-100자 사이여야 합니다.")
     private String password;

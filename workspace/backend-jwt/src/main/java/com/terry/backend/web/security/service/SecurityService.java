@@ -138,7 +138,7 @@ public class SecurityService {
 
             if (!userExists || !passwordMatches) {
                 rateLimitService.recordLoginAttempt(clientIP, false);
-                log.warn("Login failed - Username: {}, IP: {}, Reason: {}",
+                log.debug("Login failed - Username: {}, IP: {}, Reason: {}",
                     username, clientIP, userExists ? "wrong_password" : "user_not_found");
                 return ResponseMessages.fail("아이디 또는 비밀번호가 올바르지 않습니다.");
             }

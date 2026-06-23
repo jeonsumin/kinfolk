@@ -1,0 +1,348 @@
+<!DOCTYPE html><html class="light" lang="ko" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Kinfolk Table - 장보기 리스트</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .item-checked {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f7f9fb;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#dae3f0",
+                        "primary": "#303e51",
+                        "secondary": "#516072",
+                        "surface-tint": "#515f74",
+                        "surface-bright": "#f7f9fb",
+                        "secondary-fixed": "#d4e4fa",
+                        "surface": "#f7f9fb",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary-container": "#d2e1f7",
+                        "on-primary-container": "#bbcae1",
+                        "outline-variant": "#c4c6cd",
+                        "on-error": "#ffffff",
+                        "on-background": "#191c1e",
+                        "inverse-primary": "#b9c7df",
+                        "on-tertiary-container": "#bfc9d5",
+                        "tertiary-container": "#4b555f",
+                        "primary-container": "#475569",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#0d1c2d",
+                        "surface-container": "#eceef0",
+                        "background": "#f7f9fb",
+                        "on-secondary-fixed-variant": "#39485a",
+                        "primary-fixed": "#d5e3fc",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#131d25",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#191c1e",
+                        "on-primary-fixed": "#0d1c2e",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#44474c",
+                        "on-primary-fixed-variant": "#3a485b",
+                        "on-secondary-container": "#556477",
+                        "inverse-surface": "#2d3133",
+                        "inverse-on-surface": "#eff1f3",
+                        "primary-fixed-dim": "#b9c7df",
+                        "tertiary": "#343e47",
+                        "outline": "#75777d",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface-dim": "#d8dadc",
+                        "secondary-fixed-dim": "#b9c8de",
+                        "surface-container-high": "#e6e8ea",
+                        "on-tertiary-fixed-variant": "#3e4852",
+                        "tertiary-fixed-dim": "#bdc8d3",
+                        "surface-variant": "#e0e3e5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "24px",
+                        "gutter": "24px",
+                        "sm": "12px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "64px",
+                        "base": "8px",
+                        "xl": "80px",
+                        "lg": "48px",
+                        "xs": "4px"
+                    },
+                    "fontSize": {
+                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface flex min-h-screen">
+<!-- Side Navigation Bar -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col py-md px-sm bg-surface-container-low border-r border-outline-variant z-50">
+<div class="px-sm mb-lg">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Kinfolk Table</h1>
+<p class="font-label-md text-label-md text-on-surface-variant opacity-70">가족의 소중한 기록</p>
+</div>
+<nav class="flex-1 flex flex-col gap-xs">
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">대시보드</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md text-label-md">캘린더</span>
+</a>
+
+
+<!-- Active State -->
+<a class="flex items-center gap-sm px-md py-sm bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all" href="#">
+<span class="material-symbols-outlined">shopping_basket</span>
+<span class="font-label-md text-label-md">장보기 리스트</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined">photo_library</span>
+<span class="font-label-md text-label-md">사진 공유</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-xs">
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">설정</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">로그아웃</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 flex flex-col h-screen overflow-hidden">
+<!-- Top App Bar -->
+<header class="w-full h-16 sticky top-0 bg-surface flex justify-between items-center px-margin-desktop border-b border-outline-variant z-40">
+<div class="flex items-center gap-sm">
+<h2 class="font-headline-md text-headline-md font-bold text-primary">장보기 리스트</h2>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full text-label-md w-64 focus:ring-2 focus:ring-primary-container" placeholder="항목 검색..." type="text">
+</div>
+<button class="flex items-center gap-2 bg-primary text-white px-md py-2 rounded-full font-label-md hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span class="">항목 추가</span>
+</button>
+<div class="flex items-center gap-sm">
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<img alt="User profile photo" class="w-8 h-8 rounded-full border border-outline-variant object-cover" data-alt="A professional close-up portrait of a friendly-looking middle-aged man with short dark hair and a neat beard. He is wearing a clean white linen shirt, suggesting a relaxed yet sophisticated aesthetic. The background is a soft-focus warm interior light, maintaining a calm and minimalist modern vibe consistent with a premium family app interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrOUdWCIZihm4nBrdNJkEvgBcy0YTAyWP4sZMRMJmWqosNsX8BE78X7b4DcDfsi_TxYt94cl3VevHYe7wiLNpF1AvRGJApMPa5NDw7KvhMsZXzhYzdAq9TBXDnq6XW6upT7-hJ4EUpQ59sg372kSPKBD7GtvdLug-kEypsWzBgAgtvKKpGVVZc_6Tbqp0U1vZOeHuZfKnidVen5a59E-eGW8Na1qQLyWLYgDnZT8PfASRqsc6LN4dsNs_l52v5ORuEyEe2c3Se2b0">
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="flex-1 overflow-y-auto p-lg custom-scrollbar">
+<div class="max-w-5xl mx-auto space-y-lg">
+<!-- Bento Grid Layout for Categories -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Statistics Summary Card (Asymmetric Element) -->
+<section class="md:col-span-4 space-y-gutter">
+<div class="bg-secondary-fixed/30 p-md rounded-xl border border-secondary-fixed flex flex-col justify-between h-48">
+<div>
+<span class="bg-secondary-container/50 px-2 py-1 rounded text-label-sm text-secondary font-bold">이번 주 현황</span>
+<h3 class="font-headline-md text-headline-md text-primary mt-sm">75% 완료됨</h3>
+</div>
+<div class="w-full bg-white/50 rounded-full h-2 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 75%"></div>
+</div>
+<p class="text-label-sm text-on-surface-variant italic">아빠가 우유 외 2건을 방금 확인했습니다.</p>
+</div>
+<div class="bg-white p-md rounded-xl border border-surface-container-high space-y-md">
+<h4 class="font-label-md text-label-md font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">group</span>
+                                참여 중인 가족
+                            </h4>
+<div class="flex -space-x-2">
+<img class="w-10 h-10 rounded-full border-2 border-white object-cover" data-alt="Close up of a smiling mother with long brown hair, lit by natural sunlight, wearing a soft beige knitted sweater. Minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoY4dPaiIcvaoXjjY3jVwJNBvyBXC8sh17fRGTxLuUMB-o9uZeOmyrfTpT1w3fxMXaU4h_p6EiFbYBjBVfhA1TC2N15IFli2Ls5MuPcwaxOeCDLd3J88x0cYGAz6HnElpZFJ6JJC6_Zyz5ap9ZeMdl39441wooBSMv-s2jFAVt9J5ZA6bv9YCCO7jM8PG651EfkQ7-2lYPXKVZYPxvSQMBtw3_61H7T1L-4KWgTEsYb9lmlgB6RLdk7BmMLgbQ6YtM5Kbg2xGao1E">
+<img class="w-10 h-10 rounded-full border-2 border-white object-cover" data-alt="Close up of a friendly father with a warm smile, wearing a simple white shirt. High-key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9_ACRtb2dVkEQKT_cxkV0bIWZ5RhYw-26g-NjIFHj3CtZqRXmmon7ymnJv4x2BNvIcFGkcvIIAfAeDVsa5cZElSya_juonV3VRdqrZjwbGOTFAdf6_ha-q8hYjuq4xbmIoJnzqZmLKn4QmybZ3QEFap24WpsPI49LXbj74ISdN2yzYxoyF7XzHVcrgD-jj9RZcFRHArwiTcmS92SS9j5mBksUs1y-QPQVOQSFtO4tkslxsh9rxATyUJNXzJ6CQaRIpEzqekTQi2s">
+<img class="w-10 h-10 rounded-full border-2 border-white object-cover" data-alt="Portrait of a cheerful young woman with a bob haircut, wearing a muted sage green top. Clean studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLuq0Vq_DOOcWqoMp_nnFb7W3TVtcMLvT7idXmKdrPooUyjlh_30dwTnpTJNXWZZ1GHRC5B7COXODLkd6z8o0b9Sp4dABA52khKBxvPYX1zeeIXCvdiCEXiivghf1j8v8n9CC_WGYfs0GO08ulc5C1BrQuEM4wLqyeOibWxX4-8itt9fJxFxbFhS09K1cWdylkd74HWXwy-cC-0pVcssOoz0AZB3Q7fA029B5fwgMuEeMWf36GYoAAhOGlRGrgE10XzhO5wyM5P-M">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border-2 border-white flex items-center justify-center text-label-sm font-bold text-on-surface-variant">+2</div>
+</div>
+</div>
+</section>
+<!-- Main Shopping Lists -->
+<section class="md:col-span-8 space-y-lg">
+<!-- Category: 식료품 (Grocery) -->
+<div class="bg-white rounded-xl border border-surface-container-high overflow-hidden">
+<div class="px-md py-sm bg-surface-container-low/50 flex justify-between items-center border-b border-surface-container-high">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary">eco</span>
+<h3 class="font-label-md text-label-md font-bold text-primary">식료품</h3>
+</div>
+<span class="text-label-sm text-on-surface-variant">4/6 항목</span>
+</div>
+<div class="divide-y divide-surface-container">
+<!-- List Item 1 -->
+<div class="flex items-center justify-between p-md hover:bg-surface-container-lowest transition-colors group" style="opacity: 1; transform: translateY(0px); transition: 0.4s ease-out;">
+<div class="flex items-center gap-md">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary-container cursor-pointer transition-all" onclick="toggleItem(this)" type="checkbox">
+<span class="font-body-md text-body-md item-checked transition-all">유기농 우유 1L</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="text-label-sm text-on-surface-variant bg-tertiary-fixed/40 px-2 py-0.5 rounded-full">아빠</span>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:text-error transition-all">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+<!-- List Item 2 -->
+<div class="flex items-center justify-between p-md hover:bg-surface-container-lowest transition-colors group" style="opacity: 1; transform: translateY(0px); transition: 0.4s ease-out;">
+<div class="flex items-center gap-md">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary-container cursor-pointer transition-all" onclick="toggleItem(this)" type="checkbox">
+<span class="font-body-md text-body-md transition-all">아보카도 3구</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="text-label-sm text-on-surface-variant bg-secondary-container/40 px-2 py-0.5 rounded-full">엄마</span>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:text-error transition-all">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+<!-- List Item 3 -->
+<div class="flex items-center justify-between p-md hover:bg-surface-container-lowest transition-colors group" style="opacity: 1; transform: translateY(0px); transition: 0.4s ease-out;">
+<div class="flex items-center gap-md">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary-container cursor-pointer transition-all" onclick="toggleItem(this)" type="checkbox">
+<span class="font-body-md text-body-md transition-all">샤인머스캣</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="text-label-sm text-on-surface-variant bg-tertiary-fixed/40 px-2 py-0.5 rounded-full">아빠</span>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:text-error transition-all">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Category: 생활용품 (Household) -->
+<div class="bg-white rounded-xl border border-surface-container-high overflow-hidden">
+<div class="px-md py-sm bg-surface-container-low/50 flex justify-between items-center border-b border-surface-container-high">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary">soap</span>
+<h3 class="font-label-md text-label-md font-bold text-primary">생활용품</h3>
+</div>
+<span class="text-label-sm text-on-surface-variant">1/3 항목</span>
+</div>
+<div class="divide-y divide-surface-container">
+<!-- List Item 4 -->
+<div class="flex items-center justify-between p-md hover:bg-surface-container-lowest transition-colors group" style="opacity: 1; transform: translateY(0px); transition: 0.4s ease-out;">
+<div class="flex items-center gap-md">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary-container cursor-pointer transition-all" onclick="toggleItem(this)" type="checkbox">
+<span class="font-body-md text-body-md transition-all">친환경 세탁세제</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="text-label-sm text-on-surface-variant bg-secondary-container/40 px-2 py-0.5 rounded-full">민지</span>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:text-error transition-all">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+<!-- List Item 5 -->
+<div class="flex items-center justify-between p-md hover:bg-surface-container-lowest transition-colors group" style="opacity: 1; transform: translateY(0px); transition: 0.4s ease-out;">
+<div class="flex items-center gap-md">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary-container cursor-pointer transition-all" onclick="toggleItem(this)" type="checkbox">
+<span class="font-body-md text-body-md item-checked transition-all">핸드워시 리필</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="text-label-sm text-on-surface-variant bg-secondary-container/40 px-2 py-0.5 rounded-full">엄마</span>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:text-error transition-all">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Subtle Decorative Background Interaction Area -->
+<div class="relative w-full h-48 rounded-2xl overflow-hidden bg-surface-container">
+
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center p-md">
+<p class="font-headline-md text-headline-md text-primary/80">오늘 저녁은 다 같이 요리해볼까요?</p>
+<p class="text-label-md text-on-surface-variant mt-xs">가족과 함께 식탁의 즐거움을 나눠보세요.</p>
+<button class="mt-md px-6 py-2 border border-primary text-primary rounded-full hover:bg-primary hover:text-white transition-all font-label-md">가족 레시피 보기</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB for quick entry on mobile (Visible if hidden nav on mobile) -->
+<button class="fixed bottom-6 right-6 md:hidden w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[32px]">playlist_add</span>
+</button>
+<script>
+        function toggleItem(checkbox) {
+            const textElement = checkbox.nextElementSibling;
+            if (checkbox.checked) {
+                textElement.classList.add('item-checked');
+            } else {
+                textElement.classList.remove('item-checked');
+            }
+        }
+
+        // Simple animation for the list loading
+        document.addEventListener('DOMContentLoaded', () => {
+            const items = document.querySelectorAll('.divide-y > div');
+            items.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    item.style.transition = 'all 0.4s ease-out';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        });
+    </script>
+
+
+
+
+</body></html>

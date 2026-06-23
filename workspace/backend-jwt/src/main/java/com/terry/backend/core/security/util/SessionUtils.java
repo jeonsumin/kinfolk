@@ -87,6 +87,7 @@ public class SessionUtils {
     public static String getUserId() {
         try {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            log.info("Principal is : {}", principal);
             if (principal instanceof String) {
                 return (String) principal;
             } else if (principal instanceof UserDTO) {

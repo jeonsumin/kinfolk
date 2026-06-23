@@ -1,0 +1,499 @@
+<!DOCTYPE html><html class="light" lang="ko" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Kinship &amp; Co | 대시보드</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .squishy-element {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .squishy-element:active {
+            transform: scale(0.95);
+        }
+        .earth-shadow {
+            box-shadow: 0 4px 12px -2px rgba(71, 85, 105, 0.08), 0 2px 4px -1px rgba(71, 85, 105, 0.04);
+        }
+        .inner-press {
+            box-shadow: inset 0 2px 4px 0 rgba(71, 85, 105, 0.05);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c4c6cd;
+            border-radius: 10px;
+        }
+        .timeline-line {
+            background: repeating-linear-gradient(to bottom, #c4c6cd 0, #c4c6cd 4px, transparent 4px, transparent 8px);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#3e4852",
+                        "surface-container-high": "#e6e8ea",
+                        "on-tertiary-fixed": "#131d25",
+                        "background": "#f7f9fb",
+                        "on-error": "#ffffff",
+                        "secondary": "#516072",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#4b555f",
+                        "surface": "#f7f9fb",
+                        "on-surface-variant": "#44474c",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary-fixed": "#0d1c2d",
+                        "on-surface": "#191c1e",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary-container": "#bfc9d5",
+                        "on-primary-fixed": "#0d1c2e",
+                        "primary": "#303e51",
+                        "on-primary-container": "#bbcae1",
+                        "tertiary-fixed-dim": "#bdc8d3",
+                        "primary-container": "#475569",
+                        "on-primary-fixed-variant": "#3a485b",
+                        "outline-variant": "#c4c6cd",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-background": "#191c1e",
+                        "outline": "#75777d",
+                        "inverse-surface": "#2d3133",
+                        "secondary-container": "#d2e1f7",
+                        "secondary-fixed": "#d4e4fa",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#eff1f3",
+                        "inverse-primary": "#b9c7df",
+                        "surface-dim": "#d8dadc",
+                        "on-secondary-fixed-variant": "#39485a",
+                        "on-secondary-container": "#556477",
+                        "primary-fixed": "#d5e3fc",
+                        "tertiary": "#343e47",
+                        "surface-tint": "#515f74",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#b9c7df",
+                        "secondary-fixed-dim": "#b9c8de",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#dae3f0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "md": "24px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "xl": "80px",
+                        "margin-desktop": "64px",
+                        "lg": "48px",
+                        "xs": "4px",
+                        "sm": "12px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "container-padding": "24px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-caps": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "800"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface-bright text-on-surface selection:bg-primary-container selection:text-on-primary-container font-body-md overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="bg-surface-bright dark:bg-surface-container-lowest border-b border-outline-variant/30 docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center w-full px-container-padding py-stack-sm max-w-screen-2xl mx-auto">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Kinfolk Table</h1>
+<div class="flex items-center gap-stack-md">
+<button class="material-symbols-outlined p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-200 text-on-surface-variant">search</button>
+<button class="material-symbols-outlined p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-200 text-on-surface-variant text-outline">notifications</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-outline-variant shadow-sm">
+<img alt="사용자 프로필 아바타" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBTCPnR0ZMC-XumD2T8j0Lm-vnYPWtWPBk1dmf5RWtDzwH0lIFjsPEychffRejNI2_DK77ybPBMykX_1O8wvQrJSVpChVIMIKsfubopT7M4_463hcNkadjiVQTKc0tsDxHLZHAYXP7BgoSX1CA6uHGFXeIytIohe_9byXu6rRNJZuTdF4S2fEkGD7Wp9Zz-MYozNbrFoWlH4nUpqWvFXFxZNT6WLX5xsz0S3PDMXXMUcf2wrjwdLe8qFpPYC791UQ32ZcYIwr3dYI">
+</div>
+</div>
+</div>
+</header>
+<div class="flex min-h-screen">
+<!-- Sidebar Navigation -->
+<nav class="hidden md:flex h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest dark:bg-surface-container shadow-sm flex-col gap-unit py-container-padding z-40 border-r border-outline-variant/20">
+<div class="px-6 mb-stack-lg">
+<span class="font-headline-md text-headline-md font-bold text-primary">Kinfolk Table</span>
+<p class="text-on-surface-variant opacity-60 text-sm">우리의 디지털 안식처</p>
+</div>
+<div class="space-y-1">
+<a class="flex items-center gap-stack-md bg-surface-container-high text-on-surface rounded-lg p-stack-md mx-2 active:scale-98 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-lg text-body-lg font-semibold">대시보드</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-low p-stack-md mx-2 rounded-lg active:scale-98 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-body-lg text-body-lg">캘린더</span>
+</a>
+
+
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-low p-stack-md mx-2 rounded-lg active:scale-98 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-body-lg text-body-lg">장보기 리스트</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-low p-stack-md mx-2 rounded-lg active:scale-98 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">photo_library</span>
+<span class="font-body-lg text-body-lg">사진 공유</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-low p-stack-md mx-2 rounded-lg active:scale-98 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">flight_takeoff</span>
+<span class="font-body-lg text-body-lg">여행 플래너</span>
+</a><a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-low p-stack-md mx-2 rounded-lg active:scale-98 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-lg text-body-lg">설정</span>
+</a></div>
+
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 p-container-padding pb-32">
+<div class="max-w-5xl mx-auto">
+<!-- Welcome Section -->
+<header class="mb-stack-lg flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div class="flex-1">
+<div class="flex flex-col md:flex-row md:items-center justify-between">
+<div class="space-y-1">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">좋은 아침이에요, 이주님!</h2>
+<p class="font-body-md text-on-surface-variant opacity-60">화요일입니다.</p>
+</div>
+<div class="flex items-center gap-2 md:gap-3 mt-4 md:mt-0">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-2xl">partly_cloudy_day</span>
+<span class="text-2xl font-extrabold text-primary">22°C</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-sm text-on-surface leading-tight">맑음</span>
+<div class="inline-flex items-center gap-1 px-2 py-0.5 bg-secondary-container rounded-full w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="text-[10px] font-extrabold text-on-secondary-container uppercase tracking-wider">미세먼지 좋음</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex -space-x-2">
+<img alt="따뜻한 아바타" class="w-10 h-10 rounded-full border-2 border-surface-bright bg-surface-container-high" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0vuUa--Gc9h-l5Srtd8-Dc-3REug1SiwotxvQ05J_N3oAQU9Qsp5VpHyaq6o_uWEzT8GL4v8XtBvR_DElTuol2tGg9cd6vIlIpBF7wcDXSd58YOWc6i8xWno3_neEyjrgTu4issK_IiYa_49qeBczWaK3xIb2689QVRO-si9sdWTwFRfNbdv56JIKiL3DzxJwsoggJ0w6rFKdq1nu_Apo5Ey9LcGmsh_bEA6TFqaF5UuD4YpvbRjP-PKGdMhxf4y42LQflCUvWr8">
+<img alt="어린 소녀 아바타" class="w-10 h-10 rounded-full border-2 border-surface-bright bg-surface-container-high" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmt1e1Dtw_yWaZrJtrtMs0RfC19qjlkS6SnZaj3niTDhyWGXE9ipEAwgMcRzJdhVUOm91ELpOaITtp6nrOLRMiEV3dCr79I3F8BZqyuCbq7gXFqrCgEg355A9mKdfhigOc9rcGtJunXW2IlwVDjQ0UTnL0G8X60165ulkeQk7gsJz-UqFwA2yJYgaIJGTO7ePfDHAkh374lG7XxVDWm-tvj9j_ein1IZFFU2w4khNoz2ZVy3EHQBRjffbHf4QvFDhuANaYgl_lFv8">
+<img alt="십대 소년 아바타" class="w-10 h-10 rounded-full border-2 border-surface-bright bg-surface-container-high" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS5kdnVI6aSV6MPmu1N-PTyh-7Apm3x2ovH2htmpwR0XvdXR2vYjD7RZ6zi8XuM8jRtbjnnf1qz47Xk3hleMQlT7l1ZqfUiq7zjHzRCPndNS4Mc1vFmfdhTXINkgFCgqtATh_zvj6_8_TCyTNZ8yaSM1ONCBzaGlah7LRhTJtvuIX0SCKlSNvIhdtQndjMblhg_4siRsGbCj7HkE3z6iGNwNxwL9OLPGV9UYAZbM3vV7CdHsxnkfPRr8QQMHoTs50YMX5SnA7b5O0">
+<div class="w-10 h-10 rounded-full border-2 border-surface-bright bg-surface-container flex items-center justify-center text-xs font-bold text-on-surface-variant">+2</div>
+</div>
+</header>
+<!-- Quick Shortcuts Section -->
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-lg">
+<!-- Today at a Glance (Timeline) -->
+<section class="lg:col-span-8 bg-surface-container-lowest rounded-xl p-stack-lg earth-shadow border border-outline-variant/10">
+<div class="flex items-center justify-between mb-stack-lg">
+<h3 class="font-headline-md text-headline-md flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-outline">schedule</span>
+                            오늘의 일정
+                        </h3>
+<button class="text-primary font-bold text-sm hover:underline">캘린더 보기</button>
+</div>
+<div class="relative space-y-stack-lg">
+<div class="absolute left-6 top-2 bottom-2 w-0.5 timeline-line opacity-20"></div>
+<div class="flex gap-stack-md relative z-10">
+<div class="w-12 flex flex-col items-center">
+<span class="text-xs font-bold text-on-surface-variant mb-1">08:00</span>
+<div class="w-4 h-4 rounded-full bg-secondary-container ring-4 ring-surface-container-lowest"></div>
+</div>
+<div class="flex-1 bg-surface-container-low rounded-xl p-4 border-l-4 border-secondary transition-shadow cursor-pointer squishy-element" style="transform: scale(1);">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-on-surface">등교 도와주기</h4>
+<p class="text-sm text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-sm">location_on</span> 링컨 초등학교</p>
+</div>
+<div class="flex items-center gap-1 bg-secondary-container px-2 py-1 rounded-full text-[10px] font-extrabold uppercase text-on-secondary-container tracking-wider">아이들</div>
+</div>
+</div>
+</div>
+<div class="flex gap-stack-md relative z-10">
+<div class="w-12 flex flex-col items-center">
+<span class="text-xs font-bold text-on-surface-variant mb-1">12:30</span>
+<div class="w-4 h-4 rounded-full bg-primary-container ring-4 ring-surface-container-lowest"></div>
+</div>
+<div class="flex-1 bg-surface-container-low rounded-xl p-4 border-l-4 border-primary transition-shadow cursor-pointer squishy-element" style="transform: scale(1);">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-on-surface">할머니와 점심 식사</h4>
+<p class="text-sm text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-sm">restaurant</span> 더 코지 스푼</p>
+</div>
+<div class="flex items-center gap-1 bg-primary-fixed px-2 py-1 rounded-full text-[10px] font-extrabold uppercase text-on-primary-fixed tracking-wider">가족</div>
+</div>
+</div>
+</div>
+<div class="flex gap-stack-md relative z-10">
+<div class="w-12 flex flex-col items-center">
+<span class="text-xs font-bold text-primary mb-1">15:00</span>
+<div class="w-4 h-4 rounded-full bg-tertiary-container ring-4 ring-surface-container-lowest"></div>
+</div>
+<div class="flex-1 bg-white ring-1 ring-outline-variant/30 rounded-xl p-4 border-l-4 border-primary-container earth-shadow squishy-element" style="transform: scale(1);">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-[10px] font-bold text-primary uppercase">지금 진행 중</span>
+</div>
+<h4 class="font-bold text-on-surface">축구 연습</h4>
+<p class="text-sm text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-sm">sports_soccer</span> 서쪽 경기장</p>
+</div>
+<div class="flex items-center gap-1 bg-surface-container px-2 py-1 rounded-full text-[10px] font-extrabold uppercase text-on-surface-variant tracking-wider">취미</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Sidebar Widgets Area -->
+<div class="lg:col-span-4 flex flex-col gap-stack-lg">
+<!-- Quick Add Widget -->
+<section class="bg-primary-container text-on-primary-container rounded-xl p-stack-lg earth-shadow flex flex-col gap-4">
+<h3 class="font-headline-md text-headline-md text-surface-container-lowest">빠른 추가</h3>
+<div class="space-y-3">
+<div class="relative">
+<input class="w-full bg-surface-container-lowest/10 border-none focus:ring-2 focus:ring-white rounded-lg p-4 placeholder:text-white/60 inner-press text-white" placeholder="아빠에게 상기시켜야 할 일..." type="text">
+<button class="absolute right-2 top-2 p-2 bg-white text-primary-container rounded-lg squishy-element">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1 bg-white/10 rounded-full text-xs font-bold hover:bg-white/20 transition-colors text-white">🥕 장보기</button>
+<button class="px-3 py-1 bg-white/10 rounded-full text-xs font-bold hover:bg-white/20 transition-colors text-white">🧼 집안일</button>
+<button class="px-3 py-1 bg-white/10 rounded-full text-xs font-bold hover:bg-white/20 transition-colors text-white">🎉 기념일</button>
+</div>
+</div>
+</section>
+<!-- Shopping List Widget -->
+<section class="bg-surface-container-lowest rounded-xl p-stack-lg earth-shadow border border-outline-variant/10">
+<div class="flex items-center gap-2 mb-stack-md">
+<span class="material-symbols-outlined text-outline">shopping_cart</span>
+<h3 class="font-bold text-on-surface">장보기 리스트</h3>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-3">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox">
+<span class="text-sm text-on-surface">우유 사기</span>
+</div>
+<div class="flex items-center gap-3">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox">
+<span class="text-sm text-on-surface">사과 5개</span>
+</div>
+<div class="flex items-center gap-3">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox">
+<span class="text-sm text-on-surface">세제</span>
+</div>
+</div>
+<button class="w-full mt-4 py-2 rounded-lg text-primary font-bold text-sm bg-surface-container-low hover:bg-surface-container transition-colors">전체 보기</button>
+</section>
+<!-- Upcoming Events Widget -->
+<section class="bg-surface-container-lowest rounded-xl p-stack-lg earth-shadow border border-outline-variant/10">
+<div class="flex items-center gap-2 mb-stack-md">
+<span class="material-symbols-outlined text-outline">favorite</span>
+<h3 class="font-bold text-on-surface">다가오는 일정</h3>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="w-12 h-12 bg-surface-container text-on-surface-variant rounded-lg flex items-center justify-center squishy-element group-hover:bg-primary-container group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">cake</span>
+</div>
+<div>
+<h4 class="font-bold text-sm text-on-surface">미아의 8번째 생일</h4>
+<p class="text-xs text-on-surface-variant">3일 남음 • 10월 27일</p>
+</div>
+</div>
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="w-12 h-12 bg-surface-container text-on-surface-variant rounded-lg flex items-center justify-center squishy-element group-hover:bg-primary-container group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">celebration</span>
+</div>
+<div>
+<h4 class="font-bold text-sm text-on-surface">부모님 결혼기념일</h4>
+<p class="text-xs text-on-surface-variant">12일 남음 • 11월 5일</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-2 rounded-lg text-primary font-bold text-sm bg-surface-container-low hover:bg-surface-container transition-colors">메모리 박스 열기</button>
+</section>
+<!-- Chores Progress -->
+<section class="bg-surface-container-low rounded-xl p-stack-lg border border-outline-variant/20">
+<h3 class="font-bold text-on-surface mb-stack-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">task_alt</span>
+                            가족 공동 목표
+                        </h3>
+<div class="space-y-4 mt-4">
+<div>
+<div class="flex justify-between text-xs font-bold mb-1 text-on-surface-variant">
+<span class="">주방 청소하기</span>
+<span class="">80%</span>
+</div>
+<div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[80%] transition-all duration-1000" style="width: 0px;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-bold mb-1 text-on-surface-variant">
+<span class="">뒷마당 가꾸기</span>
+<span class="">35%</span>
+</div>
+<div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary/40 rounded-full w-[35%] transition-all duration-1000 delay-300"></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Family Photo Panorama Section -->
+<section class="mt-stack-lg bg-surface-container-lowest rounded-xl p-stack-lg earth-shadow border border-outline-variant/10">
+<div class="flex items-center justify-between mb-stack-md">
+<h3 class="font-headline-md text-headline-md flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-outline">photo_library</span>
+                        가족 사진 공유
+                    </h3>
+<button class="text-primary font-bold text-sm hover:underline">갤러리 전체보기</button>
+</div>
+<div class="relative group">
+<div class="flex gap-4 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-4">
+<div class="flex-shrink-0 w-72 h-48 rounded-xl overflow-hidden snap-start relative group/photo cursor-pointer">
+<img alt="가족 사진 1" class="w-full h-full object-cover transition-transform duration-500 group-hover/photo:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDysFtfosIdMgXfVCT4gZt4sIqrfmoPYRxcxv5iVCN6ZqXs7rhud82iOWlOIx_Ec0tNYRTm5Az6Fm8mX-xN0lDGqFagUZxDjUba_I6EtL_e2zVMqYr4aLN23yZHFjvp33narjaqDd-BchA5YtP1x4dABAkbayfwwgBQG1-PqvUCP65N_Axz_EprN_CaclrbVNXIR-PVQ80rwBVIFtnBD4aDvKidK7HgXdAWPDs5_wqyWpZtPIzQNFi_MYafwONYo6onH4PQm6uPfuc">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/photo:opacity-100 transition-opacity flex flex-col justify-end p-4">
+<p class="text-white text-xs font-bold">밀러 호수 소풍</p>
+<p class="text-white/80 text-[10px]">2024.10.20</p>
+</div>
+</div>
+<div class="flex-shrink-0 w-72 h-48 rounded-xl overflow-hidden snap-start relative group/photo cursor-pointer">
+<img alt="가족 사진 2" class="w-full h-full object-cover transition-transform duration-500 group-hover/photo:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTQNMN_gY3Ze1I-lRDb9XpmMz7-wXbTF9FoR0PmEgbqsRzAlIhyyKZMMb8IXOL9mNX_bi--47J3A7aPkOvnDvLvjSfCjJRAmShohSwvV5ftA8A0niYugMd1ugS2xI9KThek3D7OWV1jYUWmdB5ZR6Sd_OrlO07UrLOD27ly5ITF8Ie1K2yO-3wjgND0nRfMAE0u39wPPSSumHyvT03xQYqYRcVzFJHBggBM0QF2WABxeA6vmLbqBT6BaGsgFCDe08NTqt4sjln7mU">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/photo:opacity-100 transition-opacity flex flex-col justify-end p-4">
+<p class="text-white text-xs font-bold">주말 아침 식사</p>
+<p class="text-white/80 text-[10px]">2024.10.19</p>
+</div>
+</div>
+<div class="flex-shrink-0 w-72 h-48 rounded-xl overflow-hidden snap-start relative group/photo cursor-pointer">
+<img alt="가족 사진 3" class="w-full h-full object-cover transition-transform duration-500 group-hover/photo:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYOTPOaSMMq9uG0PFHfVp0-rhRwW7JySYrhOgN9obbkmzHqa1tavcUtRZwxzaSXggMLTT5zRSuxdJXKyJXY4vECZtNaYdULnpS-2fbkfvw1_akCba25qzR1fV3i8m5Nqks5_WoisjLxnUjcLm2_mohUMUbaRM4rojQRFhMPMDH__jjq-bVbE0RsBnB9knC6sR8VWHQoyuwC4M4i8YL6KKcAnCYzsvZIpigrVOzipdGQM3e412dmfMKb0SPkZVS9lqhyvp2p0eIyLo">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/photo:opacity-100 transition-opacity flex flex-col justify-end p-4">
+<p class="text-white text-xs font-bold">미아의 그림 교실</p>
+<p class="text-white/80 text-[10px]">2024.10.15</p>
+</div>
+</div>
+<div class="flex-shrink-0 w-72 h-48 rounded-xl overflow-hidden snap-start relative group/photo cursor-pointer">
+<img alt="가족 사진 4" class="w-full h-full object-cover transition-transform duration-500 group-hover/photo:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_ktjLJw2OcefyG1-S45Tfv_YiL-XpoLI9hMi2zwEJKWVqyMBEwbQOBRGE_r06TU0BpIM2UBjP-8ThyiEhjEfRkmCMudi8iWtRyZzWXqCNxz-0dAH9rHzkU0-hRZj3F28ZJ0PKOtq-tcThlQOxBdLbYVUysGFbdE_Ce7tLcASLXGMzzYuV9irdj-dRp50cXbIyXoGANL6wTA9MQJOqAfGkHiU32ANSwRDX8POfL7DoyoZUxT7OoJz1cvQamc5MaH-yA96JrSo_3CM">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/photo:opacity-100 transition-opacity flex flex-col justify-end p-4">
+<p class="text-white text-xs font-bold">공원 산책</p>
+<p class="text-white/80 text-[10px]">2024.10.12</p>
+</div>
+</div>
+<div class="flex-shrink-0 w-48 h-48 rounded-xl bg-surface-container border-2 border-dashed border-outline-variant flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer snap-start">
+<span class="material-symbols-outlined text-4xl mb-2">add_a_photo</span>
+<span class="text-sm font-bold">사진 추가</span>
+</div>
+</div>
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-full bg-gradient-to-l from-surface-container-lowest to-transparent pointer-events-none group-hover:opacity-0 transition-opacity"></div>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- Mobile Bottom Navigation -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe pt-2 bg-surface-container-lowest border-t border-outline-variant/30 shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center bg-surface-container-high text-primary rounded-lg px-6 py-1 active:scale-90 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-caps text-[10px] uppercase font-bold">홈</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1 active:scale-90 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-caps text-[10px] uppercase font-bold">캘린더</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1 active:scale-90 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">add_box</span>
+<span class="font-label-caps text-[10px] uppercase font-bold">추가</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1 active:scale-90 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">photo_library</span>
+<span class="font-label-caps text-[10px] uppercase font-bold">사진</span>
+</a>
+</nav>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-6 md:bottom-10 md:right-10 w-14 h-14 bg-primary text-on-primary rounded-xl shadow-xl flex items-center justify-center squishy-element z-50">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+<script>
+    // Simple Micro-interactions
+    document.querySelectorAll('.squishy-element').forEach(el => {
+        el.addEventListener('mousedown', () => {
+            el.style.transform = 'scale(0.96)';
+        });
+        el.addEventListener('mouseup', () => {
+            el.style.transform = 'scale(1)';
+        });
+        el.addEventListener('mouseleave', () => {
+            el.style.transform = 'scale(1)';
+        });
+    });
+
+    // Simulating loading states for progress bars
+    window.addEventListener('load', () => {
+        const bars = document.querySelectorAll('.h-full.bg-primary');
+        bars.forEach(bar => {
+            const targetWidth = bar.style.width;
+            bar.style.width = '0';
+            setTimeout(() => {
+                bar.style.width = targetWidth;
+            }, 100);
+        });
+    });
+</script>
+
+
+
+
+
+
+</body></html>

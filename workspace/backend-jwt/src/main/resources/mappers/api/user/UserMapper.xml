@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.terry.backend.api.user.mapper.UserMapper">
+
+    <resultMap id="UserProfile" type="com.terry.backend.api.user.dto.UserProfileDTO">
+        <id     property="id"              column="USER_ID"/>
+        <result property="loginId"         column="USER_LOGIN_ID"/>
+        <result property="name"            column="USER_NM"/>
+        <result property="email"           column="USER_EMAIL"/>
+        <result property="profileImageUri" column="USER_IMAGE_URI"/>
+        <result property="mobile"          column="USER_MBTLNUM"/>
+    </resultMap>
+
+    <select id="selectProfileById" resultMap="UserProfile">
+        SELECT USER_ID
+             , USER_LOGIN_ID
+             , USER_NM
+             , USER_EMAIL
+             , USER_IMAGE_URI
+             , USER_MBTLNUM
+        FROM SWC_USER
+        WHERE UPPER(USER_ID) = UPPER(#{id, jdbcType=VARCHAR})
+    </select>
+
+    <update id="updateDisplayName">
+        UPDATE SWC_USER
+        SET USER_NM  = #{name, jdbcType=VARCHAR}
+          , UPDT_DT  = NOW()
+          , UPDT_ID  = #{id, jdbcType=VARCHAR}
+        WHERE UPPER(USER_ID) = UPPER(#{id, jdbcType=VARCHAR})
+    </update>
+
+</mapper>

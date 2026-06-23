@@ -19,7 +19,7 @@ public class EventAttendeesDTO {
     private String id;
     private String eventId;
     private String userId;
-    private AttendeesType status;
+    private String status;
     private Date invitedAt;
     private Date updateDt;
 }

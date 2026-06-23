@@ -33,6 +33,16 @@ public interface SetupMapper {
     );
 
     /**
+     * 기본 권한 생성
+     */
+    void insertCurrentAuthority(
+            @Param("authorId") String authorId,
+            @Param("code") String code,
+            @Param("codeNm") String codeNm,
+            @Param("registId") String registId
+    );
+
+    /**
      * 사용자 권한 부여
      */
     void insertUserAuthority(

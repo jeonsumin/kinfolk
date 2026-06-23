@@ -220,7 +220,7 @@ JOIN 시 컬럼 충돌을 피하기 위해 자식 테이블 컬럼에 `AS ATTEND
             </if>
         )
     <![CDATA[
-    AND e.START_DT >= #{endOfMonth}
+    AND e.START_DT <= #{endOfMonth}
     AND e.END_DT >= #{startOfMonth}
     ORDER BY e.START_DT ASC, e.IS_ALL_DAY DESC
     ]]>

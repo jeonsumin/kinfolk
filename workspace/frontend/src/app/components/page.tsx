@@ -12,7 +12,16 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  Checkbox,
   Chip,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
   EmptyState,
   ImageCard,
   ImageOverlayCard,
@@ -657,6 +666,69 @@ export default function ComponentsPage() {
                   ))}
                 </CardContent>
               </Card>
+            </DemoCard>
+          </ShowcaseSection>
+
+          {/* ── Checkbox ─────────────────────────────────────── */}
+          <ShowcaseSection id="checkbox" title="Checkbox">
+            <DemoCard label="States">
+              <div className="flex flex-wrap items-center gap-6">
+                {[
+                  { id: "cb-on", label: "선택됨", checked: true, disabled: false },
+                  { id: "cb-off", label: "선택 안 됨", checked: false, disabled: false },
+                  { id: "cb-dis-on", label: "비활성(선택됨)", checked: true, disabled: true },
+                  { id: "cb-dis-off", label: "비활성", checked: false, disabled: true },
+                ].map(({ id, label, checked, disabled }) => (
+                  <div key={id} className="flex items-center gap-2">
+                    <Checkbox id={id} defaultChecked={checked} disabled={disabled} />
+                    <Label htmlFor={id} className={`text-sm ${disabled ? "text-muted-foreground" : ""}`}>
+                      {label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </DemoCard>
+            {/* 장보기 리스트 — shopping.png */}
+            <DemoCard label="장보기 항목 (활용 예시)">
+              <ul className="divide-y divide-border rounded-lg border border-border overflow-hidden">
+                {[
+                  { id: "sh-1", label: "유기농 우유 1L", member: "아빠", done: true },
+                  { id: "sh-2", label: "아보카도 3구", member: "엄마", done: false },
+                ].map((item) => (
+                  <li key={item.id} className="flex items-center justify-between px-4 py-3">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <Checkbox defaultChecked={item.done} />
+                      <span className={`text-sm ${item.done ? "line-through text-muted-foreground" : ""}`}>
+                        {item.label}
+                      </span>
+                    </label>
+                    <Chip color="blue" size="sm">{item.member}</Chip>
+                  </li>
+                ))}
+              </ul>
+            </DemoCard>
+          </ShowcaseSection>
+
+          {/* ── Dialog ───────────────────────────────────────── */}
+          <ShowcaseSection id="dialog" title="Dialog">
+            <DemoCard label="항목 추가 (활용 예시)">
+              <Dialog>
+                <DialogTrigger render={<Button>항목 추가</Button>} />
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>항목 추가</DialogTitle>
+                    <DialogDescription>장바구니에 새 항목을 추가하세요.</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-2">
+                    <Label htmlFor="demo-item">항목명</Label>
+                    <Input id="demo-item" placeholder="예: 유기농 우유 1L" />
+                  </div>
+                  <DialogFooter>
+                    <DialogClose render={<Button variant="outline">취소</Button>} />
+                    <DialogClose render={<Button>추가하기</Button>} />
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </DemoCard>
           </ShowcaseSection>
 

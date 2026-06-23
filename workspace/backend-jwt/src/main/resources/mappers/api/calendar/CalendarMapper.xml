@@ -7,6 +7,7 @@
     <resultMap id="eventDetailMap" type="com.terry.backend.api.calendar.dto.CalendarDTO">
         <id property="id" column="ID" />
         <result property="userId" column="USER_ID" />
+        <result property="wsId" column="WS_ID" />
         <result property="title" column="TITLE" />
         <result property="description" column="DESC" />
         <result property="startDt" column="START_DT" />
@@ -36,6 +37,7 @@
         SELECT
             e.ID
             , e.USER_ID
+            , e.WS_ID
             , e.TITLE
             , e.DESC
             , e.START_DT
@@ -67,7 +69,7 @@
                     </if>
         )
         <![CDATA[
-        AND e.START_DT >= #{endOfMonth}
+        AND e.START_DT <= #{endOfMonth}
         AND e.END_DT >= #{startOfMonth}
         ORDER BY e.START_DT ASC, e.IS_ALL_DAY DESC
         ]]>
@@ -78,6 +80,7 @@
         SELECT
               e.ID
             , e.USER_ID
+            , e.WS_ID
             , e.TITLE
             , e.DESC
             , e.START_DT
@@ -109,7 +112,7 @@
                     </if>
             )
         <![CDATA[
-        AND e.START_DT >= CONCAT(#{endOfWeek}, ' 23:59:59')
+        AND e.START_DT <= CONCAT(#{endOfWeek}, ' 23:59:59')
         AND e.END_DT >= CONCAT(#{startOfWeek}, ' 00:00:00')
         ORDER BY e.START_DT ASC, e.IS_ALL_DAY DESC
         ]]>
@@ -120,6 +123,7 @@
         SELECT
               e.ID
             , e.USER_ID
+            , e.WS_ID
             , e.TITLE
             , e.DESC
             , e.START_DT
@@ -151,7 +155,7 @@
                     </if>
         )
         <![CDATA[
-        AND DATE(e.START_DT) >= #{targetDate}
+        AND DATE(e.START_DT) <= #{targetDate}
         AND DATE(e.END_DT) >= #{targetDate}
         ORDER BY e.IS_ALL_DAY DESC, e.START_DT ASC
         ]]>
@@ -162,6 +166,7 @@
         SELECT
               e.ID
             , e.USER_ID
+            , e.WS_ID
             , e.TITLE
             , e.DESC
             , e.START_DT
@@ -199,7 +204,7 @@
                , #{userId}
                , #{wsId}
                , #{title}
-               , #{desc}
+               , #{description}
                , #{startDt}
                , #{endDt}
                , #{isAllDay}
@@ -221,28 +226,27 @@
           AND WS_ID = #{wsId}
     </update>
 
-    <!-- 일정 삭제 (CASCADE 설정으로 EVENT_ATTENDEES 데이터도 자동 삭제됨) -->
+    <!-- 일정 삭제 (CASCADE 설정으로 EVENT_ATTENDEES 데이터도 자동 삭제됨, 권한 검증은 서비스에서 처리) -->
     <delete id="deleteEvent">
         DELETE
         FROM CALENDAR_EVENTS
         WHERE ID = #{id}
-          AND WS_ID = #{wsId}
     </delete>
 
     <!-- 일정에 참가자 초대 등록 -->
     <insert id="insertAttendee">
         INSERT INTO EVENT_ATTENDEES (EVENT_ID, USER_ID, STATUS)
-        VALUES (#{eventId},
-                #{userId},
-                #{status, typeHandler=org.apache.ibatis.type.EnumToStringTypeHandler})
+        VALUES (#{eventId, jdbcType=VARCHAR},
+                #{userId, jdbcType=VARCHAR},
+                #{status, jdbcType=VARCHAR})
     </insert>
 
     <!-- 참석자의 참여 상태 변경 (수락 / 거절 / 미정 등) -->
     <update id="updateAttendeeStatus">
         UPDATE EVENT_ATTENDEES
-        SET STATUS = #{status, typeHandler=org.apache.ibatis.type.EnumToStringTypeHandler}
-        WHERE EVENT_ID = #{eventId}
-          AND USER_ID = #{userId}
+        SET STATUS = #{status, jdbcType=VARCHAR}
+        WHERE EVENT_ID = #{eventId, jdbcType=VARCHAR}
+          AND USER_ID = #{userId, jdbcType=VARCHAR}
     </update>
 
     <!-- 11. 특정 일정의 참석자 전원 초기화 (수정 시 초기화 후 재등록 용도) -->

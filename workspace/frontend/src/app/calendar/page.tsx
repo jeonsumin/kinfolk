@@ -17,7 +17,9 @@ import {
     DialogTitle,
     Input,
     Label,
+    CommCalendar,
     Switch,
+    type CommCalendarEvent,
 } from "@/shared/ui";
 import {cn} from "@/shared/utils";
 import {
@@ -43,8 +45,6 @@ const VIEW_MODES = [
 ] as const;
 type ViewMode = (typeof VIEW_MODES)[number]["id"];
 
-/* ── UI-level event types (mapped from DTO) ── */
-type CalendarEvent = { id: string; day: number; label: string; color: EventColor };
 type TimedEvent = {
     id: string;
     dayIndex: number; // 0=일 ~ 6=토
@@ -67,7 +67,6 @@ function getMemberStyle(idx: number) {
 }
 
 /* ── Styles ── */
-const DAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 const DOW_KR = ["일", "월", "화", "수", "목", "금", "토"];
 
 const EVENT_STYLES: Record<EventColor, string> = {
@@ -83,11 +82,6 @@ const END_HOUR = 22;
 const HOUR_HEIGHT = 56;
 const HOURS = Array.from({length: END_HOUR - START_HOUR + 1}, (_, i) => START_HOUR + i);
 const GRID_HEIGHT = (END_HOUR - START_HOUR) * HOUR_HEIGHT;
-
-/* ── Date helpers ── */
-function fmt(d: Date) {
-    return d.toISOString().slice(0, 10);
-}
 
 function fmtTime(h: number) {
     const hh = Math.floor(h);
@@ -127,26 +121,6 @@ function buildWeekDays(sunday: Date, today: Date) {
             isToday: d.toDateString() === today.toDateString(),
         };
     });
-}
-
-/** 월 그리드 셀 생성 */
-function buildCalendarCells(year: number, month: number) {
-    const firstDow = new Date(year, month - 1, 1).getDay();
-    const daysInMonth = new Date(year, month, 0).getDate();
-    const daysInPrev = new Date(year, month - 1, 0).getDate();
-    const cells: { day: number; currentMonth: boolean }[] = [];
-    for (let i = firstDow - 1; i >= 0; i--) cells.push({day: daysInPrev - i, currentMonth: false});
-    for (let i = 1; i <= daysInMonth; i++) cells.push({day: i, currentMonth: true});
-    const total = Math.ceil(cells.length / 7) * 7;
-    let next = 1;
-    while (cells.length < total) cells.push({day: next++, currentMonth: false});
-    return cells;
-}
-
-/* ── DTO → UI 매핑 ── */
-function dtoToCalendarEvent(dto: CalendarEventDTO): CalendarEvent {
-    const d = new Date(dto.startDt);
-    return {id: dto.id, day: d.getDate(), label: dto.title, color: dto.color};
 }
 
 function dtoToTimedEvent(dto: CalendarEventDTO, weekSunday: Date): TimedEvent | null {
@@ -225,63 +199,6 @@ function TimeGutter() {
           </span>
                 </div>
             ))}
-        </div>
-    );
-}
-
-/* ── 월 뷰 ── */
-function MonthView({
-                       year, month, todayDate, events,
-                   }: {
-    year: number; month: number; todayDate: Date; events: CalendarEvent[];
-}) {
-    const cells = buildCalendarCells(year, month);
-    return (
-        <div className="bg-card rounded-xl overflow-hidden border border-border shadow-sm">
-            <div className="grid grid-cols-7 bg-muted/60 border-b border-border">
-                {DAY_LABELS.map((label) => (
-                    <div key={label}
-                         className="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                        {label}
-                    </div>
-                ))}
-            </div>
-            <div
-                className="grid grid-cols-7 [grid-auto-rows:minmax(120px,1fr)] max-md:[grid-auto-rows:minmax(80px,auto)]">
-                {cells.map((cell, idx) => {
-                    const dayEvents = cell.currentMonth ? events.filter((e) => e.day === cell.day) : [];
-                    const isToday =
-                        cell.currentMonth &&
-                        cell.day === todayDate.getDate() &&
-                        month === todayDate.getMonth() + 1 &&
-                        year === todayDate.getFullYear();
-                    return (
-                        <div
-                            key={idx}
-                            className={cn(
-                                "border-r border-b border-border/40 p-3 transition-colors",
-                                cell.currentMonth ? "hover:bg-muted/50 cursor-pointer" : "bg-muted/30 opacity-40",
-                                isToday && "bg-primary/5"
-                            )}
-                        >
-              <span
-                  className={cn("text-sm", cell.currentMonth ? "font-bold" : "font-medium", isToday && "text-primary")}>
-                {cell.day}
-              </span>
-                            {dayEvents.length > 0 && (
-                                <div className="mt-2 space-y-1">
-                                    {dayEvents.map((event) => (
-                                        <div key={event.id}
-                                             className={cn("text-[10px] px-2 py-1 rounded border-l-2 truncate font-medium", EVENT_STYLES[event.color])}>
-                                            {event.label}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
         </div>
     );
 }
@@ -586,6 +503,7 @@ function AddEventDialog({
 /* ── 메인 페이지 ── */
 export default function CalendarPage() {
     const {currentWorkspace} = useAuthStore();
+    const workspaceId = currentWorkspace?.id;
     const today = useMemo(() => new Date(), []);
 
     const [view, setView] = useState<ViewMode>("month");
@@ -601,8 +519,8 @@ export default function CalendarPage() {
 
     /* 워크스페이스 변경 시 멤버 로드 */
     useEffect(() => {
-        if (!currentWorkspace) return;
-        getWorkspaceMembers(currentWorkspace.id)
+        if (!workspaceId) return;
+        getWorkspaceMembers(workspaceId)
             .then((res) => {
                 const list = res.data ?? [];
                 setMembers(list);
@@ -611,11 +529,11 @@ export default function CalendarPage() {
             .catch(() => {
                 setMembers([]);
             });
-    }, [currentWorkspace?.id]);
+    }, [workspaceId]);
 
     /* 뷰/날짜 변경 시 이벤트 로드 */
     useEffect(() => {
-        if (!currentWorkspace) return;
+        if (!workspaceId) return;
         let cancelled = false;
 
         const load = async () => {
@@ -623,11 +541,11 @@ export default function CalendarPage() {
             try {
                 let res;
                 if (view === "month") {
-                    res = await getMonthEvents(currentWorkspace.id, currentDate.getFullYear(), currentDate.getMonth() + 1);
+                    res = await getMonthEvents(workspaceId, currentDate.getFullYear(), currentDate.getMonth() + 1);
                 } else if (view === "week") {
-                    res = await getWeekEvents(currentWorkspace.id, weekSunday);
+                    res = await getWeekEvents(workspaceId, weekSunday);
                 } else {
-                    res = await getDayEvents(currentWorkspace.id, currentDate);
+                    res = await getDayEvents(workspaceId, currentDate);
                 }
                 if (!cancelled) setEvents(res.data ?? []);
             } catch {
@@ -641,38 +559,30 @@ export default function CalendarPage() {
         return () => {
             cancelled = true;
         };
-    }, [view, currentDate, currentWorkspace?.id, weekSunday]);
+    }, [view, currentDate, workspaceId, weekSunday]);
 
-    /* DTO → UI 타입 매핑 */
-    const monthEvents = useMemo(() => events.map(dtoToCalendarEvent), [events]);
+    /* 가족 필터는 DTO 단계에서 한 번만 적용한다. */
+    const filteredEvents = useMemo(
+        () => visibleMembers.size === 0
+            ? events
+            : events.filter((event) => event.attendees.some((attendee) => visibleMembers.has(attendee.userId))),
+        [events, visibleMembers]
+    );
+
+    const monthEvents = useMemo<CommCalendarEvent[]>(
+        () => filteredEvents.map((event) => ({
+            day: new Date(event.startDt).getDate(),
+            label: event.title,
+            color: event.color === "neutral" ? "primary" : event.color,
+        })),
+        [filteredEvents]
+    );
     const timedEvents = useMemo(
-        () => events.flatMap((dto) => {
+        () => filteredEvents.flatMap((dto) => {
             const t = dtoToTimedEvent(dto, weekSunday);
             return t ? [t] : [];
         }),
-        [events, weekSunday]
-    );
-
-    /* 가족 필터 — visibleMembers에 포함된 userId의 attendee가 있는 이벤트만 표시 */
-    const filteredMonthEvents = useMemo(
-        () => visibleMembers.size === 0
-            ? monthEvents
-            : monthEvents.filter((e) => {
-                const dto = events.find((d) => d.id === e.id);
-                if (!dto) return true;
-                return dto.attendees.some((a) => visibleMembers.has(a.userId));
-            }),
-        [monthEvents, events, visibleMembers]
-    );
-    const filteredTimedEvents = useMemo(
-        () => visibleMembers.size === 0
-            ? timedEvents
-            : timedEvents.filter((e) => {
-                const dto = events.find((d) => d.id === e.id);
-                if (!dto) return true;
-                return dto.attendees.some((a) => visibleMembers.has(a.userId));
-            }),
-        [timedEvents, events, visibleMembers]
+        [filteredEvents, weekSunday]
     );
 
     const {title: viewTitle, subtitle: viewSubtitle} = getViewTitle(view, currentDate);
@@ -757,16 +667,21 @@ export default function CalendarPage() {
 
                         {/* 뷰 */}
                         {view === "month" && (
-                            <MonthView
+                            <CommCalendar
                                 year={currentDate.getFullYear()}
                                 month={currentDate.getMonth() + 1}
-                                todayDate={today}
-                                events={filteredMonthEvents}
+                                today={
+                                    currentDate.getFullYear() === today.getFullYear() &&
+                                    currentDate.getMonth() === today.getMonth()
+                                        ? today.getDate()
+                                        : undefined
+                                }
+                                events={monthEvents}
                             />
                         )}
-                        {view === "week" && <WeekView weekDays={weekDays} events={filteredTimedEvents}/>}
+                        {view === "week" && <WeekView weekDays={weekDays} events={timedEvents}/>}
                         {view === "day" &&
-                            <DayView date={currentDate} events={filteredTimedEvents}/>}
+                            <DayView date={currentDate} events={timedEvents}/>}
                     </section>
 
                     {/* ── 필터 패널 ── */}

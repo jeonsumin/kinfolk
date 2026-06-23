@@ -15,6 +15,7 @@ import {
 export const SIDEBAR_NAV = [
   { href: "/", label: "대시보드", icon: LayoutDashboard },
   { href: "/calendar", label: "캘린더", icon: Calendar },
+  { href: "/planner", label: "플래너", icon: ClipboardList },
   { href: "/shopping", label: "장보기", icon: ShoppingCart },
 ] as const;
 

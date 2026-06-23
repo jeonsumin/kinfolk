@@ -29,7 +29,7 @@ import {
   Label,
   ListGroup,
   ListItem,
-  MonthCalendar,
+  CommCalendar,
   Progress,
   ProgressLabel,
   ProgressValue,
@@ -843,7 +843,7 @@ export default function ComponentsPage() {
                     ))}
                   </div>
                 </div>
-                <MonthCalendar
+                <CommCalendar
                   year={2024}
                   month={5}
                   today={7}

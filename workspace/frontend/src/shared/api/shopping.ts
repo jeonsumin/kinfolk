@@ -85,7 +85,7 @@ export async function updateShoppingItem(
   payload: UpdateShoppingItemPayload
 ): Promise<ApiResponse<void>> {
   return apiFetch<void>(`/api/v1.0/shopping/items/${itemId}`, {
-    method: "PATCH",
+    method: "POST",
     body: JSON.stringify(payload),
   });
 }

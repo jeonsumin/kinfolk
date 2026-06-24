@@ -51,7 +51,7 @@ public class ShoppingController extends ApiRestController {
         service.addItem(workspaceId, request);
     }
 
-    @PatchMapping("/shopping/items/{itemId}")
+    @PostMapping("/shopping/items/{itemId}")
     @Operation(summary = "아이템 수정", description = "아이템 정보를 수정한다. null 필드는 변경하지 않는다.")
     public void updateItem(
             @PathVariable String itemId,

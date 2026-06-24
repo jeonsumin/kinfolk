@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.terry.backend.api.planner.mapper.PlaceSuggestionMapper">
+
+    <resultMap id="PlaceSuggestionResult" type="com.terry.backend.api.planner.dto.PlaceSuggestionDTO">
+        <id     property="id"           column="PLACE_ID"/>
+        <result property="workspaceId"  column="WS_ID"/>
+        <result property="sourceUrl"    column="SOURCE_URL"/>
+        <result property="thumbnailUrl" column="THUMBNAIL_URL"/>
+        <result property="title"        column="TITLE"/>
+        <result property="description"  column="DESCRIPTION"/>
+        <result property="category"     column="CATEGORY"/>
+        <result property="voteCount"    column="VOTE_COUNT"/>
+        <result property="votedByMe"    column="VOTED_BY_ME"/>
+    </resultMap>
+
+    <select id="selectPlaceSuggestions" resultMap="PlaceSuggestionResult">
+        SELECT ps.PLACE_ID
+             , ps.WS_ID
+             , ps.SOURCE_URL
+             , ps.THUMBNAIL_URL
+             , ps.TITLE
+             , ps.DESCRIPTION
+             , ps.CATEGORY
+             , COUNT(v.USER_ID)                                                       AS VOTE_COUNT
+             , IFNULL(MAX(CASE WHEN v.USER_ID = #{userId} THEN 1 ELSE 0 END), 0)  AS VOTED_BY_ME
+        FROM PLACE_SUGGESTION ps
+                 LEFT JOIN PLACE_SUGGESTION_VOTE v ON v.PLACE_ID = ps.PLACE_ID
+        WHERE ps.WS_ID = #{workspaceId, jdbcType=VARCHAR}
+        GROUP BY ps.PLACE_ID, ps.WS_ID, ps.SOURCE_URL, ps.THUMBNAIL_URL, ps.TITLE, ps.DESCRIPTION, ps.CATEGORY
+        ORDER BY ps.REGIST_DT DESC
+    </select>
+
+    <select id="selectPlaceSuggestionById" resultMap="PlaceSuggestionResult">
+        SELECT ps.PLACE_ID
+             , ps.WS_ID
+             , ps.SOURCE_URL
+             , ps.THUMBNAIL_URL
+             , ps.TITLE
+             , ps.DESCRIPTION
+             , ps.CATEGORY
+             , COUNT(v.USER_ID)                                                       AS VOTE_COUNT
+             , IFNULL(MAX(CASE WHEN v.USER_ID = #{userId} THEN 1 ELSE 0 END), 0)  AS VOTED_BY_ME
+        FROM PLACE_SUGGESTION ps
+                 LEFT JOIN PLACE_SUGGESTION_VOTE v ON v.PLACE_ID = ps.PLACE_ID
+        WHERE ps.PLACE_ID = #{placeId, jdbcType=VARCHAR}
+        GROUP BY ps.PLACE_ID, ps.WS_ID, ps.SOURCE_URL, ps.THUMBNAIL_URL, ps.TITLE, ps.DESCRIPTION, ps.CATEGORY
+    </select>
+
+    <insert id="insertPlaceSuggestion">
+        INSERT INTO PLACE_SUGGESTION ( PLACE_ID
+                                     , WS_ID
+                                     , SOURCE_URL
+                                     , THUMBNAIL_URL
+                                     , TITLE
+                                     , DESCRIPTION
+                                     , CATEGORY
+                                     , REGIST_DT
+                                     , REGIST_ID)
+        VALUES ( #{placeId,      jdbcType=VARCHAR}
+               , #{wsId,         jdbcType=VARCHAR}
+               , #{sourceUrl,    jdbcType=VARCHAR}
+               , #{thumbnailUrl, jdbcType=VARCHAR}
+               , #{title,        jdbcType=VARCHAR}
+               , #{description,  jdbcType=VARCHAR}
+               , #{category,     jdbcType=VARCHAR}
+               , NOW()
+               , #{registId,     jdbcType=VARCHAR})
+    </insert>
+
+    <select id="existsPlaceVote" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM PLACE_SUGGESTION_VOTE
+        WHERE PLACE_ID = #{placeId, jdbcType=VARCHAR}
+          AND USER_ID = #{userId, jdbcType=VARCHAR}
+    </select>
+
+    <insert id="insertPlaceVote">
+        INSERT INTO PLACE_SUGGESTION_VOTE ( VOTE_ID
+                                          , PLACE_ID
+                                          , USER_ID
+                                          , REGIST_DT)
+        VALUES ( #{voteId,  jdbcType=VARCHAR}
+               , #{placeId, jdbcType=VARCHAR}
+               , #{userId,  jdbcType=VARCHAR}
+               , NOW())
+    </insert>
+
+    <delete id="deletePlaceVote">
+        DELETE FROM PLACE_SUGGESTION_VOTE
+        WHERE PLACE_ID = #{placeId, jdbcType=VARCHAR}
+          AND USER_ID = #{userId, jdbcType=VARCHAR}
+    </delete>
+
+    <select id="existsWorkspaceMember" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM WORKSPACE_USER
+        WHERE WS_ID = #{workspaceId, jdbcType=VARCHAR}
+          AND USER_ID = #{userId, jdbcType=VARCHAR}
+    </select>
+
+</mapper>

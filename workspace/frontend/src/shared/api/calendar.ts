@@ -104,8 +104,8 @@ export async function getCalendarEvent(
 /** POST /api/v1.0/calendar */
 export async function createCalendarEvent(
     request: CalendarCreateRequest
-): Promise<ApiResponse<CalendarEventDTO>> {
-    return apiFetch<CalendarEventDTO>(BASE, {
+): Promise<ApiResponse<void>> {
+    return apiFetch<void>(BASE, {
         method: "POST",
         body: JSON.stringify(request),
     });

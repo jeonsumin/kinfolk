@@ -12,7 +12,7 @@ export interface UserProfile {
 
 /** PATCH /api/v1.0/user/me 요청 바디 */
 export interface UpdateUserPayload {
-  name: string; // 필수, 최대 50자
+  displayName: string; // 필수, 최대 50자
 }
 
 const BASE = "/api/v1.0/user";

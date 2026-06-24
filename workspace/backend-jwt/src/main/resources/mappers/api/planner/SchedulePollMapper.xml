@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.terry.backend.api.planner.mapper.SchedulePollMapper">
+
+    <resultMap id="SchedulePollResult" type="com.terry.backend.api.planner.dto.SchedulePollDTO">
+        <id     property="id"          column="POLL_ID"/>
+        <result property="workspaceId" column="WS_ID"/>
+        <result property="title"       column="TITLE"/>
+        <result property="createdAt"   column="REGIST_DT"/>
+        <collection property="candidates" ofType="com.terry.backend.api.planner.dto.SchedulePollCandidateDTO">
+            <id     property="id"          column="CANDIDATE_ID"/>
+            <result property="startDt"     column="START_DT"/>
+            <result property="endDt"       column="END_DT"/>
+            <result property="voteCount"   column="VOTE_COUNT"/>
+            <result property="votedByMe"   column="VOTED_BY_ME"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="SchedulePollVoteSummaryResult" type="com.terry.backend.api.planner.dto.SchedulePollVoteSummaryDTO">
+        <result property="startDt"   column="START_DT"/>
+        <result property="endDt"     column="END_DT"/>
+        <result property="voteCount" column="VOTE_COUNT"/>
+    </resultMap>
+
+    <select id="selectSchedulePolls" resultMap="SchedulePollResult">
+        SELECT p.POLL_ID
+             , p.WS_ID
+             , p.TITLE
+             , p.REGIST_DT
+             , c.CANDIDATE_ID
+             , c.START_DT
+             , c.END_DT
+             , COUNT(v.USER_ID)                                                       AS VOTE_COUNT
+             , IFNULL(MAX(CASE WHEN v.USER_ID = #{userId} THEN 1 ELSE 0 END), 0)  AS VOTED_BY_ME
+        FROM SCHEDULE_POLL p
+                 LEFT JOIN SCHEDULE_POLL_CANDIDATE c ON c.POLL_ID = p.POLL_ID
+                 LEFT JOIN SCHEDULE_POLL_VOTE v ON v.CANDIDATE_ID = c.CANDIDATE_ID
+        WHERE p.WS_ID = #{workspaceId, jdbcType=VARCHAR}
+        GROUP BY p.POLL_ID, p.WS_ID, p.TITLE, p.REGIST_DT, c.CANDIDATE_ID, c.START_DT, c.END_DT
+        ORDER BY p.REGIST_DT DESC, c.START_DT ASC
+    </select>
+
+    <select id="selectSchedulePollById" resultMap="SchedulePollResult">
+        SELECT p.POLL_ID
+             , p.WS_ID
+             , p.TITLE
+             , p.REGIST_DT
+             , c.CANDIDATE_ID
+             , c.START_DT
+             , c.END_DT
+             , COUNT(v.USER_ID)                                                       AS VOTE_COUNT
+             , IFNULL(MAX(CASE WHEN v.USER_ID = #{userId} THEN 1 ELSE 0 END), 0)  AS VOTED_BY_ME
+        FROM SCHEDULE_POLL p
+                 LEFT JOIN SCHEDULE_POLL_CANDIDATE c ON c.POLL_ID = p.POLL_ID
+                 LEFT JOIN SCHEDULE_POLL_VOTE v ON v.CANDIDATE_ID = c.CANDIDATE_ID
+        WHERE p.POLL_ID = #{pollId, jdbcType=VARCHAR}
+        GROUP BY p.POLL_ID, p.WS_ID, p.TITLE, p.REGIST_DT, c.CANDIDATE_ID, c.START_DT, c.END_DT
+        ORDER BY c.START_DT ASC
+    </select>
+
+    <select id="selectVoteSummary" resultMap="SchedulePollVoteSummaryResult">
+        SELECT c.START_DT
+             , c.END_DT
+             , COUNT(v.USER_ID) AS VOTE_COUNT
+        FROM SCHEDULE_POLL p
+                 JOIN SCHEDULE_POLL_CANDIDATE c ON c.POLL_ID = p.POLL_ID
+                 LEFT JOIN SCHEDULE_POLL_VOTE v ON v.CANDIDATE_ID = c.CANDIDATE_ID
+        WHERE p.WS_ID = #{workspaceId, jdbcType=VARCHAR}
+        GROUP BY c.START_DT, c.END_DT
+        ORDER BY VOTE_COUNT DESC
+    </select>
+
+    <insert id="insertSchedulePoll">
+        INSERT INTO SCHEDULE_POLL ( POLL_ID
+                                  , WS_ID
+                                  , TITLE
+                                  , IS_ANONYMOUS
+                                  , REGIST_DT
+                                  , REGIST_ID)
+        VALUES ( #{pollId,    jdbcType=VARCHAR}
+               , #{wsId,      jdbcType=VARCHAR}
+               , #{title,     jdbcType=VARCHAR}
+               , 'Y'
+               , NOW()
+               , #{registId,  jdbcType=VARCHAR})
+    </insert>
+
+    <insert id="insertSchedulePollCandidate">
+        INSERT INTO SCHEDULE_POLL_CANDIDATE ( CANDIDATE_ID
+                                            , POLL_ID
+                                            , START_DT
+                                            , END_DT
+                                            , REGIST_DT
+                                            , REGIST_ID)
+        VALUES ( #{candidateId, jdbcType=VARCHAR}
+               , #{pollId,      jdbcType=VARCHAR}
+               , #{startDt,     jdbcType=VARCHAR}
+               , #{endDt,       jdbcType=VARCHAR}
+               , NOW()
+               , #{registId,    jdbcType=VARCHAR})
+    </insert>
+
+    <select id="existsVote" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM SCHEDULE_POLL_VOTE
+        WHERE CANDIDATE_ID = #{candidateId, jdbcType=VARCHAR}
+          AND USER_ID = #{userId, jdbcType=VARCHAR}
+    </select>
+
+    <insert id="insertVote">
+        INSERT INTO SCHEDULE_POLL_VOTE ( VOTE_ID
+                                       , CANDIDATE_ID
+                                       , USER_ID
+                                       , REGIST_DT)
+        VALUES ( #{voteId,      jdbcType=VARCHAR}
+               , #{candidateId, jdbcType=VARCHAR}
+               , #{userId,      jdbcType=VARCHAR}
+               , NOW())
+    </insert>
+
+    <delete id="deleteVote">
+        DELETE FROM SCHEDULE_POLL_VOTE
+        WHERE CANDIDATE_ID = #{candidateId, jdbcType=VARCHAR}
+          AND USER_ID = #{userId, jdbcType=VARCHAR}
+    </delete>
+
+    <select id="existsWorkspaceMember" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM WORKSPACE_USER
+        WHERE WS_ID = #{workspaceId, jdbcType=VARCHAR}
+          AND USER_ID = #{userId, jdbcType=VARCHAR}
+    </select>
+
+</mapper>

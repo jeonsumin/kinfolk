@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.terry.backend.api.planner.mapper.PlannerMapper">
+
+    <resultMap id="PlannerResult" type="com.terry.backend.api.planner.dto.PlannerDTO">
+        <id     property="id"           column="PLANNER_ID"/>
+        <result property="workspaceId"  column="WS_ID"/>
+        <result property="title"        column="TITLE"/>
+        <result property="color"        column="COLOR"/>
+        <result property="updatedAt"    column="UPDT_DT"/>
+        <result property="participants" column="PARTICIPANTS"
+                typeHandler="com.terry.backend.thirdparty.handlers.ListStringTypeHandler"/>
+        <result property="itinerary"    column="ITINERARY"
+                typeHandler="com.terry.backend.thirdparty.handlers.PlannerItineraryTypeHandler"/>
+        <association property="calendar" javaType="com.terry.backend.api.planner.dto.PlannerCalendarDTO">
+            <result property="year"  column="CAL_YEAR"/>
+            <result property="month" column="CAL_MONTH"/>
+        </association>
+    </resultMap>
+
+    <select id="selectPlanners" resultMap="PlannerResult">
+        SELECT PLANNER_ID
+             , WS_ID
+             , TITLE
+             , PARTICIPANTS
+             , COLOR
+             , CAL_YEAR
+             , CAL_MONTH
+             , ITINERARY
+             , UPDT_DT
+        FROM PLANNER
+        WHERE WS_ID = #{workspaceId, jdbcType=VARCHAR}
+        ORDER BY REGIST_DT DESC
+    </select>
+
+    <select id="selectPlannerById" resultMap="PlannerResult">
+        SELECT PLANNER_ID
+             , WS_ID
+             , TITLE
+             , PARTICIPANTS
+             , COLOR
+             , CAL_YEAR
+             , CAL_MONTH
+             , ITINERARY
+             , UPDT_DT
+        FROM PLANNER
+        WHERE PLANNER_ID = #{plannerId, jdbcType=VARCHAR}
+    </select>
+
+    <insert id="insertPlanner">
+        INSERT INTO PLANNER ( PLANNER_ID
+                            , WS_ID
+                            , TITLE
+                            , PARTICIPANTS
+                            , COLOR
+                            , CAL_YEAR
+                            , CAL_MONTH
+                            , ITINERARY
+                            , REGIST_DT
+                            , REGIST_ID
+                            , UPDT_DT
+                            , UPDT_ID)
+        VALUES ( #{plannerId,    jdbcType=VARCHAR}
+               , #{wsId,         jdbcType=VARCHAR}
+               , #{title,        jdbcType=VARCHAR}
+               , #{participants, typeHandler=com.terry.backend.thirdparty.handlers.ListStringTypeHandler}
+               , #{color,        jdbcType=VARCHAR}
+               , #{calYear,      jdbcType=INTEGER}
+               , #{calMonth,     jdbcType=INTEGER}
+               , #{itinerary,    typeHandler=com.terry.backend.thirdparty.handlers.PlannerItineraryTypeHandler}
+               , NOW()
+               , #{registId,     jdbcType=VARCHAR}
+               , NOW()
+               , #{registId,     jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updatePlannerItinerary">
+        UPDATE PLANNER
+        SET ITINERARY = #{itinerary, typeHandler=com.terry.backend.thirdparty.handlers.PlannerItineraryTypeHandler}
+          , UPDT_DT   = NOW()
+          , UPDT_ID   = #{updtId, jdbcType=VARCHAR}
+        WHERE PLANNER_ID = #{plannerId, jdbcType=VARCHAR}
+    </update>
+
+    <select id="existsWorkspaceMember" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM WORKSPACE_USER
+        WHERE WS_ID   = #{workspaceId, jdbcType=VARCHAR}
+          AND USER_ID = #{userId,      jdbcType=VARCHAR}
+    </select>
+
+</mapper>

@@ -21,7 +21,7 @@ export default function ProfileSetupPage() {
     setIsLoading(true);
     try {
       // PATCH /api/v1.0/user/me → 수정된 UserProfileDTO 반환
-      const res = await updateMe({ name: name.trim() });
+      const res = await updateMe({ displayName: name.trim() });
       setProfile(res.data); // 반환된 프로필로 store 업데이트 (userName 포함)
       router.push("/");
     } catch (err) {

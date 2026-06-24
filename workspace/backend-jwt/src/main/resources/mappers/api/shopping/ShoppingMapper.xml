@@ -44,10 +44,12 @@
              , i.IS_CHECKED
              , i.ASSIGNED_USER_ID
              , u.USER_NM AS ASSIGNED_USER_NM
-        FROM SHOPPING_CATEGORY c
-                 LEFT JOIN SHOPPING_ITEM i ON i.CATEGORY_ID = c.CATEGORY_ID
-                 LEFT JOIN SWC_USER u ON u.USER_ID = i.ASSIGNED_USER_ID
-        WHERE c.WS_ID = #{workspaceId, jdbcType=VARCHAR}
+        FROM
+            SHOPPING_CATEGORY c
+            LEFT JOIN SHOPPING_ITEM i ON i.CATEGORY_ID = c.CATEGORY_ID
+            LEFT JOIN SWC_USER u ON u.USER_ID = i.ASSIGNED_USER_ID
+        WHERE
+            c.WS_ID = #{workspaceId, jdbcType=VARCHAR}
         ORDER BY c.SORT_ORDER ASC, i.REGIST_DT ASC
     </select>
 

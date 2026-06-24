@@ -1,8 +1,8 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn, getSession } from "next-auth/react";
+import { signIn, signOut, getSession } from "next-auth/react";
 import { Button, Input, Label } from "@/shared/ui";
 import { getMe, getWorkspaces } from "@/shared/api";
 import { useAuthStore } from "@/stores/auth-store";
@@ -10,12 +10,17 @@ import { useAuthStore } from "@/stores/auth-store";
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setTokens, setProfile, setWorkspaces, setCurrentWorkspace } = useAuthStore();
+  const { setTokens, setProfile, setWorkspaces, setCurrentWorkspace, reset } = useAuthStore();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    signOut({ redirect: false });
+    reset();
+  }, [reset]);
 
   const handleLogin = async () => {
     if (!username.trim() || !password) return;
@@ -30,16 +35,18 @@ function LoginContent() {
         password,
       });
 
-      if (!result?.ok) {
+      if (result?.error || !result?.ok) {
         setError("아이디 또는 비밀번호가 잘못됐습니다.");
         return;
       }
 
       // 2. 세션에서 토큰 읽어 Zustand에 동기화 (apiFetch 에서 사용)
       const session = await getSession();
-      if (session?.accessToken) {
-        setTokens(session.accessToken, session.refreshToken ?? "");
+      if (!session?.accessToken) {
+        setError("아이디 또는 비밀번호가 잘못됐습니다.");
+        return;
       }
+      setTokens(session.accessToken, session.refreshToken ?? "");
 
       // 3. 사용자 프로필 로드
       try {

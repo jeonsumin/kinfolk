@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Jeju Island Friendship Trip - Kinfolk Table</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Noto+Sans+KR:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans KR', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .timeline-line {
+            position: absolute;
+            left: 19px;
+            top: 24px;
+            bottom: 0;
+            width: 2px;
+            background: #eceef0;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid #F1F5F9;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#eceef0",
+                        "on-secondary": "#ffffff",
+                        "background": "#f7f9fb",
+                        "tertiary-container": "#4b555f",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e0e3e5",
+                        "on-primary-fixed": "#0d1c2e",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#bfc9d5",
+                        "primary-fixed-dim": "#b9c7df",
+                        "on-secondary-fixed": "#0d1c2d",
+                        "surface-dim": "#d8dadc",
+                        "outline": "#75777d",
+                        "inverse-primary": "#b9c7df",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#44474c",
+                        "tertiary-fixed": "#dae3f0",
+                        "tertiary": "#343e47",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#bbcae1",
+                        "on-primary": "#ffffff",
+                        "on-secondary-container": "#556477",
+                        "primary-container": "#475569",
+                        "surface": "#f7f9fb",
+                        "outline-variant": "#c4c6cd",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#e6e8ea",
+                        "secondary-container": "#d2e1f7",
+                        "on-surface": "#191c1e",
+                        "inverse-surface": "#2d3133",
+                        "on-background": "#191c1e",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary": "#516072",
+                        "primary-fixed": "#d5e3fc",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#f7f9fb",
+                        "primary": "#303e51"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "base": "8px",
+                        "gutter": "24px",
+                        "margin-desktop": "64px",
+                        "md": "24px",
+                        "margin-mobile": "16px",
+                        "xl": "80px",
+                        "lg": "48px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface antialiased">
+<div class="flex min-h-screen">
+<!-- SideNavBar - Desktop -->
+<aside class="hidden md:flex h-screen w-64 left-0 sticky flex-col bg-surface-container-low p-gutter gap-base shadow-sm border-r border-outline-variant">
+<div class="mb-lg">
+<h1 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Kinfolk Table</h1>
+<p class="text-secondary font-label-md">Family Travel</p>
+</div>
+<nav class="flex flex-col gap-xs flex-grow">
+<a class="flex items-center gap-base p-base text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-base p-base bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md">Calendar</span>
+</a>
+<a class="flex items-center gap-base p-base text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-label-md">Shopping List</span>
+</a>
+<a class="flex items-center gap-base p-base text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined">photo_library</span>
+<span class="font-label-md">Photo Sharing</span>
+</a>
+<a class="flex items-center gap-base p-base text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-label-md">Travel Planner</span>
+</a>
+</nav>
+<div class="flex items-center gap-base mt-auto p-base">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div class="overflow-hidden">
+<p class="font-label-md truncate">User Profile</p>
+</div>
+</div>
+</aside>
+<main class="flex-grow w-full max-w-5xl mx-auto px-margin-mobile md:px-margin-desktop py-lg">
+<!-- Top Bar (Contextual) -->
+<header class="flex justify-between items-center mb-xl">
+<div>
+<div class="flex items-center gap-xs text-primary mb-xs">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span class="font-label-md">전체 일정으로 돌아가기</span>
+</div>
+<h2 class="font-headline-xl text-headline-xl text-primary">여행 일정 짜기</h2>
+<p class="text-secondary font-body-md mt-xs">제주도 우정 여행 (2024.05.20 - 2024.05.22)</p>
+</div>
+<div class="hidden md:flex gap-base">
+<button class="px-gutter py-base rounded-lg border border-primary text-primary font-label-md hover:bg-surface-container transition-colors">
+                        PDF로 저장
+                    </button>
+<button class="px-gutter py-base rounded-lg bg-primary text-white font-label-md hover:opacity-90 transition-opacity flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">share</span>
+                        공유하기
+                    </button>
+</div>
+</header>
+<!-- Itinerary Section -->
+<div class="grid grid-cols-1 gap-xl">
+<!-- Day 1 -->
+<section class="space-y-gutter relative">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-base">
+<span class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">1</span>
+<h3 class="font-headline-md text-headline-md text-primary">Day 1 — 도착 및 해변 탐방</h3>
+</div>
+<span class="text-secondary font-label-md">5월 20일 (월)</span>
+</div>
+<div class="ml-5 relative pl-gutter space-y-gutter">
+<div class="timeline-line"></div>
+<!-- Activity Item -->
+<div class="flex gap-gutter group relative">
+<div class="absolute -left-[31px] top-4 w-4 h-4 rounded-full border-4 border-background bg-primary z-10"></div>
+<div class="flex-shrink-0 w-24 pt-2">
+<span class="font-label-md text-secondary">09:30 AM</span>
+</div>
+<div class="flex-grow glass-card p-gutter rounded-xl hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-xs mb-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]">flight_land</span>
+<span class="text-secondary font-label-sm uppercase tracking-wider">공항</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-xs">제주 국제 공항 도착</h4>
+<p class="text-on-surface-variant font-body-md">동기들과 1번 게이트에서 합류. 렌터카 셔틀버스 탑승장으로 이동.</p>
+</div>
+<div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A modern architectural shot of Jeju International Airport's entrance, featuring sleek glass and steel structures under a bright, sunny blue sky. The scene is clean and minimalist, with a few palm trees hinting at the tropical destination. High-key lighting and a professional travel photography style consistent with a premium travel app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4DzNf7rOwkwfLTSsol6Ym3qlCZszw2MJDnwdEsltifww2YNwe1GMNKM2UN4ixtsfthKuCtK2GFBml3B6hesYYVsEMPnlZheanROvxG4Psz_lmVc0POpc-ganRo-N81K_bc7x_ms_u0vuKqZMKwi6mcwT-9MRoeaKSKJMVSl9amCXi9JYMvOqfHW1sbYraqfk3ydFtw0fQsRYAghvKh3YpRWwwny-owy5WbtCoRIVWrFsXzlAqGdVMC9IJi_MjfgFqo7Q2acgkKUE"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="flex gap-gutter group relative">
+<div class="absolute -left-[31px] top-4 w-4 h-4 rounded-full border-4 border-background bg-secondary z-10"></div>
+<div class="flex-shrink-0 w-24 pt-2">
+<span class="font-label-md text-secondary">12:30 PM</span>
+</div>
+<div class="flex-grow glass-card p-gutter rounded-xl hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-xs mb-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]">restaurant</span>
+<span class="text-secondary font-label-sm uppercase tracking-wider">식당</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-xs">현지 로컬 맛집 점심 식사</h4>
+<p class="text-on-surface-variant font-body-md">함덕 근처 '해녀촌'에서 회국수와 성게국수. 바다 전망 자리가 있는지 확인 필요.</p>
+</div>
+<div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Top-down shot of traditional Korean seafood dishes, including raw fish noodles and sea urchin soup, presented in minimalist white ceramic bowls on a light wooden table. Soft natural light flows from a nearby window, creating a serene and appetizing dining atmosphere. High-end food photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBs7bpb9UimR23kp8bTCmCOR_qzRyBiGvbU8sjBPTLFZVTWFGcPrImBIfkn6P_1H76JhYzsfP_xIGB7bUOHrsFuqQ2OTNG-3Bio8EYJg4rkSeCz31UB7b1824GGYABVdhI9S__9LcPHL0M1kmXoIBXKgHAUhZRyiNCQHCB3xTbrny9URX2A9_Ji7qFTUigbcdXczViXfSrRo82K-lFzqj3Ya2GLD7yepBlWnXGgfd1GxxFrXOxyhsgABQG6o8yHsNALEzvBmgNdfO8"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="flex gap-gutter group relative">
+<div class="absolute -left-[31px] top-4 w-4 h-4 rounded-full border-4 border-background bg-secondary z-10"></div>
+<div class="flex-shrink-0 w-24 pt-2">
+<span class="font-label-md text-secondary">03:00 PM</span>
+</div>
+<div class="flex-grow glass-card p-gutter rounded-xl hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-xs mb-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]">beach_access</span>
+<span class="text-secondary font-label-sm uppercase tracking-wider">명소</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-xs">함덕 해수욕장 산책</h4>
+<p class="text-on-surface-variant font-body-md">에메랄드빛 바다 배경으로 우정 사진 촬영. 카페 '델문도'에서 커피 한 잔.</p>
+</div>
+<div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A wide, scenic shot of Hamdeok Beach in Jeju Island, featuring turquoise water and white sand. The sky is a clear, soft blue. A modern café is visible on a rocky outcrop. The overall feeling is airy, calm, and sophisticated, emphasizing the natural beauty of the island." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA80x-l-0iB8YDnUsQHmkHKHQkykpt1uI18EsOCkM2u7FYf34Ca3mOeb0GS8mVDXlbifL_TD2h_s-XFYG_QHwRA0K5Td15GwyKGkvkWkQ331bBp6fkr8xwinn8ivmytmJw_v4mLT3JLzfUyn5FS--MSPycoTHi-0Y2BhZkPQh9_u_WSs9KNVX4EKTdBWIWATbJy7m4r0_woau2xTSN6SRqgF3lbwEhiDWFbwbWYDKakYsZmXm4C_Osjrv0YOvxmFDUqUJidRvb9Ey0"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Add Activity Button -->
+<button class="ml-gutter flex items-center gap-xs px-gutter py-base rounded-lg border-2 border-dashed border-outline-variant text-secondary font-label-md hover:bg-surface-container-low hover:border-primary hover:text-primary transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                            일정 추가하기
+                        </button>
+</div>
+</section>
+<!-- Day 2 -->
+<section class="space-y-gutter relative">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-base">
+<span class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">2</span>
+<h3 class="font-headline-md text-headline-md text-primary">Day 2 — 숲과 오름의 힐링</h3>
+</div>
+<span class="text-secondary font-label-md">5월 21일 (화)</span>
+</div>
+<div class="ml-5 relative pl-gutter space-y-gutter">
+<div class="timeline-line"></div>
+<!-- Activity Item -->
+<div class="flex gap-gutter group relative">
+<div class="absolute -left-[31px] top-4 w-4 h-4 rounded-full border-4 border-background bg-secondary z-10"></div>
+<div class="flex-shrink-0 w-24 pt-2">
+<span class="font-label-md text-secondary">10:00 AM</span>
+</div>
+<div class="flex-grow glass-card p-gutter rounded-xl hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-xs mb-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]">forest</span>
+<span class="text-secondary font-label-sm uppercase tracking-wider">자연</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-xs">사려니 숲길 탐방</h4>
+<p class="text-on-surface-variant font-body-md">피톤치드 가득한 삼나무 숲길 걷기. 평탄한 코스로 1시간 정도 산책.</p>
+</div>
+<div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A tranquil and misty view of Saryeoni Forest Path in Jeju Island. Tall, straight cedar trees line the path, creating a natural cathedral effect. The lighting is soft and diffused, highlighting the lush green moss and fern on the forest floor. A sense of professional serenity and intentional minimalism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeTH0EYzvLvJxnyzH_HsT1HocpBiJUixICWGLamoW3kDq80Xq2ZqIpu4YtVuCk-YOQ-9whzLodtyFu0oXqVq1FxJtwmPdXtIv3aQvg4gpIvnUqzFgOVy_zcG_l_D09huQjPtidwkGo1cOgY_PEzlzwhaX19wgRaQf0OkTn7XbdXXA2ykVXdPRCUqAp4u_ramDzP-iLbYZo0GUOt8eVf3yNNUsL_Z0STAmHc6RkAXBtAMb-TGa-v_KzYAXTBN_6yjxBaFVVOJiPsLc"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Add Activity Button -->
+<button class="ml-gutter flex items-center gap-xs px-gutter py-base rounded-lg border-2 border-dashed border-outline-variant text-secondary font-label-md hover:bg-surface-container-low hover:border-primary hover:text-primary transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                            일정 추가하기
+                        </button>
+</div>
+</section>
+<!-- Add Day Button -->
+<div class="flex justify-center pt-base">
+<button class="flex flex-col items-center gap-xs px-xl py-lg rounded-xl border-2 border-dashed border-outline-variant text-secondary font-label-md hover:bg-white hover:border-primary hover:text-primary transition-all active:scale-98 group">
+<span class="material-symbols-outlined text-[32px] group-hover:scale-110 transition-transform">calendar_add_on</span>
+<span>새로운 날짜 추가하기</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Bottom NavBar -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-outline-variant flex justify-around items-center py-base px-base z-50">
+<button class="flex flex-col items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-label-sm">Home</span>
+</button>
+<button class="flex flex-col items-center gap-xs text-primary font-bold">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span class="text-[10px] font-label-sm">Itinerary</span>
+</button>
+<button class="flex flex-col items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="text-[10px] font-label-sm">Plan</span>
+</button>
+<button class="flex flex-col items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined">map</span>
+<span class="text-[10px] font-label-sm">Map</span>
+</button>
+<button class="flex flex-col items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-label-sm">Profile</span>
+</button>
+</nav>
+<!-- Interactive script for some basic UI feel -->
+<script>
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousedown', () => {
+                card.style.transform = 'scale(0.995)';
+            });
+            card.addEventListener('mouseup', () => {
+                card.style.transform = 'scale(1)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

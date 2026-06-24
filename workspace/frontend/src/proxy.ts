@@ -31,14 +31,9 @@ export const proxy = auth((req) => {
   return NextResponse.next();
 });
 
+
 export const config = {
   matcher: [
-    /*
-     * 아래 경로는 매칭 제외:
-     * - /api/auth/** (NextAuth 핸들러)
-     * - /_next/static, /_next/image (Next.js 내부)
-     * - /favicon.ico
-     */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/((?!login|onboarding|api/auth|_next/static|_next/image|favicon\\.ico).*)",
   ],
 };

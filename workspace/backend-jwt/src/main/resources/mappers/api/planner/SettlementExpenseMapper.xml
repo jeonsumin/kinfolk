@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.terry.backend.api.planner.mapper.SettlementExpenseMapper">
+
+    <resultMap id="SettlementExpenseResult" type="com.terry.backend.api.planner.dto.SettlementExpenseDTO">
+        <id     property="id"          column="EXPENSE_ID"/>
+        <result property="workspaceId" column="WS_ID"/>
+        <result property="date"        column="EXPENSE_DATE"/>
+        <result property="item"        column="ITEM"/>
+        <result property="payer"       column="PAYER"/>
+        <result property="amount"      column="AMOUNT"/>
+        <result property="status"      column="STATUS" />
+    </resultMap>
+
+    <select id="selectSettlementExpenses" resultMap="SettlementExpenseResult">
+        SELECT EXPENSE_ID
+             , WS_ID
+             , EXPENSE_DATE
+             , ITEM
+             , PAYER
+             , AMOUNT
+             , STATUS
+        FROM SETTLEMENT_EXPENSE
+        WHERE WS_ID = #{workspaceId, jdbcType=VARCHAR}
+        ORDER BY REGIST_DT DESC
+    </select>
+
+    <insert id="insertSettlementExpense">
+        INSERT INTO SETTLEMENT_EXPENSE ( EXPENSE_ID
+                                       , WS_ID
+                                       , EXPENSE_DATE
+                                       , ITEM
+                                       , PAYER
+                                       , AMOUNT
+                                       , STATUS
+                                       , REGIST_DT
+                                       , REGIST_ID)
+        VALUES ( #{expenseId,   jdbcType=VARCHAR}
+               , #{wsId,        jdbcType=VARCHAR}
+               , #{expenseDate, jdbcType=DATE}
+               , #{item,        jdbcType=VARCHAR}
+               , #{payer,       jdbcType=VARCHAR}
+               , #{amount,      jdbcType=BIGINT}
+               , #{status,      jdbcType=VARCHAR}
+               , NOW()
+               , #{registId,    jdbcType=VARCHAR})
+    </insert>
+
+    <select id="existsWorkspaceMember" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM WORKSPACE_USER
+        WHERE WS_ID = #{workspaceId, jdbcType=VARCHAR}
+          AND USER_ID = #{userId, jdbcType=VARCHAR}
+    </select>
+
+</mapper>

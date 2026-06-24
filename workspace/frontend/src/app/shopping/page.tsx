@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useMemo, useState, type FormEvent} from "react";
+import {useCallback, useEffect, useMemo, useState, type FormEvent} from "react";
 import {Leaf, Plus, Search, SprayCan, Trash2, Users} from "lucide-react";
 import {TopBar} from "@/shared/ui/top-bar";
 import {
@@ -32,10 +32,11 @@ import {
 } from "@/shared/ui";
 import {cn} from "@/shared/utils";
 import {
-  addMockShoppingItem,
-  deleteMockShoppingItem,
-  getMockShoppingList,
-  toggleMockShoppingItem,
+  addShoppingItem,
+  deleteShoppingItem,
+  getShoppingCategories,
+  getShoppingList,
+  updateShoppingItem,
   type ShoppingCategoryDTO,
   type ShoppingItemDTO,
 } from "@/shared/api";
@@ -63,7 +64,7 @@ function AddItemDialog({
   onOpenChange: (open: boolean) => void;
   workspaceId: string;
   categories: ShoppingCategoryDTO[];
-  onCreated: (categoryId: string, item: ShoppingItemDTO) => void;
+  onCreated: () => void;
 }) {
   const [itemName, setItemName] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -82,12 +83,12 @@ function AddItemDialog({
     if (!canSubmit) return;
     setIsSubmitting(true);
     try {
-      const item = await addMockShoppingItem(workspaceId, {
+      await addShoppingItem(workspaceId, {
         categoryId,
         itemNm: itemName.trim(),
         assignedUserId: memberId,
       });
-      onCreated(categoryId, item);
+      onCreated();
       reset();
       onOpenChange(false);
     } finally {
@@ -144,26 +145,33 @@ function AddItemDialog({
 
 export default function ShoppingPage() {
   const {currentWorkspace} = useAuthStore();
-  const workspaceId = currentWorkspace?.id ?? "mock-workspace";
+  const workspaceId = currentWorkspace?.id ?? "";
   const [categories, setCategories] = useState<ShoppingCategoryDTO[]>([]);
   const [search, setSearch] = useState("");
   const [addOpen, setAddOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      setIsLoading(true);
-      try {
-        const list = await getMockShoppingList(workspaceId);
-        if (!cancelled) setCategories(list);
-      } finally {
-        if (!cancelled) setIsLoading(false);
+  const loadList = useCallback(async () => {
+    if (!workspaceId) return;
+    setIsLoading(true);
+    try {
+      const res = await getShoppingList(workspaceId);
+      const list = res.data ?? [];
+      if (list.length === 0) {
+        // 첫 로드 시 카테고리 시드 (lazy-seed)
+        const catRes = await getShoppingCategories(workspaceId);
+        setCategories(catRes.data ?? []);
+      } else {
+        setCategories(list);
       }
-    };
-    load();
-    return () => { cancelled = true; };
+    } finally {
+      setIsLoading(false);
+    }
   }, [workspaceId]);
+
+  useEffect(() => {
+    loadList();
+  }, [loadList]);
 
   const items = useMemo(() => categories.flatMap((category) => category.items ?? []), [categories]);
   const completedCount = items.filter((item) => item.isChecked).length;
@@ -184,14 +192,27 @@ export default function ShoppingPage() {
     })));
   };
 
-  const handleToggle = async (itemId: string) => updateItem(await toggleMockShoppingItem(itemId));
+  const handleToggle = async (itemId: string) => {
+    const item = categories.flatMap((c) => c.items ?? []).find((i) => i.itemId === itemId);
+    if (!item) return;
+    updateItem({...item, isChecked: !item.isChecked}); // optimistic
+    try {
+      await updateShoppingItem(itemId, {isChecked: !item.isChecked});
+    } catch {
+      updateItem(item); // revert
+    }
+  };
 
   const handleDelete = async (itemId: string) => {
-    await deleteMockShoppingItem(itemId);
     setCategories((current) => current.map((category) => ({
       ...category,
       items: category.items?.filter((item) => item.itemId !== itemId) ?? null,
-    })));
+    }))); // optimistic
+    try {
+      await deleteShoppingItem(itemId);
+    } catch {
+      loadList(); // revert by re-fetching
+    }
   };
 
   return (
@@ -219,15 +240,6 @@ export default function ShoppingPage() {
                   <h3 className="text-2xl font-semibold text-primary">{progress}% 완료됨</h3>
                   <Progress value={progress}><ProgressTrack className="bg-card/60"><ProgressIndicator /></ProgressTrack></Progress>
                   <p className="text-xs text-muted-foreground">전체 {items.length}개 중 {completedCount}개를 확인했습니다.</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="pb-0"><h3 className="flex items-center gap-2 text-sm font-bold text-primary"><Users size={18} /> 참여 중인 가족</h3></CardHeader>
-                <CardContent className="pt-4">
-                  <AvatarGroup>
-                    {MEMBERS.map((member) => <Avatar key={member.id} size="lg"><AvatarFallback className={cn("font-semibold", member.avatar)}>{member.initial}</AvatarFallback></Avatar>)}
-                    <AvatarGroupCount>+2</AvatarGroupCount>
-                  </AvatarGroup>
                 </CardContent>
               </Card>
             </aside>
@@ -283,7 +295,7 @@ export default function ShoppingPage() {
         onOpenChange={setAddOpen}
         workspaceId={workspaceId}
         categories={categories}
-        onCreated={(categoryId, item) => setCategories((current) => current.map((category) => category.categoryId === categoryId ? {...category, items: [...(category.items ?? []), item]} : category))}
+        onCreated={loadList}
       />
     </div>
   );

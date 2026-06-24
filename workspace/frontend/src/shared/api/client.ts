@@ -50,12 +50,25 @@ export async function apiFetch<T = unknown>(
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
+  const { skipAuth, ...fetchOptions } = options;
+
   let res: Response;
   try {
-    const { skipAuth: _, ...fetchOptions } = options;
     res = await fetch(`${API_BASE}${path}`, { ...fetchOptions, headers });
   } catch {
     throw new ApiError("서버에 연결할 수 없습니다. 네트워크를 확인해주세요.");
+  }
+
+  // 401/403/500 → 로그인 리디렉션 (skipAuth 요청 제외)
+  if (!skipAuth && (res.status === 401 || res.status === 403 || res.status === 500)) {
+    if (res.status === 401) useAuthStore.getState().reset();
+    if (typeof window !== "undefined") window.location.replace("/login");
+    const statusMessages: Record<number, string> = {
+      401: "인증이 만료되었습니다. 다시 로그인해주세요.",
+      403: "접근 권한이 없습니다.",
+      500: "서버 오류가 발생했습니다.",
+    };
+    throw new ApiError(statusMessages[res.status] ?? `요청에 실패했습니다. (${res.status})`);
   }
 
   // 빈 body 처리 (204 No Content 또는 body 없음)

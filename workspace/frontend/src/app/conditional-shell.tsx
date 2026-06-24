@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Sidebar } from "@/shared/ui/sidebar";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 
-const AUTH_PREFIXES = ["/login", "/onboarding"];
+const AUTH_PREFIXES = ["/login", "/onboarding","/signup"];
 
 export function ConditionalShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();

@@ -1,5 +1,5 @@
 export { apiFetch, ApiError, type ApiResponse } from "./client";
-export { login, logout, refreshAccessToken, type TokenData } from "./auth";
+export { login, logout, refreshAccessToken, signup, type SignupPayload, type TokenData } from "./auth";
 export { getMe, updateMe, type UserProfile, type UpdateUserPayload } from "./user";
 export {
   createWorkspace,

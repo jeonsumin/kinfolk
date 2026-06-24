@@ -100,6 +100,12 @@ function LoginContent() {
           </p>
         </div>
 
+        {searchParams.get("registered") === "1" && (
+          <div className="rounded-lg bg-primary/10 border border-primary/20 px-3 py-2.5">
+            <p className="text-xs text-primary">회원가입이 완료되었습니다. 로그인해주세요.</p>
+          </div>
+        )}
+
         {/* 에러 메시지 */}
         {error && (
           <div className="rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2.5">
@@ -168,7 +174,7 @@ function LoginContent() {
 
         <p className="text-center text-xs text-muted-foreground">
           계정이 없으신가요?{" "}
-          <Button variant="link" size="xs" className="px-0 h-auto text-xs">
+          <Button variant="link" size="xs" className="px-0 h-auto text-xs" onClick={() => router.push("/signup")}>
             회원가입
           </Button>
         </p>

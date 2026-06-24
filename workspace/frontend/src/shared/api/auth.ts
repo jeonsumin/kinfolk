@@ -7,9 +7,24 @@ interface LoginPayload {
   password: string;
 }
 
+export interface SignupPayload {
+  username: string;
+  password: string;
+  name: string;
+}
+
 export interface TokenData {
   accessToken: string;
   refreshToken: string;
+}
+
+/** POST /signup */
+export function signup(payload: SignupPayload): Promise<ApiResponse> {
+  return apiFetch("/signup", {
+    method: "POST",
+    body: JSON.stringify(payload),
+    skipAuth: true,
+  });
 }
 
 /**

@@ -78,7 +78,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorizeRequest -> authorizeRequest
                         .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
-                        .requestMatchers("/", "/login", "/logout", "/token/refresh").permitAll()
+                        .requestMatchers("/", "/login", "/signup", "/logout", "/token/refresh").permitAll()
                         .requestMatchers("/admin/**").hasAuthority(RoleType.ADMIN.name())
                         .anyRequest().authenticated()
                 );

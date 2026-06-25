@@ -19,10 +19,8 @@ public interface ShoppingMapper {
 
     /**
      * 2. 카테고리 목록 조회
-     *
-     * @param workspaceId 워크스페이스 ID
      */
-    List<ShoppingCategoryDTO> selectCategories(@Param("workspaceId") String workspaceId);
+    List<ShoppingCategoryDTO> selectCategories();
 
     /**
      * 3. 카테고리 수 조회 (lazy-seed 판별용)

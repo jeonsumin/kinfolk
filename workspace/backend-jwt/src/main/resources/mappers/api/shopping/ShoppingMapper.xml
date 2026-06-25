@@ -59,7 +59,6 @@
              , CATEGORY_NM
              , SORT_ORDER
         FROM SHOPPING_CATEGORY
-        WHERE WS_ID = #{workspaceId, jdbcType=VARCHAR}
         ORDER BY SORT_ORDER ASC
     </select>
 

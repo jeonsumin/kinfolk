@@ -1,0 +1,348 @@
+<!DOCTYPE html><html class="light" lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Kinfolk Table - 가족 관리</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#3e4852",
+                        "surface-container-high": "#e6e8ea",
+                        "on-tertiary-fixed": "#131d25",
+                        "background": "#f7f9fb",
+                        "on-error": "#ffffff",
+                        "secondary": "#516072",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#4b555f",
+                        "surface": "#f7f9fb",
+                        "on-surface-variant": "#44474c",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary-fixed": "#0d1c2d",
+                        "on-surface": "#191c1e",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary-container": "#bfc9d5",
+                        "on-primary-fixed": "#0d1c2e",
+                        "primary": "#303e51",
+                        "on-primary-container": "#bbcae1",
+                        "tertiary-fixed-dim": "#bdc8d3",
+                        "primary-container": "#475569",
+                        "on-primary-fixed-variant": "#3a485b",
+                        "outline-variant": "#c4c6cd",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-background": "#191c1e",
+                        "outline": "#75777d",
+                        "inverse-surface": "#2d3133",
+                        "secondary-container": "#d2e1f7",
+                        "secondary-fixed": "#d4e4fa",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#eff1f3",
+                        "inverse-primary": "#b9c7df",
+                        "surface-dim": "#d8dadc",
+                        "on-secondary-fixed-variant": "#39485a",
+                        "on-secondary-container": "#556477",
+                        "primary-fixed": "#d5e3fc",
+                        "tertiary": "#343e47",
+                        "surface-tint": "#515f74",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#b9c7df",
+                        "secondary-fixed-dim": "#b9c8de",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#dae3f0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "md": "24px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "xl": "80px",
+                        "margin-desktop": "64px",
+                        "lg": "48px",
+                        "xs": "4px",
+                        "sm": "12px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-caps": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "800"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .soft-shadow {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+        .transition-soft {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface-bright border-b border-outline-variant/30 top-0 sticky z-50">
+<div class="flex justify-between items-center w-full px-container-padding py-stack-sm max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-stack-md">
+<span class="font-headline-md text-headline-md font-bold text-primary">Kinfolk Table</span>
+</div>
+<!-- Desktop Nav -->
+<nav class="hidden md:flex gap-8">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors py-2" href="#">대시보드</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors py-2" href="#">캘린더</a>
+<a class="text-primary font-bold border-b-2 border-primary py-2" href="#">가족 관리</a>
+</nav>
+<div class="flex items-center gap-stack-md">
+<button class="p-2 rounded-full hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/50 ml-2">
+<img alt="User profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4jAU1_cdvCSsU8Dssn9p-U82cTHbZIFqgxzGiaqYEYVYaZi-Q0W74gLs7C8mTrn8ZLPxraRTQwcZP7YEEq1-Ycz5LFViRFHdfeQTg7Dh4dx_bwxeTnnlEEO7s1gEsOsTyjcsWpxN4JUaEYbkXfyWuquy19fUPp0C_Rxj6noUjxuKy0QtANTvbTL3LaML3RBUwmunaV7ylZFO9pUhzK40wd3Ab7wM3SOpa8xOZ6LxClQNB4C3--Rhq6ELdX6CwC77fLUwuSDJmOZw">
+</div>
+</div>
+</div>
+</header>
+<div class="flex min-h-screen max-w-screen-2xl mx-auto">
+<!-- SideNavBar (Desktop Only) -->
+<aside class="hidden md:flex flex-col gap-2 py-container-padding h-screen w-64 fixed left-0 top-16 bg-surface-container-low border-r border-outline-variant/20">
+<div class="px-6 mb-8">
+<h2 class="text-on-surface font-bold text-xl">가족</h2>
+<p class="text-on-surface-variant text-sm">가족 공간 관리</p>
+</div>
+<div class="space-y-1 px-3">
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container p-3 rounded-lg transition-soft" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium">대시보드</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container p-3 rounded-lg transition-soft" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-medium">캘린더</span>
+</a>
+
+<a class="flex items-center gap-3 bg-primary-container/20 text-primary p-3 rounded-lg transition-soft" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-bold">가족 관리</span>
+</a><a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container p-3 rounded-lg transition-soft" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-medium">장보기 리스트</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container p-3 rounded-lg transition-soft" href="#">
+<span class="material-symbols-outlined">photo_library</span>
+<span class="font-medium">사진 공유</span>
+</a></div>
+
+</aside>
+<!-- Main Content -->
+<main class="flex-1 md:ml-64 px-6 py-stack-lg pb-32">
+<!-- Hero Header -->
+<section class="mb-stack-lg relative rounded-2xl overflow-hidden h-64 flex items-center p-8 bg-surface-container-highest">
+<img alt="가족 모임" class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-multiply" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2bzJtmtCEC5irmjf5O4Kk7iVnpbqVsTInsPPrT8HpIo4a13eNmuEmplSKq-Mx7KHz37A1nf8nNRKWAAyAIGIFml6D1GwFmVVB6ELfinc7J3khZf3G8a_kZbAx2a_tD-iyDO-Z2K-vbMlWuQP2qeTsr0JK7zoLwlsKlyebS-r7RHHAH1zc54OBFvmOxayobWOwJx-srzfD8Qd-EcunAuDc8FBoFN3Uvd69hWdAfoTkODV-v8wfS0rNYL9TABcitiIht9wz1u3i4xs">
+<div class="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent"></div>
+<div class="relative z-10 text-white">
+<h1 class="font-headline-lg text-3xl md:text-4xl mb-2">우리 가족의 디지털 화로</h1>
+<p class="font-body-lg text-lg opacity-90 max-w-md">가장 소중한 사람들과 함께 조정하고, 축하하며, 서로를 돌보세요.</p>
+</div>
+</section>
+<!-- Family Member Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+<!-- Family Member Card: Sarah -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 soft-shadow flex flex-col items-center text-center transition-soft hover:shadow-md border border-outline-variant/10">
+<div class="w-20 h-20 rounded-full mb-4 ring-4 ring-secondary-container/30">
+<img alt="Sarah 프로필" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqj3bjfBic1v_kBEAwevbP0CTW8uxPb5r0LvNOUgDlvNJaKRNEc2v5XT4ILzZsNmY1D7xGNMBGbOiaTpZguiI-q0vNoqJqduKOAVTz5u5uHL6QhqUKCEzNcrgkumxvvARP3z5ukTvNYJ7HRyMya8e1Xolb2mQrqu5xRgAaCn594jxtQFXJFrb1jE2CElXnNvlkXqWQyDMPuH3IB7rMdUjIl325oqtPBDYJUDS8oP5NFgFhKyWQrvY97_CHMX4cthGivtgDXpjnRsA">
+</div>
+<h3 class="font-headline-md text-xl">Sarah</h3>
+<div class="mt-2 bg-secondary-fixed/50 text-on-secondary-fixed-variant px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider truncate">엄마</div>
+<p class="mt-4 text-on-surface-variant text-sm truncate">테마: 스카이 블루</p>
+<div class="mt-6 flex gap-3">
+<button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined text-lg">settings</span></button>
+</div>
+</div>
+<!-- Family Member Card: James -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 soft-shadow flex flex-col items-center text-center transition-soft hover:shadow-md border border-outline-variant/10">
+<div class="w-20 h-20 rounded-full mb-4 ring-4 ring-tertiary-container/30">
+<img alt="James 프로필" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3g5PM8K4BcGKEZKxLuRmsGYO_gNYwCi-ncj2XZ-bJh0zihIceKVN7ByrFKwjnNXmu-Bs-_390rY2pKsbXPNweoB7H1VwsKeHf2hkT6aMzONcZ1uruCc7MCVTdSDDyeHLp_T4EsSHyiga2RKxsziQENWUEvIY5gadqeDfKLgBHP1n65yZEJNDTxMtBhpi3_pnJtn0zQE_9ehhu2fnWmivIunYF-R2xv0wESfKKKJ9bwwfO2b5x-s_i6alZVQxhPBEUF1gne0-ly8A">
+</div>
+<h3 class="font-headline-md text-xl">James</h3>
+<div class="mt-2 bg-tertiary-fixed/50 text-on-tertiary-fixed-variant px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider truncate">아빠</div>
+<p class="mt-4 text-on-surface-variant text-sm truncate">테마: 메도우 그린</p>
+<div class="mt-6 flex gap-3">
+<button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined text-lg">settings</span></button>
+</div>
+</div>
+<!-- Family Member Card: Leo -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 soft-shadow flex flex-col items-center text-center transition-soft hover:shadow-md border border-outline-variant/10">
+<div class="w-20 h-20 rounded-full mb-4 ring-4 ring-primary-container/30">
+<img alt="Leo 프로필" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAV2G9m0znhP2MS-aM62GkQB2oZbJpbu_ArTryhaVCut6Cohgn-A7jxuq00klBWM5mhPOIff3wxI0iwbwBQbmLvecGo8KkLxNokqUULjV3i0-nzKLLlom4eGNKAxORuPJjBUlCBlDA9xopzgIp1o2Wq-qrFr5KS0-9EM2gGBzZpPiLAbsB6Ng6zLLnFWOyqTYY6Yv78jCQXZr51cK-2Jo2J8JgKx21rztrfdG0f3lVlH0os_WDhdZFm4rlUa3xDnhHVBTtmFPcAQNI">
+</div>
+<h3 class="font-headline-md text-xl">Leo</h3>
+<div class="mt-2 bg-primary-fixed/50 text-on-primary-fixed-variant px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider truncate">자녀</div>
+<p class="mt-4 text-on-surface-variant text-sm truncate">테마: 선빔 옐로우</p>
+<div class="mt-6 flex gap-3">
+<button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined text-lg">settings</span></button>
+</div>
+</div>
+</div>
+<!-- Management Actions -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+<!-- Invite via Email -->
+<section class="bg-surface-container rounded-2xl p-8 border border-outline-variant/10">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">mail</span>
+</div>
+<div>
+<h2 class="font-headline-md text-xl font-bold truncate">이메일로 초대</h2>
+<p class="text-on-surface-variant text-sm truncate">새로운 가족 구성원을 서클에 추가하세요.</p>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<input class="w-full bg-surface-container-highest border border-outline-variant/50 rounded-xl py-3.5 px-4 focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-on-surface-variant/50" placeholder="email@family.com" type="email">
+<button class="w-full py-3.5 bg-primary text-on-primary font-bold rounded-xl hover:bg-primary/90 active:scale-[0.98] transition-all shadow-sm">
+                        초대장 발송
+                    </button>
+</div>
+</section>
+<!-- Invite via Link -->
+<section class="bg-surface-container rounded-2xl p-8 border border-outline-variant/10">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center text-on-secondary">
+<span class="material-symbols-outlined">link</span>
+</div>
+<div>
+<h2 class="font-headline-md text-xl font-bold truncate">링크로 초대</h2>
+<p class="text-on-surface-variant text-sm truncate">가족들과 안전한 참여 링크를 공유하세요.</p>
+</div>
+</div>
+<div class="flex items-center gap-3 bg-surface-container-highest p-4 rounded-xl mb-4 border border-outline-variant/30">
+<span class="text-sm text-on-surface font-medium truncate flex-1">kinship.co/join/family-9981-asdf</span>
+<button class="p-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-xl">content_copy</span>
+</button>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">info</span>
+<span class="">이 링크는 보안을 위해 24시간 후에 만료됩니다.</span>
+</div>
+</section>
+</div>
+<!-- Chores/Goals Section -->
+<section class="bg-surface-container-lowest rounded-2xl p-8 soft-shadow border border-outline-variant/10">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h2 class="font-headline-md text-xl font-bold">주간 가족 집안일</h2>
+<p class="text-on-surface-variant text-sm">우리 집을 위한 공동의 기여</p>
+</div>
+<span class="material-symbols-outlined text-primary text-3xl">eco</span>
+</div>
+<div class="space-y-8">
+<div>
+<div class="flex justify-between text-sm mb-3">
+<span class="font-medium text-on-surface">식물 물 주기 (Leo)</span>
+<span class="font-bold text-primary">80%</span>
+</div>
+<div class="h-3 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[80%] transition-all duration-1000 ease-out"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-sm mb-3">
+<span class="font-medium text-on-surface">가족 저녁 준비 (James)</span>
+<span class="font-bold text-secondary">45%</span>
+</div>
+<div class="h-3 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full w-[45%] transition-all duration-1000 ease-out"></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe pt-3 bg-surface-container-highest border-t border-outline-variant/20 shadow-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-bold uppercase mt-1">홈</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-[10px] font-bold uppercase mt-1">캘린더</span>
+</a>
+<a class="flex flex-col items-center justify-center py-1" href="#">
+<div class="bg-primary p-2.5 rounded-xl -mt-6 shadow-lg active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-on-primary">add</span>
+</div>
+<span class="text-[10px] font-bold uppercase mt-1">추가</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary py-1" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[10px] font-bold uppercase mt-1">가족 관리</span>
+</a>
+</nav>
+<script>
+    // Micro-interaction for buttons
+    document.querySelectorAll('button').forEach(button => {
+        button.addEventListener('mousedown', () => {
+            button.style.transform = 'scale(0.96)';
+        });
+        button.addEventListener('mouseup', () => {
+            button.style.transform = 'scale(1)';
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+</body></html>

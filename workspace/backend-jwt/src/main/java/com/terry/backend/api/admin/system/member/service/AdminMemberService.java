@@ -1,5 +1,8 @@
 package com.terry.backend.api.admin.system.member.service;
 
+import com.terry.backend.api.admin.system.authority.dto.AuthorityDTO;
+import com.terry.backend.api.admin.system.authority.dto.AuthoritySearchParam;
+import com.terry.backend.api.admin.system.authority.mapper.AdminAuthorityMapper;
 import com.terry.backend.api.admin.system.member.dto.MemberAuthorityDTO;
 import com.terry.backend.api.admin.system.member.dto.MemberDTO;
 import com.terry.backend.api.admin.system.member.dto.MemberSearchParam;
@@ -13,6 +16,7 @@ import com.terry.backend.api.admin.system.member.strategy.MemberStrategy;
 import com.terry.backend.core.security.util.SessionUtils;
 import com.terry.backend.core.serial.config.SerialConfiguration;
 import com.terry.backend.core.serial.util.SerialUtil;
+import com.terry.backend.web.security.RoleType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -29,11 +33,13 @@ public class AdminMemberService {
 
     private final AdminMemberMapper adminMemberMapper;
     private final AdminMemberAuthorityMapper adminMemberAuthorityMapper;
+    private final AdminAuthorityMapper adminAuthorityMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public AdminMemberService(AdminMemberMapper adminMemberMapper, AdminMemberAuthorityMapper adminMemberAuthorityMapper, PasswordEncoder passwordEncoder) {
+    public AdminMemberService(AdminMemberMapper adminMemberMapper, AdminMemberAuthorityMapper adminMemberAuthorityMapper, AdminAuthorityMapper adminAuthorityMapper, PasswordEncoder passwordEncoder) {
         this.adminMemberMapper = adminMemberMapper;
         this.adminMemberAuthorityMapper = adminMemberAuthorityMapper;
+        this.adminAuthorityMapper = adminAuthorityMapper;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -62,7 +68,7 @@ public class AdminMemberService {
             createMember(entity);
             adminMemberMapper.insert(entity);
         }
-
+        entity.setAuthorities(adminMemberAuthorityMapper.selectAuthority(id));
         // 권한 목록 처리
         if (!CollectionUtils.isEmpty(entity.getAuthorities())) {
             // 먼저 삭제를 처리한다
@@ -87,6 +93,24 @@ public class AdminMemberService {
 
         // Update Session Cache
         SessionUtils.updateUserCacheMap(entity.getId(), entity.getName(), entity.getLoginId());
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Throwable.class)
+    public void signup(final MemberDTO entity) throws Exception {
+        createMember(entity);
+        adminMemberMapper.insert(entity);
+        adminMemberAuthorityMapper.saveUserAuthority(entity.getId(), getUserAuthorityId());
+        SessionUtils.updateUserCacheMap(entity.getId(), entity.getName(), entity.getLoginId());
+    }
+
+    private String getUserAuthorityId() {
+        List<AuthorityDTO> authorities = adminAuthorityMapper.select(
+                AuthoritySearchParam.builder().code(RoleType.USER).build());
+        return authorities.stream()
+                .filter(authority -> "Y".equalsIgnoreCase(authority.getUse()))
+                .findFirst()
+                .map(AuthorityDTO::getId)
+                .orElseThrow(() -> new IllegalStateException("USER 권한이 설정되어 있지 않습니다."));
     }
 
 

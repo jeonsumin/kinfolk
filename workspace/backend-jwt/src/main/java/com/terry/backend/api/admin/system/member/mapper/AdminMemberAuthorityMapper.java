@@ -18,4 +18,6 @@ public interface AdminMemberAuthorityMapper {
 
   void save(MemberAuthorityDTO dto);
 
+  void saveUserAuthority(@Param(value = "userId") String userId, @Param(value = "authorityId") String authorityId);
+
 }

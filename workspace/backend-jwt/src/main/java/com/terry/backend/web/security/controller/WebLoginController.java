@@ -47,7 +47,7 @@ public class WebLoginController {
     @Operation(summary = "회원가입", description = "로그인 아이디, 비밀번호, 이름으로 계정을 생성한다.")
     public ResponseEntity<ResponseMessages> signup(@Valid @RequestBody SignupRequest request) {
         try {
-            adminMemberService.save(null, MemberDTO.builder()
+            adminMemberService.signup(MemberDTO.builder()
                     .loginId(request.getUsername().trim())
                     .password(request.getPassword())
                     .name(request.getName().trim())

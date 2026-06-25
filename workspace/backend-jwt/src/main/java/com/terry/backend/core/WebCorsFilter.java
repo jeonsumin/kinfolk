@@ -25,7 +25,7 @@ public class WebCorsFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
 
         res.setHeader("Access-Control-Allow-Origin", "*");
-        res.setHeader("Access-Control-Allow-Methods", "POST,GET,PUT,DELETE");
+        res.setHeader("Access-Control-Allow-Methods", "POST,GET,PUT,DELETE,FETCH,OPTIONS");
         res.setHeader("Access-Control-Max-Age", "3600");
         res.setHeader("Access-Control-Allow-Headers", "X-Frame-Options,Content-Type,Authorization");
         res.setHeader("Access-Control-Allow-Credentials", "true");

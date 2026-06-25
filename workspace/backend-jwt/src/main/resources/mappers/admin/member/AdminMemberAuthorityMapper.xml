@@ -76,4 +76,25 @@
             UPDT_ID = #{updateId, jdbcType=VARCHAR};
     </insert>
 
+    <insert id="saveUserAuthority">
+        INSERT INTO SWC_USER_AUTHOR (USER_ID,
+                                     AUTHOR_ID,
+                                     AUTHOR_VALUE,
+                                     HIST_ID,
+                                     REGIST_DT,
+                                     REGIST_ID,
+                                     UPDT_DT,
+                                     UPDT_ID)
+        VALUES (UPPER(#{userId, jdbcType=VARCHAR}),
+                UPPER(#{authorityId, jdbcType=VARCHAR}),
+                NULL,
+                NULL,
+                NOW(),
+                NULL,
+                NOW(),
+                NULL) ON DUPLICATE KEY
+        UPDATE
+            UPDT_DT = NOW();
+    </insert>
+
 </mapper>

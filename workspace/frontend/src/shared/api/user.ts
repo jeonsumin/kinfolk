@@ -33,7 +33,7 @@ export async function updateMe(
   payload: UpdateUserPayload
 ): Promise<ApiResponse<UserProfile>> {
   return apiFetch<UserProfile>(`${BASE}/me`, {
-    method: "PATCH",
+    method: "POST",
     body: JSON.stringify(payload),
   });
 }

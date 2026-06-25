@@ -49,7 +49,7 @@
             LEFT JOIN SHOPPING_ITEM i ON i.CATEGORY_ID = c.CATEGORY_ID
             LEFT JOIN SWC_USER u ON u.USER_ID = i.ASSIGNED_USER_ID
         WHERE
-            c.WS_ID = #{workspaceId, jdbcType=VARCHAR}
+            i.WS_ID = #{workspaceId, jdbcType=VARCHAR}
         ORDER BY c.SORT_ORDER ASC, i.REGIST_DT ASC
     </select>
 

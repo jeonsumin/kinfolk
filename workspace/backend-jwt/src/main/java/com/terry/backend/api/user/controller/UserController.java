@@ -9,11 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -29,7 +25,7 @@ public class UserController extends ApiRestController {
         return service.getMyProfile();
     }
 
-    @PatchMapping("/user/me")
+    @PostMapping("/user/me")
     @Operation(summary = "이름 수정", description = "현재 로그인한 사용자의 이름을 수정하고 수정된 프로필을 반환한다.")
     public UserProfileDTO updateDisplayName(@Valid @RequestBody UpdateDisplayNameRequest request) {
         return service.updateDisplayName(request.getDisplayName());

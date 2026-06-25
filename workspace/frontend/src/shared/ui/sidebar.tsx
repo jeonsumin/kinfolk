@@ -12,13 +12,20 @@ import { logout } from "@/shared/api";
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { currentWorkspace, userName } = useAuthStore();
+  const { currentWorkspace, userName, reset } = useAuthStore();
   const initial = userName ? userName.charAt(0) : "K";
 
   const handleLogout = async () => {
-    await logout();
-    await signOut({ redirect: false });
-    router.push("/login");
+    try {
+      await signOut({ redirect: false });
+      await logout();
+    } catch {
+      // 백엔드 로그아웃 실패와 무관하게 클라이언트 세션은 종료한다.
+    } finally {
+      reset();
+      router.replace("/login");
+      router.refresh();
+    }
   };
 
   return (

@@ -57,12 +57,12 @@ public class ShoppingService {
     public List<ShoppingCategoryDTO> getCategories(String workspaceId) throws Exception {
         String userId = SessionUtils.getUserId();
         checkMembership(workspaceId, userId);
-        if (mapper.countCategories(workspaceId) == 0) {
-            for (int i = 0; i < DEFAULT_CATEGORIES.length; i++) {
-                String categoryId = SerialUtil.get(ShoppingCategoryStrategy.ID, CATEGORY_STRATEGY);
-                mapper.insertCategory(categoryId, workspaceId, DEFAULT_CATEGORIES[i], i + 1, userId);
-            }
-        }
+//        if (mapper.countCategories(workspaceId) == 0) {
+//            for (Integer i = 0; i < DEFAULT_CATEGORIES.length; i++) {
+//                String categoryId = SerialUtil.getList(ShoppingCategoryStrategy.ID, i).toString();
+//                mapper.insertCategory(categoryId, workspaceId, DEFAULT_CATEGORIES[i], i + 1, userId);
+//            }
+//        }
         return mapper.selectCategories(workspaceId);
     }
 

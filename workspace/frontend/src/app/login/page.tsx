@@ -1,11 +1,21 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn, signOut, getSession } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { Button, Input, Label } from "@/shared/ui";
 import { getMe, getWorkspaces } from "@/shared/api";
 import { useAuthStore } from "@/stores/auth-store";
+
+function getPostLoginPath(callbackUrl: string | null, hasWorkspaces: boolean) {
+  const fallback = hasWorkspaces ? "/" : "/onboarding/workspace";
+  if (!callbackUrl || !callbackUrl.startsWith("/") || callbackUrl.startsWith("//")) return fallback;
+  if (callbackUrl === "/login" || callbackUrl === "/signup") return fallback;
+  if (callbackUrl.startsWith("/login?") || callbackUrl.startsWith("/signup?")) return fallback;
+  if (callbackUrl.startsWith("/onboarding")) return fallback;
+  if (!hasWorkspaces && !callbackUrl.startsWith("/invite/")) return fallback;
+  return callbackUrl;
+}
 
 function LoginContent() {
   const router = useRouter();
@@ -17,15 +27,11 @@ function LoginContent() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    signOut({ redirect: false });
-    reset();
-  }, [reset]);
-
   const handleLogin = async () => {
     if (!username.trim() || !password) return;
     setError("");
     setIsLoading(true);
+    reset();
 
     try {
       // 1. NextAuth Credentials 로그인 → 서버에서 /login 호출 후 세션 쿠키 발급
@@ -59,17 +65,15 @@ function LoginContent() {
       // 4. 워크스페이스 유무로 신규/기존 사용자 분기
       const wsRes = await getWorkspaces();
       const workspaces = wsRes.data;
+      const callbackUrl = searchParams.get("callbackUrl");
 
       if (!workspaces || workspaces.length === 0) {
-        // 초대 링크로 진입한 신규 사용자 → 온보딩 대신 초대 페이지로
-        const cb = searchParams.get("callbackUrl");
-        router.push(cb && cb !== "/" ? cb : "/onboarding/workspace");
+        router.push(getPostLoginPath(callbackUrl, false));
       } else {
         const mapped = workspaces.map((ws) => ({ id: ws.id, name: ws.wsNm }));
         setWorkspaces(mapped);
         setCurrentWorkspace(mapped[0]);
-        const callbackUrl = searchParams.get("callbackUrl") ?? "/";
-        router.push(callbackUrl);
+        router.push(getPostLoginPath(callbackUrl, true));
       }
     } catch {
       setError("로그인에 실패했습니다.");

@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
 /** 인증 없이 접근 가능한 경로 */
-const PUBLIC_PATHS = ["/login"];
+const PUBLIC_PATHS = ["/login","/signup"];
 
 export const proxy = auth((req) => {
   // 개발 환경에서는 인증 없이 접근 허용
@@ -34,6 +34,6 @@ export const proxy = auth((req) => {
 
 export const config = {
   matcher: [
-    "/((?!login|onboarding|api/auth|_next/static|_next/image|favicon\\.ico).*)",
+    "/((?!login|signup|onboarding|api/auth|_next/static|_next/image|favicon\\.ico).*)",
   ],
 };

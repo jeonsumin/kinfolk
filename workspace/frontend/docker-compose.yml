@@ -1,0 +1,17 @@
+services:
+  frontend:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+    container_name: kinfolk-frontend
+    environment:
+      AUTH_SECRET: ${AUTH_SECRET:?Set AUTH_SECRET before starting Docker Compose}
+      AUTH_URL: ${AUTH_URL:-http://localhost:3000}
+      AUTH_API_URL: ${AUTH_API_URL:-http://host.docker.internal:8080}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    restart: unless-stopped

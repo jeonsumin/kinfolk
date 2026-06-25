@@ -1,3 +1,47 @@
+-- WORKSPACE definition
+
+CREATE TABLE `WORKSPACE` (
+                             `ID` varchar(255) NOT NULL,
+                             `WS_NM` varchar(255) DEFAULT NULL COMMENT '워크스페이스 이름',
+                             `WS_DESC` text DEFAULT NULL COMMENT '워크스페이스 설명',
+                             `WS_OWNER_ID` varchar(255) DEFAULT NULL COMMENT '워크스페이스 관리자',
+                             `REGIST_DT` timestamp NULL DEFAULT NULL COMMENT '생성일자',
+                             PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci COMMENT='워크스페이스';
+
+-- WORKSPACE_USER definition
+
+CREATE TABLE `WORKSPACE_USER` (
+                                  `ID` varchar(255) DEFAULT NULL,
+                                  `WS_ID` varchar(255) DEFAULT NULL COMMENT '워크스페이스 ID',
+                                  `USER_ID` varchar(255) DEFAULT NULL COMMENT '회원 ID',
+                                  `AUTHORITY` varchar(50) DEFAULT NULL COMMENT '권한',
+                                  `REGIST_DT` timestamp NULL DEFAULT NULL COMMENT '생성일자',
+                                  KEY `WORKSPACE_USER_WORKSPACE_FK` (`WS_ID`),
+                                  CONSTRAINT `WORKSPACE_USER_WORKSPACE_FK` FOREIGN KEY (`WS_ID`) REFERENCES `WORKSPACE` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci COMMENT='조직 회원 매핑';
+
+-- WORKSPACE_INVITATION definition
+
+CREATE TABLE `WORKSPACE_INVITATION` (
+  `INVITATION_ID`    varchar(255) NOT NULL,
+  `WS_ID`            varchar(255) NOT NULL                    COMMENT '워크스페이스 ID',
+  `INVITE_EMAIL`     varchar(255) DEFAULT NULL                COMMENT '초대 대상 이메일(링크 초대면 NULL)',
+  `INVITE_TOKEN`     varchar(255) NOT NULL                    COMMENT '초대 토큰(UUID)',
+  `AUTHORITY`        varchar(50)  NOT NULL DEFAULT 'MEMBER'   COMMENT '부여 권한(OWNER/MEMBER)',
+  `STATUS`           varchar(20)  NOT NULL DEFAULT 'PENDING'  COMMENT '상태(PENDING/ACCEPTED/EXPIRED/REVOKED)',
+  `EXPIRE_DT`        timestamp    NOT NULL                    COMMENT '만료일시(3일)',
+  `ACCEPTED_USER_ID` varchar(255) DEFAULT NULL                COMMENT '수락한 사용자 ID',
+  `ACCEPTED_DT`      timestamp    NULL DEFAULT NULL           COMMENT '수락일시',
+  `REGIST_DT`        timestamp    NULL DEFAULT NULL           COMMENT '생성일자',
+  `REGIST_ID`        varchar(255) DEFAULT NULL                COMMENT '초대자 ID',
+  PRIMARY KEY (`INVITATION_ID`),
+  UNIQUE KEY `uk_invitation_token` (`INVITE_TOKEN`),
+  KEY `idx_invitation_ws_id` (`WS_ID`),
+  KEY `idx_invitation_email` (`INVITE_EMAIL`),
+  CONSTRAINT `WORKSPACE_INVITATION_WORKSPACE_FK` FOREIGN KEY (`WS_ID`) REFERENCES `WORKSPACE` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci COMMENT='워크스페이스 초대';
+
 -- SWC_USER definition
 
 CREATE TABLE IF NOT EXISTS `SWC_USER`(

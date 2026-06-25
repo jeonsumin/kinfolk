@@ -52,4 +52,32 @@ public interface WorkspaceMapper {
      * @param workspaceId 워크스페이스 ID
      */
     List<WorkspaceMemberDTO> selectWorkspaceMembers(@Param("workspaceId") String workspaceId);
+
+    /**
+     * 6. 워크스페이스 OWNER 수 조회 (마지막 OWNER 보호용)
+     * @param workspaceId 워크스페이스 ID
+     */
+    int countOwners(@Param("workspaceId") String workspaceId);
+
+    /**
+     * 7. 워크스페이스 멤버 제거
+     * @param workspaceId 워크스페이스 ID
+     * @param userId      제거할 회원 ID
+     */
+    void deleteWorkspaceUser(
+            @Param("workspaceId") String workspaceId,
+            @Param("userId") String userId
+    );
+
+    /**
+     * 8. 워크스페이스 멤버 권한 변경
+     * @param workspaceId 워크스페이스 ID
+     * @param userId      대상 회원 ID
+     * @param authority   변경할 권한
+     */
+    void updateWorkspaceUserAuthority(
+            @Param("workspaceId") String workspaceId,
+            @Param("userId") String userId,
+            @Param("authority") WorkspaceAuthority authority
+    );
 }

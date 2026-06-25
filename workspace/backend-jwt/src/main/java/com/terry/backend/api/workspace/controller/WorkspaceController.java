@@ -1,6 +1,7 @@
 package com.terry.backend.api.workspace.controller;
 
 import com.terry.backend.api.workspace.dto.CreateWorkspaceRequest;
+import com.terry.backend.api.workspace.dto.UpdateMemberAuthorityRequest;
 import com.terry.backend.api.workspace.dto.WorkspaceDTO;
 import com.terry.backend.api.workspace.dto.WorkspaceMemberDTO;
 import com.terry.backend.api.workspace.service.WorkspaceService;
@@ -11,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,5 +55,22 @@ public class WorkspaceController extends ApiRestController {
     @Operation(summary = "워크스페이스 멤버 목록", description = "워크스페이스 멤버 목록을 반환한다. 현재 사용자가 멤버인지 검증한다.")
     public List<WorkspaceMemberDTO> getWorkspaceMembers(@PathVariable String workspaceId) throws Exception {
         return service.getWorkspaceMembers(workspaceId);
+    }
+
+    @DeleteMapping("/workspace/{workspaceId}/members/{memberId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "멤버 내보내기", description = "OWNER 전용. 워크스페이스에서 지정 멤버를 제거한다. 마지막 OWNER 삭제 불가.")
+    public void removeMember(@PathVariable String workspaceId, @PathVariable String memberId) throws Exception {
+        service.removeMember(workspaceId, memberId);
+    }
+
+    @PatchMapping("/workspace/{workspaceId}/members/{memberId}/authority")
+    @Operation(summary = "멤버 권한 변경", description = "OWNER 전용. 지정 멤버의 권한을 변경한다. 마지막 OWNER 강등 불가.")
+    public void updateMemberAuthority(
+            @PathVariable String workspaceId,
+            @PathVariable String memberId,
+            @Valid @RequestBody UpdateMemberAuthorityRequest request
+    ) throws Exception {
+        service.updateMemberAuthority(workspaceId, memberId, request.getAuthority());
     }
 }

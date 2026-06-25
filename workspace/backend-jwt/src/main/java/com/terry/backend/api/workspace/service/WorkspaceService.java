@@ -82,4 +82,49 @@ public class WorkspaceService {
         selectWorkspace(workspaceId);
         return mapper.selectWorkspaceMembers(workspaceId);
     }
+
+    /**
+     * 멤버 내보내기 — OWNER 전용. 마지막 OWNER 삭제 불가
+     */
+    @Transactional
+    public void removeMember(String workspaceId, String memberId) throws SystemException {
+        requireOwner(workspaceId);
+        WorkspaceDTO target = mapper.selectWorkspaceWithAuthority(workspaceId, memberId);
+        if (target == null) {
+            throw new SystemException(HttpStatus.NOT_FOUND, "해당 멤버를 찾을 수 없습니다.");
+        }
+        if (target.getAuthority() == WorkspaceAuthority.OWNER && mapper.countOwners(workspaceId) <= 1) {
+            throw new SystemException(HttpStatus.CONFLICT, "마지막 OWNER는 삭제할 수 없습니다.");
+        }
+        mapper.deleteWorkspaceUser(workspaceId, memberId);
+    }
+
+    /**
+     * 멤버 권한 변경 — OWNER 전용. 마지막 OWNER 강등 불가
+     */
+    @Transactional
+    public void updateMemberAuthority(String workspaceId, String memberId, WorkspaceAuthority authority) throws SystemException {
+        requireOwner(workspaceId);
+        WorkspaceDTO target = mapper.selectWorkspaceWithAuthority(workspaceId, memberId);
+        if (target == null) {
+            throw new SystemException(HttpStatus.NOT_FOUND, "해당 멤버를 찾을 수 없습니다.");
+        }
+        if (authority == WorkspaceAuthority.MEMBER
+                && target.getAuthority() == WorkspaceAuthority.OWNER
+                && mapper.countOwners(workspaceId) <= 1) {
+            throw new SystemException(HttpStatus.CONFLICT, "마지막 OWNER는 강등할 수 없습니다.");
+        }
+        mapper.updateWorkspaceUserAuthority(workspaceId, memberId, authority);
+    }
+
+    /**
+     * 현재 사용자가 OWNER인지 검증. 아니면 403 throw.
+     */
+    public void requireOwner(String workspaceId) throws SystemException {
+        String userId = SessionUtils.getUserId();
+        WorkspaceDTO ws = mapper.selectWorkspaceWithAuthority(workspaceId, userId);
+        if (ws == null || ws.getAuthority() != WorkspaceAuthority.OWNER) {
+            throw new SystemException(HttpStatus.FORBIDDEN, "OWNER 권한이 필요합니다.");
+        }
+    }
 }

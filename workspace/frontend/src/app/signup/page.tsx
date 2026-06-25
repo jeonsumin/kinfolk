@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ApiError, signup } from "@/shared/api";
 import {
   Button,
@@ -15,8 +15,11 @@ import {
   Label,
 } from "@/shared/ui";
 
-export default function SignupPage() {
+function SignupContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") ?? "";
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -30,12 +33,19 @@ export default function SignupPage() {
 
     try {
       await signup({ username: username.trim(), password, name: name.trim() });
-      router.replace("/login?registered=1");
+      const redirect = callbackUrl
+        ? `/login?registered=1&callbackUrl=${encodeURIComponent(callbackUrl)}`
+        : "/login?registered=1";
+      router.replace(redirect);
     } catch (error) {
       setError(error instanceof ApiError ? error.messages : "회원가입에 실패했습니다.");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGoLogin = () => {
+    router.push(callbackUrl ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/login");
   };
 
   return (
@@ -80,7 +90,7 @@ export default function SignupPage() {
             </Button>
             <p className="text-center text-xs text-muted-foreground">
               이미 계정이 있으신가요?{" "}
-              <Button type="button" variant="link" size="xs" className="px-0 h-auto text-xs" onClick={() => router.push("/login")}>
+              <Button type="button" variant="link" size="xs" className="px-0 h-auto text-xs" onClick={handleGoLogin}>
                 로그인
               </Button>
             </p>
@@ -88,5 +98,13 @@ export default function SignupPage() {
         </Card>
       </form>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense>
+      <SignupContent />
+    </Suspense>
   );
 }

@@ -61,7 +61,9 @@ function LoginContent() {
       const workspaces = wsRes.data;
 
       if (!workspaces || workspaces.length === 0) {
-        router.push("/onboarding/workspace");
+        // 초대 링크로 진입한 신규 사용자 → 온보딩 대신 초대 페이지로
+        const cb = searchParams.get("callbackUrl");
+        router.push(cb && cb !== "/" ? cb : "/onboarding/workspace");
       } else {
         const mapped = workspaces.map((ws) => ({ id: ws.id, name: ws.wsNm }));
         setWorkspaces(mapped);
@@ -174,7 +176,10 @@ function LoginContent() {
 
         <p className="text-center text-xs text-muted-foreground">
           계정이 없으신가요?{" "}
-          <Button variant="link" size="xs" className="px-0 h-auto text-xs" onClick={() => router.push("/signup")}>
+          <Button variant="link" size="xs" className="px-0 h-auto text-xs" onClick={() => {
+              const cb = searchParams.get("callbackUrl");
+              router.push(cb ? `/signup?callbackUrl=${encodeURIComponent(cb)}` : "/signup");
+            }}>
             회원가입
           </Button>
         </p>

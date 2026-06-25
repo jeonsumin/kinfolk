@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.terry.backend.api.workspace.mapper.WorkspaceInvitationMapper">
+
+    <resultMap id="InvitationResult" type="com.terry.backend.api.workspace.dto.WorkspaceInvitationDTO">
+        <id     property="invitationId"   column="INVITATION_ID"/>
+        <result property="wsId"           column="WS_ID"/>
+        <result property="wsNm"           column="WS_NM"/>
+        <result property="inviteEmail"    column="INVITE_EMAIL"/>
+        <result property="inviteToken"    column="INVITE_TOKEN"/>
+        <result property="authority"      column="AUTHORITY"/>
+        <result property="status"         column="STATUS"/>
+        <result property="expireDt"       column="EXPIRE_DT"/>
+        <result property="acceptedUserId" column="ACCEPTED_USER_ID"/>
+        <result property="acceptedDt"     column="ACCEPTED_DT"/>
+        <result property="registDt"       column="REGIST_DT"/>
+        <result property="registId"       column="REGIST_ID"/>
+        <result property="inviterName"    column="INVITER_NM"/>
+    </resultMap>
+
+    <insert id="insertInvitation">
+        INSERT INTO WORKSPACE_INVITATION ( INVITATION_ID
+                                         , WS_ID
+                                         , INVITE_EMAIL
+                                         , INVITE_TOKEN
+                                         , AUTHORITY
+                                         , STATUS
+                                         , EXPIRE_DT
+                                         , REGIST_DT
+                                         , REGIST_ID)
+        VALUES ( #{invitationId,  jdbcType=VARCHAR}
+               , #{wsId,          jdbcType=VARCHAR}
+               , #{inviteEmail,   jdbcType=VARCHAR}
+               , #{inviteToken,   jdbcType=VARCHAR}
+               , #{authority,     jdbcType=VARCHAR}
+               , #{status,        jdbcType=VARCHAR}
+               , #{expireDt,      jdbcType=TIMESTAMP}
+               , NOW()
+               , #{registId,      jdbcType=VARCHAR})
+    </insert>
+
+    <select id="selectInvitationsByWsId" resultMap="InvitationResult">
+        SELECT I.INVITATION_ID
+             , I.WS_ID
+             , NULL           AS WS_NM
+             , I.INVITE_EMAIL
+             , I.INVITE_TOKEN
+             , I.AUTHORITY
+             , I.STATUS
+             , I.EXPIRE_DT
+             , I.ACCEPTED_USER_ID
+             , I.ACCEPTED_DT
+             , I.REGIST_DT
+             , I.REGIST_ID
+             , NULL           AS INVITER_NM
+        FROM WORKSPACE_INVITATION I
+        WHERE I.WS_ID = #{wsId, jdbcType=VARCHAR}
+        ORDER BY I.REGIST_DT DESC
+    </select>
+
+    <select id="selectInvitationByToken" resultMap="InvitationResult">
+        SELECT I.INVITATION_ID
+             , I.WS_ID
+             , W.WS_NM
+             , I.INVITE_EMAIL
+             , I.INVITE_TOKEN
+             , I.AUTHORITY
+             , I.STATUS
+             , I.EXPIRE_DT
+             , I.ACCEPTED_USER_ID
+             , I.ACCEPTED_DT
+             , I.REGIST_DT
+             , I.REGIST_ID
+             , U.USER_NM      AS INVITER_NM
+        FROM WORKSPACE_INVITATION I
+                 INNER JOIN WORKSPACE W ON W.ID = I.WS_ID
+                 LEFT  JOIN SWC_USER  U ON U.USER_ID = I.REGIST_ID
+        WHERE I.INVITE_TOKEN = #{token, jdbcType=VARCHAR}
+    </select>
+
+    <update id="updateInvitationStatus">
+        UPDATE WORKSPACE_INVITATION
+        SET STATUS = #{status, jdbcType=VARCHAR}
+        WHERE INVITATION_ID = #{invitationId, jdbcType=VARCHAR}
+    </update>
+
+    <update id="acceptInvitation">
+        UPDATE WORKSPACE_INVITATION
+        SET STATUS           = 'ACCEPTED'
+          , ACCEPTED_USER_ID = #{userId,       jdbcType=VARCHAR}
+          , ACCEPTED_DT      = NOW()
+        WHERE INVITATION_ID  = #{invitationId, jdbcType=VARCHAR}
+    </update>
+
+    <update id="expirePendingInvitations">
+        UPDATE WORKSPACE_INVITATION
+        <![CDATA[
+        SET STATUS = 'EXPIRED'
+        WHERE WS_ID    = #{wsId, jdbcType=VARCHAR}
+          AND STATUS   = 'PENDING'
+          AND EXPIRE_DT < NOW()
+        ]]>
+    </update>
+
+    <select id="existsWorkspaceUser" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM WORKSPACE_USER
+        WHERE WS_ID   = #{wsId,   jdbcType=VARCHAR}
+          AND USER_ID = #{userId, jdbcType=VARCHAR}
+    </select>
+
+</mapper>

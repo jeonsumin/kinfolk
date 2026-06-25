@@ -1,15 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ChevronRight } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { LogOut, Settings, UserRound } from "lucide-react";
+import { signOut } from "next-auth/react";
 import { cn } from "@/shared/utils/index";
 import { SIDEBAR_NAV } from "@/shared/config";
 import { useAuthStore } from "@/stores/auth-store";
+import { logout } from "@/shared/api";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { currentWorkspace, userName } = useAuthStore();
+  const initial = userName ? userName.charAt(0) : "K";
+
+  const handleLogout = async () => {
+    await logout();
+    await signOut({ redirect: false });
+    router.push("/login");
+  };
 
   return (
     <aside className="hidden lg:flex w-56 shrink-0 flex-col h-full bg-sidebar text-sidebar-foreground">
@@ -46,27 +56,40 @@ export function Sidebar() {
       </nav>
 
       {/* Profile / Workspace switcher */}
-      <div className="px-3 py-3 border-t border-sidebar-border">
-        <Link
-          href="/workspaces"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-sidebar-accent/60 transition-colors group"
-        >
-          <div className="w-8 h-8 rounded-full bg-sidebar-primary flex items-center justify-center shrink-0 text-xs font-bold text-sidebar-primary-foreground">
-            {userName ? userName.charAt(0) : "K"}
+      <div className="relative px-3 py-3 border-t border-sidebar-border">
+        <details className="group">
+          <summary className="flex cursor-pointer list-none items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-sidebar-accent/60 [&::-webkit-details-marker]:hidden">
+            <div className="w-8 h-8 rounded-full bg-sidebar-primary flex items-center justify-center shrink-0 text-xs font-bold text-sidebar-primary-foreground">
+              {initial}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-sidebar-foreground truncate leading-snug">
+                {currentWorkspace?.name ?? "워크스페이스"}
+              </p>
+              <p className="text-[11px] text-sidebar-foreground/50 truncate leading-snug">
+                {userName || "프로필 설정하기"}
+              </p>
+            </div>
+            <UserRound size={14} className="text-sidebar-foreground/40 shrink-0" />
+          </summary>
+          <div className="absolute bottom-[68px] left-3 right-3 z-20 overflow-hidden rounded-lg border border-sidebar-border bg-sidebar shadow-xl">
+            <Link
+              href="/settings"
+              className="flex items-center gap-2 px-3 py-2 text-xs text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent"
+            >
+              <Settings size={14} />
+              설정
+            </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent"
+            >
+              <LogOut size={14} />
+              로그아웃
+            </button>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-sidebar-foreground truncate leading-snug">
-              {currentWorkspace?.name ?? "워크스페이스"}
-            </p>
-            <p className="text-[11px] text-sidebar-foreground/50 truncate leading-snug">
-              {userName || "프로필 설정하기"}
-            </p>
-          </div>
-          <ChevronRight
-            size={14}
-            className="text-sidebar-foreground/30 group-hover:text-sidebar-foreground/60 transition-colors shrink-0"
-          />
-        </Link>
+        </details>
       </div>
     </aside>
   );

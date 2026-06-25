@@ -81,4 +81,25 @@
         ORDER BY WU.REGIST_DT ASC
     </select>
 
+    <select id="countOwners" resultType="int">
+        SELECT COUNT(1)
+        FROM WORKSPACE_USER
+        WHERE WS_ID    = #{workspaceId, jdbcType=VARCHAR}
+          AND AUTHORITY = 'OWNER'
+    </select>
+
+    <delete id="deleteWorkspaceUser">
+        DELETE FROM WORKSPACE_USER
+        WHERE WS_ID   = #{workspaceId, jdbcType=VARCHAR}
+          AND USER_ID = #{userId,       jdbcType=VARCHAR}
+    </delete>
+
+    <update id="updateWorkspaceUserAuthority">
+        UPDATE WORKSPACE_USER
+        SET AUTHORITY = #{authority, jdbcType=VARCHAR}
+          , UPDT_DT  = NOW()
+        WHERE WS_ID   = #{workspaceId, jdbcType=VARCHAR}
+          AND USER_ID = #{userId,       jdbcType=VARCHAR}
+    </update>
+
 </mapper>

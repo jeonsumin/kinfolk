@@ -1,10 +1,6 @@
 import {
   LayoutDashboard,
-  Users,
-  CalendarPlus,
   Images,
-  TreePine,
-  Share2,
   Settings,
   ClipboardList,
   Home,
@@ -17,6 +13,7 @@ export const SIDEBAR_NAV = [
   { href: "/calendar", label: "캘린더", icon: Calendar },
   { href: "/planner", label: "플래너", icon: ClipboardList },
   { href: "/shopping", label: "장보기", icon: ShoppingCart },
+  { href: "/settings", label: "설정", icon: Settings },
 ] as const;
 
 export const BOTTOM_NAV = [

@@ -31,6 +31,9 @@ logging:
   level:
     org.springframework: info
 
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:3000}
+
 mail:
   fromMail: abc@gmail.com
   password: 123

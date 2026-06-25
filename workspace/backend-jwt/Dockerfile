@@ -6,7 +6,7 @@ COPY pom.xml ./
 RUN mvn dependency:go-offline
 
 COPY src ./src
-RUN mvn -DskipTests package && cp ../deploy/swc/swc.jar ./application.jar
+RUN mvn -DskipTests package && cp target/swc.jar ./application.jar
 
 FROM eclipse-temurin:17-jre
 

@@ -144,7 +144,9 @@ public class AdminMemberService {
         /**
          * 이메일 중복 확인
          */
-        checkEmail(entity.getEmail());
+        if (StringUtils.hasText(entity.getEmail())) {
+            checkEmail(entity.getEmail());
+        }
 
         /**
          * 패스워드 암호화 처리

@@ -67,7 +67,14 @@
 | # | 작업 | 담당 | 상태 | 비고 |
 |---|------|------|------|------|
 | D-1 | 대시보드 페이지 퍼블리싱 | publisher | ✅ 완료 | `src/app/page.tsx` 전면 재구성 |
-| D-2 | 대시보드 API 연동 | frontend | 🚫 미착수 | shopping 완료 후 검토 |
+| D-2 | 대시보드 API 연동 (frontend 전용, 기존 API만) | frontend | ✅ 완료 | PM 검증: 하위 전부 완료 |
+| D-2-1 | page.tsx client 전환 + 로딩 스캐폴드(workspace 가드) | frontend | ✅ 완료 | `"use client"`, Promise.all 5병렬, Skeleton |
+| D-2-2 | 인사말/요일 | frontend | ✅ 완료 | store userName + client date (hydration 가드) |
+| D-2-3 | 가족 아바타 (getWorkspaceMembers) | frontend | ✅ 완료 | 최대 4명 + "+N" |
+| D-2-4 | 오늘의 일정 (getDayEvents) | frontend | ✅ 완료 | 진행중 활성표시, 종일/시간 구분 |
+| D-2-5 | 장보기 (getShoppingList, 미완료 상위 3) | frontend | ✅ 완료 | label←itemNm, done←isChecked |
+| D-2-6 | 다가오는 일정 (getMonthEvents 미래 필터) | frontend | ✅ 완료 | 이번달+다음달 미래 이벤트 상위 3 |
+| D-2-7 | 스킵 항목(날씨/목표/사진) 정적 유지 | frontend | ✅ 완료 | placeholder 보존 확인 |
 
 ---
 
@@ -129,4 +136,4 @@
 
 ## 현재 블로커
 
-1. **D-2 미착수** — 대시보드 API 연동 (A~C 완료됨, D로 이동 가능)
+- **없음.** 1차 범위 기능 전부 완료(A~H + 로그인 버그). F-2/F-3(Google OAuth·회원가입)은 2차 분리.

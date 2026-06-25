@@ -1,18 +1,18 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import {
+  CalendarDays,
   Clock,
   MapPin,
-  Utensils,
   ShoppingCart,
   Heart,
-  Cake,
-  PartyPopper,
   Target,
   Send,
   Camera,
   CloudSun,
   Plus,
   Images,
-  Goal,
 } from "lucide-react";
 import { TopBar } from "@/shared/ui/top-bar";
 import {
@@ -28,58 +28,38 @@ import {
   Progress,
   ProgressLabel,
   ProgressValue,
+  Skeleton,
 } from "@/shared/ui";
-import { MEMBERS, EXTRA_MEMBER_COUNT } from "@/shared/config";
+import {
+  getWorkspaceMembers,
+  getDayEvents,
+  getShoppingList,
+  getMonthEvents,
+  type WorkspaceMemberDTO,
+  type CalendarEventDTO,
+  type ShoppingItemDTO,
+} from "@/shared/api";
+import { useAuthStore } from "@/stores/auth-store";
 import { cn } from "@/shared/utils";
 
-/* ── Mock data (UI 전용 — 비즈니스 로직은 frontend-agent 위임) ── */
-type TagColor = "green" | "slate" | "amber";
-
-const TIMELINE = [
-  {
-    time: "08:00",
-    title: "등교 도와주기",
-    place: "링컨 초등학교",
-    placeIcon: MapPin,
-    tag: "아이들",
-    tagColor: "green" as TagColor,
-    accent: "#516072",
-    active: false,
-  },
-  {
-    time: "12:30",
-    title: "할머니와 점심 식사",
-    place: "더 코지 스푼",
-    placeIcon: Utensils,
-    tag: "가족",
-    tagColor: "slate" as TagColor,
-    accent: "#475569",
-    active: false,
-  },
-  {
-    time: "15:00",
-    title: "축구 연습",
-    place: "서쪽 경기장",
-    placeIcon: Goal,
-    tag: "취미",
-    tagColor: "amber" as TagColor,
-    accent: "#303e51",
-    active: true,
-  },
+/* ── 상수 ── */
+const MEMBER_PALETTE = [
+  { bg: "#d2e1f7", text: "#516072" },
+  { bg: "#ead6f0", text: "#7c4d8a" },
+  { bg: "#d1f5e4", text: "#2e7d5a" },
+  { bg: "#fdf0d0", text: "#8a6800" },
 ];
+
+const EVENT_COLORS: Record<string, { chip: "blue" | "green" | "slate" | "amber"; accent: string }> = {
+  blue:    { chip: "blue",   accent: "#516072" },
+  green:   { chip: "green",  accent: "#2e7d5a" },
+  mauve:   { chip: "slate",  accent: "#475569" },
+  neutral: { chip: "amber",  accent: "#8a6800" },
+};
+
+const DAYS_KO = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
 
 const QUICK_TAGS = ["🥕 장보기", "🧼 집안일", "🎉 기념일"];
-
-const SHOPPING = [
-  { label: "우유 사기", done: false },
-  { label: "사과 5개", done: false },
-  { label: "세제", done: false },
-];
-
-const UPCOMING = [
-  { icon: Cake, title: "미아의 8번째 생일", meta: "3일 남음 • 10월 27일" },
-  { icon: PartyPopper, title: "부모님 결혼기념일", meta: "12일 남음 • 11월 5일" },
-];
 
 const CHORES = [
   { label: "주방 청소하기", value: 80 },
@@ -87,30 +67,129 @@ const CHORES = [
 ];
 
 const PHOTOS = [
-  { title: "밀러 호수 소풍", date: "2024.10.20", gradient: "from-[#b9c7df] to-[#475569]" },
-  { title: "주말 아침 식사", date: "2024.10.19", gradient: "from-[#d4e4fa] to-[#516072]" },
-  { title: "미아의 그림 교실", date: "2024.10.15", gradient: "from-[#bbcae1] to-[#343e47]" },
-  { title: "공원 산책", date: "2024.10.12", gradient: "from-[#c4d4ec] to-[#303e51]" },
+  { title: "밀러 호수 소풍",    date: "2024.10.20", gradient: "from-[#b9c7df] to-[#475569]" },
+  { title: "주말 아침 식사",    date: "2024.10.19", gradient: "from-[#d4e4fa] to-[#516072]" },
+  { title: "미아의 그림 교실",  date: "2024.10.15", gradient: "from-[#bbcae1] to-[#343e47]" },
+  { title: "공원 산책",         date: "2024.10.12", gradient: "from-[#c4d4ec] to-[#303e51]" },
 ];
 
+/* ── 헬퍼 ── */
+function extractTime(dtStr: string): string {
+  const m = dtStr.match(/[T ](\d{2}:\d{2})/);
+  return m ? m[1] : "";
+}
+
+function isEventNow(event: CalendarEventDTO): boolean {
+  const now = Date.now();
+  const start = new Date(event.startDt.replace(" ", "T")).getTime();
+  const end   = new Date(event.endDt.replace(" ", "T")).getTime();
+  return start <= now && now <= end;
+}
+
+function formatUpcomingMeta(startDt: string): string {
+  const eventDate = new Date(startDt.slice(0, 10) + "T00:00:00");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffDays = Math.round((eventDate.getTime() - today.getTime()) / 86400000);
+  const month = eventDate.getMonth() + 1;
+  const day   = eventDate.getDate();
+  if (diffDays === 0) return `오늘 • ${month}월 ${day}일`;
+  if (diffDays === 1) return `내일 • ${month}월 ${day}일`;
+  return `${diffDays}일 남음 • ${month}월 ${day}일`;
+}
+
+/* ── Page ── */
 export default function DashboardPage() {
+  const { currentWorkspace, userName, profile } = useAuthStore();
+  const displayName = profile?.name ?? userName;
+
+  // 클라이언트에서만 시간 기반 인사말 계산 (hydration mismatch 방지)
+  const [greeting, setGreeting] = useState("안녕하세요");
+  const [dayLabel, setDayLabel]  = useState("");
+  useEffect(() => {
+    const now  = new Date();
+    const hour = now.getHours();
+    setGreeting(hour < 12 ? "좋은 아침이에요" : hour < 17 ? "좋은 오후예요" : "좋은 저녁이에요");
+    setDayLabel(DAYS_KO[now.getDay()] + "입니다.");
+  }, []);
+
+  const [members,        setMembers]        = useState<WorkspaceMemberDTO[]>([]);
+  const [todayEvents,    setTodayEvents]    = useState<CalendarEventDTO[]>([]);
+  const [shoppingItems,  setShoppingItems]  = useState<ShoppingItemDTO[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<CalendarEventDTO[]>([]);
+  const [isLoading,      setIsLoading]      = useState(true);
+
+  useEffect(() => {
+    if (!currentWorkspace) { setIsLoading(false); return; }
+    const wsId = currentWorkspace.id;
+    let cancelled = false;
+    setIsLoading(true);
+
+    const today     = new Date();
+    const year      = today.getFullYear();
+    const month     = today.getMonth() + 1;
+    const nextMonth = month === 12 ? 1 : month + 1;
+    const nextYear  = month === 12 ? year + 1 : year;
+    const todayStr  = today.toISOString().slice(0, 10);
+
+    Promise.all([
+      getWorkspaceMembers(wsId),
+      getDayEvents(wsId, today),
+      getShoppingList(wsId),
+      getMonthEvents(wsId, year, month),
+      getMonthEvents(wsId, nextYear, nextMonth),
+    ])
+      .then(([membersRes, dayRes, shoppingRes, thisMonthRes, nextMonthRes]) => {
+        if (cancelled) return;
+
+        setMembers(membersRes.data ?? []);
+        setTodayEvents(dayRes.data ?? []);
+
+        const allItems = (shoppingRes.data ?? []).flatMap((cat) => cat.items ?? []);
+        const unchecked = allItems.filter((i) => !i.isChecked);
+        setShoppingItems(unchecked.slice(0, 3));
+
+        const allMonthEvents = [
+          ...(thisMonthRes.data ?? []),
+          ...(nextMonthRes.data ?? []),
+        ];
+        const upcoming = allMonthEvents
+          .filter((e) => e.startDt.slice(0, 10) > todayStr)
+          .sort((a, b) => a.startDt.localeCompare(b.startDt))
+          .slice(0, 3);
+        setUpcomingEvents(upcoming);
+      })
+      .catch(() => {
+        // 에러 발생 시 빈 상태 유지
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [currentWorkspace?.id]);
+
+  const visibleMembers = members.slice(0, 4);
+  const extraCount     = Math.max(0, members.length - 4);
+
   return (
     <div className="flex flex-col flex-1 h-full overflow-hidden">
       <TopBar />
 
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-5xl mx-auto px-4 lg:px-6 py-5 lg:py-6">
+
           {/* ── Welcome header ── */}
           <header className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div className="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="space-y-1">
                 <h2 className="text-2xl lg:text-[32px] font-semibold text-foreground tracking-tight leading-tight">
-                  좋은 아침이에요, 이주님!
+                  {greeting}{displayName ? `, ${displayName}님!` : "!"}
                 </h2>
-                <p className="text-sm text-muted-foreground">화요일입니다.</p>
+                <p className="text-sm text-muted-foreground">{dayLabel}</p>
               </div>
 
-              {/* Weather */}
+              {/* Weather — D-2-7 정적 유지 */}
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1">
                   <CloudSun size={26} className="text-primary" strokeWidth={1.8} />
@@ -126,25 +205,37 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Family avatars */}
-            <AvatarGroup>
-              {MEMBERS.map((m) => (
-                <Avatar key={m.name} size="lg">
-                  <AvatarFallback
-                    className="text-sm font-semibold text-white"
-                    style={{ backgroundColor: m.color }}
-                  >
-                    {m.initials}
-                  </AvatarFallback>
-                </Avatar>
-              ))}
-              <AvatarGroupCount>+{EXTRA_MEMBER_COUNT}</AvatarGroupCount>
-            </AvatarGroup>
+            {/* D-2-3 멤버 아바타 */}
+            {isLoading ? (
+              <div className="flex gap-1">
+                {[0, 1, 2].map((i) => (
+                  <Skeleton key={i} className="size-10 rounded-full" />
+                ))}
+              </div>
+            ) : (
+              <AvatarGroup>
+                {visibleMembers.map((m, idx) => (
+                  <Avatar key={m.memberId} size="lg">
+                    <AvatarFallback
+                      className="text-sm font-semibold"
+                      style={{
+                        backgroundColor: MEMBER_PALETTE[idx % MEMBER_PALETTE.length].bg,
+                        color:           MEMBER_PALETTE[idx % MEMBER_PALETTE.length].text,
+                      }}
+                    >
+                      {m.name.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                ))}
+                {extraCount > 0 && <AvatarGroupCount>+{extraCount}</AvatarGroupCount>}
+              </AvatarGroup>
+            )}
           </header>
 
           {/* ── Bento grid ── */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-            {/* Today timeline */}
+
+            {/* D-2-4 오늘의 일정 */}
             <section className="lg:col-span-8 bg-card rounded-xl p-5 lg:p-6 border border-border shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
@@ -157,67 +248,85 @@ export default function DashboardPage() {
               </div>
 
               <div className="relative space-y-5">
-                {/* Vertical line */}
                 <div className="absolute left-6 top-2 bottom-2 w-px border-l border-dashed border-border" />
 
-                {TIMELINE.map((event) => {
-                  const PlaceIcon = event.placeIcon;
-                  return (
-                    <div key={event.title} className="flex gap-4 relative z-10">
-                      <div className="w-12 flex flex-col items-center shrink-0">
-                        <span
-                          className={cn(
-                            "text-xs font-bold mb-1",
-                            event.active ? "text-primary" : "text-muted-foreground"
-                          )}
-                        >
-                          {event.time}
-                        </span>
-                        <span
-                          className="w-4 h-4 rounded-full ring-4 ring-card"
-                          style={{ backgroundColor: event.accent }}
-                        />
-                      </div>
-
-                      <div
-                        className={cn(
-                          "flex-1 rounded-xl p-4 border-l-4 transition-shadow cursor-pointer",
-                          event.active
-                            ? "bg-card ring-1 ring-border shadow-md"
-                            : "bg-muted/50"
-                        )}
-                        style={{ borderLeftColor: event.accent }}
-                      >
-                        <div className="flex justify-between items-start gap-2">
-                          <div>
-                            {event.active && (
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                                <span className="text-[10px] font-bold text-primary uppercase">
-                                  지금 진행 중
-                                </span>
-                              </div>
+                {isLoading ? (
+                  <div className="space-y-4 ml-16">
+                    {[0, 1, 2].map((i) => (
+                      <Skeleton key={i} className="h-16 rounded-xl" />
+                    ))}
+                  </div>
+                ) : todayEvents.length === 0 ? (
+                  <p className="text-center text-sm text-muted-foreground py-8 ml-16">
+                    오늘 일정이 없습니다.
+                  </p>
+                ) : (
+                  todayEvents.map((event) => {
+                    const colorInfo = EVENT_COLORS[event.color] ?? EVENT_COLORS.neutral;
+                    const active    = isEventNow(event);
+                    const time      = event.isAllDay === 1 ? "종일" : extractTime(event.startDt);
+                    return (
+                      <div key={event.id} className="flex gap-4 relative z-10">
+                        <div className="w-12 flex flex-col items-center shrink-0">
+                          <span
+                            className={cn(
+                              "text-xs font-bold mb-1",
+                              active ? "text-primary" : "text-muted-foreground"
                             )}
-                            <h4 className="font-bold text-foreground">{event.title}</h4>
-                            <p className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5">
-                              <PlaceIcon size={14} strokeWidth={1.8} />
-                              {event.place}
-                            </p>
+                          >
+                            {time}
+                          </span>
+                          <span
+                            className="w-4 h-4 rounded-full ring-4 ring-card"
+                            style={{ backgroundColor: colorInfo.accent }}
+                          />
+                        </div>
+
+                        <div
+                          className={cn(
+                            "flex-1 rounded-xl p-4 border-l-4 transition-shadow cursor-pointer",
+                            active ? "bg-card ring-1 ring-border shadow-md" : "bg-muted/50"
+                          )}
+                          style={{ borderLeftColor: colorInfo.accent }}
+                        >
+                          <div className="flex justify-between items-start gap-2">
+                            <div>
+                              {active && (
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                                  <span className="text-[10px] font-bold text-primary uppercase">
+                                    지금 진행 중
+                                  </span>
+                                </div>
+                              )}
+                              <h4 className="font-bold text-foreground">{event.title}</h4>
+                              {event.location && (
+                                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5">
+                                  <MapPin size={14} strokeWidth={1.8} />
+                                  {event.location}
+                                </p>
+                              )}
+                            </div>
+                            <Chip
+                              color={colorInfo.chip}
+                              size="sm"
+                              className="font-extrabold uppercase tracking-wider shrink-0"
+                            >
+                              일정
+                            </Chip>
                           </div>
-                          <Chip color={event.tagColor} size="sm" className="font-extrabold uppercase tracking-wider shrink-0">
-                            {event.tag}
-                          </Chip>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
             </section>
 
             {/* Right widgets */}
             <div className="lg:col-span-4 flex flex-col gap-5">
-              {/* Quick add */}
+
+              {/* 빠른 추가 — 정적 유지 */}
               <section className="bg-primary text-primary-foreground rounded-xl p-5 shadow-sm flex flex-col gap-4">
                 <h3 className="text-lg font-semibold">빠른 추가</h3>
                 <div className="space-y-3">
@@ -247,53 +356,82 @@ export default function DashboardPage() {
                 </div>
               </section>
 
-              {/* Shopping list */}
+              {/* D-2-5 장보기 리스트 */}
               <section className="bg-card rounded-xl p-5 border border-border shadow-sm">
                 <div className="flex items-center gap-2 mb-4">
                   <ShoppingCart size={18} className="text-muted-foreground" strokeWidth={1.8} />
                   <h3 className="font-bold text-foreground">장보기 리스트</h3>
                 </div>
                 <div className="space-y-3">
-                  {SHOPPING.map((item) => (
-                    <label key={item.label} className="flex items-center gap-3 cursor-pointer">
-                      <Checkbox defaultChecked={item.done} />
-                      <span className="text-sm text-foreground">{item.label}</span>
-                    </label>
-                  ))}
+                  {isLoading ? (
+                    [0, 1, 2].map((i) => <Skeleton key={i} className="h-5 rounded" />)
+                  ) : shoppingItems.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-2">
+                      항목이 없습니다.
+                    </p>
+                  ) : (
+                    shoppingItems.map((item) => (
+                      <label key={item.itemId} className="flex items-center gap-3 cursor-pointer">
+                        <Checkbox
+                          checked={item.isChecked}
+                          onCheckedChange={() => {}}
+                        />
+                        <span
+                          className={cn(
+                            "text-sm text-foreground",
+                            item.isChecked && "line-through text-muted-foreground"
+                          )}
+                        >
+                          {item.itemNm}
+                        </span>
+                      </label>
+                    ))
+                  )}
                 </div>
-                <Button variant="ghost" className="w-full mt-4 bg-muted/60 hover:bg-muted text-primary font-bold">
+                <Button
+                  variant="ghost"
+                  className="w-full mt-4 bg-muted/60 hover:bg-muted text-primary font-bold"
+                >
                   전체 보기
                 </Button>
               </section>
 
-              {/* Upcoming events */}
+              {/* D-2-6 다가오는 일정 */}
               <section className="bg-card rounded-xl p-5 border border-border shadow-sm">
                 <div className="flex items-center gap-2 mb-4">
                   <Heart size={18} className="text-muted-foreground" strokeWidth={1.8} />
                   <h3 className="font-bold text-foreground">다가오는 일정</h3>
                 </div>
                 <div className="space-y-4">
-                  {UPCOMING.map((event) => {
-                    const Icon = event.icon;
-                    return (
-                      <div key={event.title} className="flex items-center gap-4 group cursor-pointer">
+                  {isLoading ? (
+                    [0, 1].map((i) => <Skeleton key={i} className="h-12 rounded" />)
+                  ) : upcomingEvents.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">다가오는 일정이 없습니다.</p>
+                  ) : (
+                    upcomingEvents.map((event) => (
+                      <div key={event.id} className="flex items-center gap-4 group cursor-pointer">
                         <div className="w-12 h-12 bg-muted text-muted-foreground rounded-lg flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                          <Icon size={22} strokeWidth={1.8} />
+                          <CalendarDays size={22} strokeWidth={1.8} />
                         </div>
                         <div>
                           <h4 className="font-bold text-sm text-foreground">{event.title}</h4>
-                          <p className="text-xs text-muted-foreground">{event.meta}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatUpcomingMeta(event.startDt)}
+                          </p>
                         </div>
                       </div>
-                    );
-                  })}
+                    ))
+                  )}
                 </div>
-                <Button variant="ghost" className="w-full mt-6 bg-muted/60 hover:bg-muted text-primary font-bold">
+                <Button
+                  variant="ghost"
+                  className="w-full mt-6 bg-muted/60 hover:bg-muted text-primary font-bold"
+                >
                   메모리 박스 열기
                 </Button>
               </section>
 
-              {/* Chores progress */}
+              {/* 가족 공동 목표 — D-2-7 정적 유지 */}
               <section className="bg-muted/50 rounded-xl p-5 border border-border">
                 <h3 className="font-bold text-foreground mb-2 flex items-center gap-2">
                   <Target size={18} className="text-muted-foreground" strokeWidth={1.8} />
@@ -313,7 +451,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* ── Family photo panorama ── */}
+          {/* 가족 사진 공유 — D-2-7 정적 유지 */}
           <section className="mt-5 bg-card rounded-xl p-5 lg:p-6 border border-border shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
@@ -337,8 +475,6 @@ export default function DashboardPage() {
                   <div className={cn("h-full w-full bg-gradient-to-br", photo.gradient)} />
                 </ImageOverlayCard>
               ))}
-
-              {/* Add photo */}
               <button className="w-48 shrink-0 snap-start aspect-[3/2] rounded-xl bg-muted border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:bg-accent transition-colors">
                 <Camera size={32} strokeWidth={1.6} className="mb-2" />
                 <span className="text-sm font-bold">사진 추가</span>

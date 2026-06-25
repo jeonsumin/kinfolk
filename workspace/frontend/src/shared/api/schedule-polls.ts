@@ -19,6 +19,7 @@ export interface SchedulePollDTO {
 
 export interface CreateSchedulePollRequest {
   workspaceId: string;
+  plannerId: string;
   title: string;
   candidates: SchedulePollCandidateRequest[];
 }
@@ -36,13 +37,13 @@ export interface SchedulePollVoteSummaryDTO {
 
 const BASE = "/api/v1.0/schedule-polls";
 
-export async function getSchedulePolls(workspaceId: string): Promise<SchedulePollDTO[]> {
-  const res = await apiFetch<SchedulePollDTO[]>(`${BASE}?workspaceId=${encodeURIComponent(workspaceId)}`);
+export async function getSchedulePolls(workspaceId: string, plannerId: string): Promise<SchedulePollDTO[]> {
+  const res = await apiFetch<SchedulePollDTO[]>(`${BASE}?workspaceId=${encodeURIComponent(workspaceId)}&plannerId=${encodeURIComponent(plannerId)}`);
   return res.data ?? [];
 }
 
-export async function getSchedulePollVoteSummary(workspaceId: string): Promise<SchedulePollVoteSummaryDTO[]> {
-  const res = await apiFetch<SchedulePollVoteSummaryDTO[]>(`${BASE}/vote-summary?workspaceId=${encodeURIComponent(workspaceId)}`);
+export async function getSchedulePollVoteSummary(workspaceId: string, plannerId: string): Promise<SchedulePollVoteSummaryDTO[]> {
+  const res = await apiFetch<SchedulePollVoteSummaryDTO[]>(`${BASE}/vote-summary?workspaceId=${encodeURIComponent(workspaceId)}&plannerId=${encodeURIComponent(plannerId)}`);
   return res.data ?? [];
 }
 

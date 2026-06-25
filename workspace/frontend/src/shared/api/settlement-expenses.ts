@@ -14,6 +14,7 @@ export interface SettlementExpenseDTO {
 
 export interface CreateSettlementExpenseRequest {
   workspaceId: string;
+  plannerId: string;
   item: string;
   payer: string;
   amount: number;
@@ -22,8 +23,8 @@ export interface CreateSettlementExpenseRequest {
 
 const BASE = "/api/v1.0/settlement-expenses";
 
-export async function getSettlementExpenses(workspaceId: string): Promise<SettlementExpenseDTO[]> {
-  const res = await apiFetch<SettlementExpenseDTO[]>(`${BASE}?workspaceId=${encodeURIComponent(workspaceId)}`);
+export async function getSettlementExpenses(workspaceId: string, plannerId: string): Promise<SettlementExpenseDTO[]> {
+  const res = await apiFetch<SettlementExpenseDTO[]>(`${BASE}?workspaceId=${encodeURIComponent(workspaceId)}&plannerId=${encodeURIComponent(plannerId)}`);
   return res.data ?? [];
 }
 

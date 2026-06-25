@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class CreateSettlementExpenseRequest {
 
     private String workspaceId;
+    private String plannerId;
     private String item;
     private String payer;
     private Long amount;

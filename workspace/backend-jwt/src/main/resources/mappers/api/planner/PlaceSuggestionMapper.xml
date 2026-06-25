@@ -27,6 +27,7 @@
         FROM PLACE_SUGGESTION ps
                  LEFT JOIN PLACE_SUGGESTION_VOTE v ON v.PLACE_ID = ps.PLACE_ID
         WHERE ps.WS_ID = #{workspaceId, jdbcType=VARCHAR}
+          AND ps.PLANNER_ID = #{plannerId, jdbcType=VARCHAR}
         GROUP BY ps.PLACE_ID, ps.WS_ID, ps.SOURCE_URL, ps.THUMBNAIL_URL, ps.TITLE, ps.DESCRIPTION, ps.CATEGORY
         ORDER BY ps.REGIST_DT DESC
     </select>
@@ -50,6 +51,7 @@
     <insert id="insertPlaceSuggestion">
         INSERT INTO PLACE_SUGGESTION ( PLACE_ID
                                      , WS_ID
+                                     , PLANNER_ID
                                      , SOURCE_URL
                                      , THUMBNAIL_URL
                                      , TITLE
@@ -59,6 +61,7 @@
                                      , REGIST_ID)
         VALUES ( #{placeId,      jdbcType=VARCHAR}
                , #{wsId,         jdbcType=VARCHAR}
+               , #{plannerId,    jdbcType=VARCHAR}
                , #{sourceUrl,    jdbcType=VARCHAR}
                , #{thumbnailUrl, jdbcType=VARCHAR}
                , #{title,        jdbcType=VARCHAR}

@@ -31,10 +31,10 @@ public class SettlementExpenseService {
     }
 
     @Transactional(readOnly = true)
-    public List<SettlementExpenseDTO> getSettlementExpenses(String workspaceId) throws Exception {
+    public List<SettlementExpenseDTO> getSettlementExpenses(String workspaceId, String plannerId) throws Exception {
         String userId = SessionUtils.getUserId();
         checkMembership(workspaceId, userId);
-        return mapper.selectSettlementExpenses(workspaceId);
+        return mapper.selectSettlementExpenses(workspaceId, plannerId);
     }
 
     @Transactional
@@ -43,7 +43,7 @@ public class SettlementExpenseService {
         checkMembership(request.getWorkspaceId(), userId);
         String expenseId = SerialUtil.get(SettlementExpenseStrategy.ID, STRATEGY);
         LocalDate today = LocalDate.now();
-        mapper.insertSettlementExpense(expenseId, request.getWorkspaceId(), today, request.getItem(), request.getPayer(), request.getAmount(), request.getStatus().name(), userId);
+        mapper.insertSettlementExpense(expenseId, request.getWorkspaceId(), request.getPlannerId(), today, request.getItem(), request.getPayer(), request.getAmount(), request.getStatus().name(), userId);
         return SettlementExpenseDTO.builder()
                 .id(expenseId)
                 .workspaceId(request.getWorkspaceId())

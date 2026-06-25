@@ -36,17 +36,17 @@ public class SchedulePollService {
     }
 
     @Transactional(readOnly = true)
-    public List<SchedulePollDTO> getSchedulePolls(String workspaceId) throws Exception {
+    public List<SchedulePollDTO> getSchedulePolls(String workspaceId, String plannerId) throws Exception {
         String userId = SessionUtils.getUserId();
         checkMembership(workspaceId, userId);
-        return mapper.selectSchedulePolls(workspaceId, userId);
+        return mapper.selectSchedulePolls(workspaceId, plannerId, userId);
     }
 
     @Transactional(readOnly = true)
-    public List<SchedulePollVoteSummaryDTO> getVoteSummary(String workspaceId) throws Exception {
+    public List<SchedulePollVoteSummaryDTO> getVoteSummary(String workspaceId, String plannerId) throws Exception {
         String userId = SessionUtils.getUserId();
         checkMembership(workspaceId, userId);
-        return mapper.selectVoteSummary(workspaceId);
+        return mapper.selectVoteSummary(workspaceId, plannerId);
     }
 
     @Transactional
@@ -54,7 +54,7 @@ public class SchedulePollService {
         String userId = SessionUtils.getUserId();
         checkMembership(request.getWorkspaceId(), userId);
         String pollId = SerialUtil.get(SchedulePollStrategy.ID, POLL_STRATEGY);
-        mapper.insertSchedulePoll(pollId, request.getWorkspaceId(), request.getTitle(), userId);
+        mapper.insertSchedulePoll(pollId, request.getWorkspaceId(), request.getPlannerId(), request.getTitle(), userId);
         for (SchedulePollCandidateRequest c : request.getCandidates()) {
             String candidateId = SerialUtil.get(SchedulePollCandidateStrategy.ID, CANDIDATE_STRATEGY);
             mapper.insertSchedulePollCandidate(candidateId, pollId, c.getStartDt(), c.getEndDt(), userId);

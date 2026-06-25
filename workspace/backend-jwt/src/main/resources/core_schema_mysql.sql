@@ -215,12 +215,14 @@ KEY `idx_shopping_item_category_id` (`CATEGORY_ID`)
 CREATE TABLE IF NOT EXISTS `SCHEDULE_POLL` (
 `POLL_ID`      VARCHAR(255) NOT NULL,
 `WS_ID`        VARCHAR(255) NOT NULL          COMMENT '워크스페이스 ID',
+`PLANNER_ID`   VARCHAR(255) NOT NULL          COMMENT '플래너 ID',
 `TITLE`        VARCHAR(255) NOT NULL          COMMENT '투표 제목',
 `IS_ANONYMOUS` VARCHAR(1)   DEFAULT 'Y'       COMMENT '익명 여부 (항상 Y)',
 `REGIST_DT`    DATETIME     DEFAULT NOW()     COMMENT '생성일시',
 `REGIST_ID`    VARCHAR(255) DEFAULT NULL      COMMENT '생성자',
 PRIMARY KEY (`POLL_ID`),
-KEY `idx_schedule_poll_ws_id` (`WS_ID`)
+KEY `idx_schedule_poll_ws_id` (`WS_ID`),
+KEY `idx_schedule_poll_planner_id` (`PLANNER_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='희망일정 투표';
 
 -- SCHEDULE_POLL_CANDIDATE definition
@@ -249,6 +251,7 @@ UNIQUE KEY `uq_schedule_poll_vote` (`CANDIDATE_ID`, `USER_ID`)
 CREATE TABLE IF NOT EXISTS `PLACE_SUGGESTION` (
 `PLACE_ID`      VARCHAR(255)  NOT NULL,
 `WS_ID`         VARCHAR(255)  NOT NULL        COMMENT '워크스페이스 ID',
+`PLANNER_ID`   VARCHAR(255) NOT NULL          COMMENT '플래너 ID',
 `SOURCE_URL`    VARCHAR(1000) NOT NULL         COMMENT '장소 원본 URL',
 `THUMBNAIL_URL` VARCHAR(1000) DEFAULT NULL     COMMENT '썸네일 URL',
 `TITLE`         VARCHAR(255)  DEFAULT NULL     COMMENT '장소명',
@@ -257,7 +260,8 @@ CREATE TABLE IF NOT EXISTS `PLACE_SUGGESTION` (
 `REGIST_DT`     DATETIME      DEFAULT NOW()    COMMENT '생성일시',
 `REGIST_ID`     VARCHAR(255)  DEFAULT NULL     COMMENT '생성자',
 PRIMARY KEY (`PLACE_ID`),
-KEY `idx_place_suggestion_ws_id` (`WS_ID`)
+KEY `idx_place_suggestion_ws_id` (`WS_ID`),
+KEY `idx_place_suggestion_planner_id` (`PLANNER_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='장소 제안';
 
 -- PLACE_SUGGESTION_VOTE definition
@@ -274,6 +278,7 @@ UNIQUE KEY `uq_place_suggestion_vote` (`PLACE_ID`, `USER_ID`)
 CREATE TABLE IF NOT EXISTS `SETTLEMENT_EXPENSE` (
 `EXPENSE_ID`   VARCHAR(255) NOT NULL,
 `WS_ID`        VARCHAR(255) NOT NULL             COMMENT '워크스페이스 ID',
+`PLANNER_ID`   VARCHAR(255) NOT NULL          COMMENT '플래너 ID',
 `EXPENSE_DATE` DATE         NOT NULL             COMMENT '정산 날짜 (서버 오늘)',
 `ITEM`         VARCHAR(255) NOT NULL             COMMENT '항목명',
 `PAYER`        VARCHAR(255) NOT NULL             COMMENT '지불자 (자유 텍스트)',
@@ -282,7 +287,8 @@ CREATE TABLE IF NOT EXISTS `SETTLEMENT_EXPENSE` (
 `REGIST_DT`    DATETIME     DEFAULT NOW()        COMMENT '생성일시',
 `REGIST_ID`    VARCHAR(255) DEFAULT NULL         COMMENT '생성자',
 PRIMARY KEY (`EXPENSE_ID`),
-KEY `idx_settlement_expense_ws_id` (`WS_ID`)
+KEY `idx_settlement_expense_ws_id` (`WS_ID`),
+KEY `idx_settlement_expense_planner_id` (`PLANNER_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='정산 내역';
 
 -- PLANNER definition

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class CreatePlaceSuggestionRequest {
 
     private String workspaceId;
+    private String plannerId;
     private String sourceUrl;
     private String thumbnailUrl;
     private String title;

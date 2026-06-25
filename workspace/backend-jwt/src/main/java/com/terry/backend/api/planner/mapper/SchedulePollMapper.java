@@ -10,11 +10,11 @@ import java.util.List;
 @Mapper
 public interface SchedulePollMapper {
 
-    List<SchedulePollDTO> selectSchedulePolls(@Param("workspaceId") String workspaceId, @Param("userId") String userId);
+    List<SchedulePollDTO> selectSchedulePolls(@Param("workspaceId") String workspaceId, @Param("plannerId") String plannerId, @Param("userId") String userId);
 
-    List<SchedulePollVoteSummaryDTO> selectVoteSummary(@Param("workspaceId") String workspaceId);
+    List<SchedulePollVoteSummaryDTO> selectVoteSummary(@Param("workspaceId") String workspaceId, @Param("plannerId") String plannerId);
 
-    void insertSchedulePoll(@Param("pollId") String pollId, @Param("wsId") String wsId, @Param("title") String title, @Param("registId") String registId);
+    void insertSchedulePoll(@Param("pollId") String pollId, @Param("wsId") String wsId, @Param("plannerId") String plannerId, @Param("title") String title, @Param("registId") String registId);
 
     void insertSchedulePollCandidate(@Param("candidateId") String candidateId, @Param("pollId") String pollId, @Param("startDt") String startDt, @Param("endDt") String endDt, @Param("registId") String registId);
 

@@ -26,8 +26,9 @@ public class SettlementExpenseController extends ApiRestController {
     private final SettlementExpenseService service;
 
     @GetMapping("/settlement-expenses")
-    public List<SettlementExpenseDTO> getSettlementExpenses(@RequestParam String workspaceId) throws Exception {
-        return service.getSettlementExpenses(workspaceId);
+    public List<SettlementExpenseDTO> getSettlementExpenses(@RequestParam String workspaceId,
+                                                            @RequestParam String plannerId) throws Exception {
+        return service.getSettlementExpenses(workspaceId, plannerId);
     }
 
     @PostMapping("/settlement-expenses")

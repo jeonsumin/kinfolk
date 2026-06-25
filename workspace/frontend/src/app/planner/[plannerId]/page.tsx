@@ -23,10 +23,10 @@ import {
 import {type FormEvent, useEffect, useState} from "react";
 import Link from "next/link";
 import {
+    ArrowLeft,
     CalendarDays,
     ChevronLeft,
     ChevronRight, ExternalLink, Heart,
-    Home,
     Info,
     MapPinned,
     Plus, ReceiptText,
@@ -60,6 +60,7 @@ import {
     TableRow
 } from "@shared/ui";
 import {cn} from "@shared/utils";
+import {TopBar} from "@shared/ui/top-bar";
 
 
 const dateInputValue = (date = new Date()) =>
@@ -77,11 +78,13 @@ function SchedulePollDialog({
                                 open,
                                 onOpenChange,
                                 workspaceId,
+                                plannerId,
                                 onCreated,
                             }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     workspaceId: string;
+    plannerId: string;
     onCreated: (poll: SchedulePollDTO) => void;
 }) {
     const [title, setTitle] = useState("");
@@ -103,6 +106,7 @@ function SchedulePollDialog({
         try {
             onCreated(await createSchedulePoll({
                 workspaceId,
+                plannerId,
                 title: title.trim(),
                 candidates: [{startDt, endDt}],
             }));
@@ -156,11 +160,13 @@ function PlaceSuggestionDialog({
                                    open,
                                    onOpenChange,
                                    workspaceId,
+                                   plannerId,
                                    onCreated,
                                }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     workspaceId: string;
+    plannerId: string;
     onCreated: (place: PlaceSuggestionDTO) => void;
 }) {
     const [sourceUrl, setSourceUrl] = useState("");
@@ -200,6 +206,7 @@ function PlaceSuggestionDialog({
         try {
             onCreated(await createPlaceSuggestion({
                 workspaceId,
+                plannerId,
                 sourceUrl,
                 thumbnailUrl,
                 title: title.trim(),
@@ -270,11 +277,13 @@ function SettlementExpenseDialog({
                                      open,
                                      onOpenChange,
                                      workspaceId,
+                                     plannerId,
                                      onCreated,
                                  }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     workspaceId: string;
+    plannerId: string;
     onCreated: (expense: SettlementExpenseDTO) => void;
 }) {
     const [item, setItem] = useState("");
@@ -299,6 +308,7 @@ function SettlementExpenseDialog({
         try {
             onCreated(await createSettlementExpense({
                 workspaceId,
+                plannerId,
                 item: item.trim(),
                 payer: payer.trim(),
                 amount: numericAmount,
@@ -389,6 +399,7 @@ function PlannerDetailPage() {
     const [expenses, setExpenses] = useState<SettlementExpenseDTO[]>([]);
     const [isExpenseLoading, setIsExpenseLoading] = useState(false);
     const month = `${calendarDate.getFullYear()}년 ${calendarDate.getMonth() + 1}월`;
+    const itinerary = planner?.itinerary ?? [];
 
     useEffect(() => {
         getPlanner(plannerWorkspaceId, plannerId).then((item) => {
@@ -404,8 +415,8 @@ function PlannerDetailPage() {
             setIsPollLoading(true);
             try {
                 const [polls, summaries] = await Promise.all([
-                    getSchedulePolls(plannerWorkspaceId),
-                    getSchedulePollVoteSummary(plannerWorkspaceId),
+                    getSchedulePolls(plannerWorkspaceId, plannerId),
+                    getSchedulePollVoteSummary(plannerWorkspaceId, plannerId),
                 ]);
                 if (!cancelled) {
                     setSchedulePolls(polls);
@@ -420,7 +431,7 @@ function PlannerDetailPage() {
         return () => {
             cancelled = true;
         };
-    }, [plannerWorkspaceId]);
+    }, [plannerId, plannerWorkspaceId]);
 
     useEffect(() => {
         let cancelled = false;
@@ -428,7 +439,7 @@ function PlannerDetailPage() {
         const load = async () => {
             setIsExpenseLoading(true);
             try {
-                const result = await getSettlementExpenses(plannerWorkspaceId);
+                const result = await getSettlementExpenses(plannerWorkspaceId, plannerId);
                 if (!cancelled) setExpenses(result);
             } finally {
                 if (!cancelled) setIsExpenseLoading(false);
@@ -439,7 +450,7 @@ function PlannerDetailPage() {
         return () => {
             cancelled = true;
         };
-    }, [plannerWorkspaceId]);
+    }, [plannerId, plannerWorkspaceId]);
 
     useEffect(() => {
         let cancelled = false;
@@ -447,7 +458,7 @@ function PlannerDetailPage() {
         const load = async () => {
             setIsPlaceLoading(true);
             try {
-                const suggestions = await getPlaceSuggestions(plannerWorkspaceId);
+                const suggestions = await getPlaceSuggestions(plannerWorkspaceId, plannerId);
                 if (!cancelled) setPlaces(suggestions);
             } finally {
                 if (!cancelled) setIsPlaceLoading(false);
@@ -458,7 +469,7 @@ function PlannerDetailPage() {
         return () => {
             cancelled = true;
         };
-    }, [plannerWorkspaceId]);
+    }, [plannerId, plannerWorkspaceId]);
 
     const shiftMonth = (amount: -1 | 1) => {
         setCalendarDate((date) => new Date(date.getFullYear(), date.getMonth() + amount, 1));
@@ -468,7 +479,7 @@ function PlannerDetailPage() {
         try {
             const poll = await toggleSchedulePollVote(pollId, candidateId);
             setSchedulePolls((polls) => polls.map((item) => item.id === poll.id ? poll : item));
-            const summaries = await getSchedulePollVoteSummary(plannerWorkspaceId);
+            const summaries = await getSchedulePollVoteSummary(plannerWorkspaceId, plannerId);
             setTopPollVote(summaries[0] ?? null);
         } catch {
             // ponytail: add a toast when the real API can return a failure state.
@@ -484,27 +495,15 @@ function PlannerDetailPage() {
 
     return (
         <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
-            <header
-                className="flex h-16 shrink-0 items-center justify-between border-b border-border bg-background px-4 lg:px-8">
-                <div className="flex items-center gap-3">
-                    <Link href="/planner" className="text-lg font-bold text-primary">Kinfolk Table</Link>
-                    <span className="hidden h-6 w-px bg-border sm:block"/>
-                    <span className="hidden text-sm text-muted-foreground sm:block">게스트 플래너</span>
-                    <Link href="/planner"
-                          className="hidden items-center gap-1 text-sm text-muted-foreground hover:text-primary md:flex"><Home
-                        size={14}/> 대시보드로 돌아가기</Link>
-                </div>
-                <nav className="hidden gap-6 text-sm font-medium md:flex">
-                    <a href="#itinerary" className="text-primary">여행 정보</a>
-                    <a href="#vote" className="text-muted-foreground hover:text-primary">투표</a>
-                    <a href="#settlement" className="text-muted-foreground hover:text-primary">정산</a>
-                </nav>
-            </header>
+            <TopBar/>
 
             <main className="flex-1 overflow-y-auto">
                 <div className="mx-auto max-w-[1440px] space-y-6 px-4 py-6 lg:px-8 lg:py-12">
                     <header className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
                         <div>
+                            <Link href={`/planner`}
+                                  className="mb-2 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"><ArrowLeft
+                                size={17}/> 플래너 리스트로 돌아가기</Link>
                             <h1 className="text-3xl font-bold tracking-tight text-primary lg:text-[40px]">{planner?.title ?? "플래너"}</h1>
                             <p className="mt-2 text-sm text-muted-foreground lg:text-base">함께 가는
                                 사람들: {planner?.participants.join(", ") || "등록된 사람이 없습니다."}</p>
@@ -535,17 +534,29 @@ function PlannerDetailPage() {
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-4 pb-5 lg:pb-6">
-                                {schedulePolls.length > 0 ? schedulePolls.flatMap((poll) => poll.candidates.map((candidate) => ({
-                                    candidate,
-                                    title: poll.title
-                                }))).slice(0, 3).map(({candidate, title}, index) => (
-                                    <div key={candidate.id} className="border-l-2 border-border pl-4">
-                                        <div className="flex items-center gap-2"><Chip size="sm"
-                                                                                       color={index === 0 ? "slate" : "default"}>Day {index + 1}</Chip><span
-                                            className="text-sm font-medium">{formatPollPeriod(candidate.startDt, candidate.endDt)}</span>
+                                {itinerary.length > 0 ? itinerary.map((day, index) => (
+                                    <section key={day.id} className="space-y-3 rounded-lg border border-border bg-muted/20 p-4">
+                                        <div className="flex flex-wrap items-center justify-between gap-2">
+                                            <div className="flex items-center gap-2">
+                                                <Chip size="sm" color={index === 0 ? "slate" : "default"}>Day {index + 1}</Chip>
+                                                <h3 className="text-sm font-semibold text-foreground">{day.title}</h3>
+                                            </div>
+                                            <span className="text-xs font-medium text-muted-foreground">{formatPollDate(day.date)}</span>
                                         </div>
-                                        <p className="mt-2 rounded-lg bg-muted/70 p-3 text-sm text-foreground">{title}</p>
-                                    </div>
+                                        <div className="relative space-y-3 border-l border-border pl-4">
+                                            {day.items.length > 0 ? day.items.map((item) => (
+                                                <div key={item.id} className="relative">
+                                                    <span className="absolute -left-[21px] top-1.5 size-2.5 rounded-full bg-primary ring-4 ring-background"/>
+                                                    <div className="flex flex-wrap items-center gap-2">
+                                                        <span className="text-xs font-semibold text-primary">{item.time}</span>
+                                                        <span className="text-xs text-muted-foreground">{item.category}</span>
+                                                    </div>
+                                                    <p className="mt-1 text-sm font-semibold text-foreground">{item.title}</p>
+                                                    {item.description && <p className="mt-1 text-sm leading-6 text-muted-foreground">{item.description}</p>}
+                                                </div>
+                                            )) : <p className="text-sm text-muted-foreground">등록된 세부 일정이 없습니다.</p>}
+                                        </div>
+                                    </section>
                                 )) : <div
                                     className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">일정을
                                     추가해 여행 동선을 만들어 보세요.</div>}
@@ -791,21 +802,24 @@ function PlannerDetailPage() {
                 open={pollOpen}
                 onOpenChange={setPollOpen}
                 workspaceId={plannerWorkspaceId}
+                plannerId={plannerId}
                 onCreated={(poll) => {
                     setSchedulePolls((polls) => [poll, ...polls]);
-                    getSchedulePollVoteSummary(plannerWorkspaceId).then((summaries) => setTopPollVote(summaries[0] ?? null));
+                    getSchedulePollVoteSummary(plannerWorkspaceId, plannerId).then((summaries) => setTopPollVote(summaries[0] ?? null));
                 }}
             />
             <PlaceSuggestionDialog
                 open={placeOpen}
                 onOpenChange={setPlaceOpen}
                 workspaceId={plannerWorkspaceId}
+                plannerId={plannerId}
                 onCreated={(place) => setPlaces((current) => [place, ...current])}
             />
             <SettlementExpenseDialog
                 open={expenseOpen}
                 onOpenChange={setExpenseOpen}
                 workspaceId={plannerWorkspaceId}
+                plannerId={plannerId}
                 onCreated={(expense) => setExpenses((current) => [expense, ...current])}
             />
         </div>

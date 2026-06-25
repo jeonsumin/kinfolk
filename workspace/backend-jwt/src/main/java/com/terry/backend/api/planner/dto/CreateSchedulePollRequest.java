@@ -12,6 +12,7 @@ import java.util.List;
 public class CreateSchedulePollRequest {
 
     private String workspaceId;
+    private String plannerId;
     private String title;
     private List<SchedulePollCandidateRequest> candidates;
 }

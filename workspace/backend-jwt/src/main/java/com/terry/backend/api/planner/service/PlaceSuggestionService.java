@@ -32,10 +32,10 @@ public class PlaceSuggestionService {
     }
 
     @Transactional(readOnly = true)
-    public List<PlaceSuggestionDTO> getPlaceSuggestions(String workspaceId) throws Exception {
+    public List<PlaceSuggestionDTO> getPlaceSuggestions(String workspaceId, String plannerId) throws Exception {
         String userId = SessionUtils.getUserId();
         checkMembership(workspaceId, userId);
-        return mapper.selectPlaceSuggestions(workspaceId, userId);
+        return mapper.selectPlaceSuggestions(workspaceId, plannerId, userId);
     }
 
     @Transactional
@@ -43,7 +43,7 @@ public class PlaceSuggestionService {
         String userId = SessionUtils.getUserId();
         checkMembership(request.getWorkspaceId(), userId);
         String placeId = SerialUtil.get(PlaceSuggestionStrategy.ID, STRATEGY);
-        mapper.insertPlaceSuggestion(placeId, request.getWorkspaceId(), request.getSourceUrl(), request.getThumbnailUrl(), request.getTitle(), request.getDescription(), request.getCategory(), userId);
+        mapper.insertPlaceSuggestion(placeId, request.getWorkspaceId(), request.getPlannerId(), request.getSourceUrl(), request.getThumbnailUrl(), request.getTitle(), request.getDescription(), request.getCategory(), userId);
         return mapper.selectPlaceSuggestionById(placeId, userId);
     }
 

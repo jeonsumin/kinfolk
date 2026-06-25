@@ -10,9 +10,9 @@ import java.util.List;
 @Mapper
 public interface SettlementExpenseMapper {
 
-    List<SettlementExpenseDTO> selectSettlementExpenses(@Param("workspaceId") String workspaceId);
+    List<SettlementExpenseDTO> selectSettlementExpenses(@Param("workspaceId") String workspaceId, @Param("plannerId") String plannerId);
 
-    void insertSettlementExpense(@Param("expenseId") String expenseId, @Param("wsId") String wsId, @Param("expenseDate") LocalDate expenseDate, @Param("item") String item, @Param("payer") String payer, @Param("amount") Long amount, @Param("status") String status, @Param("registId") String registId);
+    void insertSettlementExpense(@Param("expenseId") String expenseId, @Param("wsId") String wsId, @Param("plannerId") String plannerId, @Param("expenseDate") LocalDate expenseDate, @Param("item") String item, @Param("payer") String payer, @Param("amount") Long amount, @Param("status") String status, @Param("registId") String registId);
 
     boolean existsWorkspaceMember(@Param("workspaceId") String workspaceId, @Param("userId") String userId);
 }

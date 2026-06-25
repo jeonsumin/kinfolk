@@ -30,13 +30,15 @@ public class SchedulePollController extends ApiRestController {
     private final SchedulePollService service;
 
     @GetMapping("/schedule-polls")
-    public List<SchedulePollDTO> getSchedulePolls(@RequestParam String workspaceId) throws Exception {
-        return service.getSchedulePolls(workspaceId);
+    public List<SchedulePollDTO> getSchedulePolls(@RequestParam String workspaceId,
+                                                  @RequestParam String plannerId) throws Exception {
+        return service.getSchedulePolls(workspaceId, plannerId);
     }
 
     @GetMapping("/schedule-polls/vote-summary")
-    public List<SchedulePollVoteSummaryDTO> getVoteSummary(@RequestParam String workspaceId) throws Exception {
-        return service.getVoteSummary(workspaceId);
+    public List<SchedulePollVoteSummaryDTO> getVoteSummary(@RequestParam String workspaceId,
+                                                           @RequestParam String plannerId) throws Exception {
+        return service.getVoteSummary(workspaceId, plannerId);
     }
 
     @PostMapping("/schedule-polls")

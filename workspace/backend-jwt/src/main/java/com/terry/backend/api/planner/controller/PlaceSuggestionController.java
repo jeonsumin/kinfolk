@@ -30,8 +30,9 @@ public class PlaceSuggestionController extends ApiRestController {
     private final PlacePreviewService previewService;
 
     @GetMapping("/place-suggestions")
-    public List<PlaceSuggestionDTO> getPlaceSuggestions(@RequestParam String workspaceId) throws Exception {
-        return service.getPlaceSuggestions(workspaceId);
+    public List<PlaceSuggestionDTO> getPlaceSuggestions(@RequestParam String workspaceId,
+                                                        @RequestParam String plannerId) throws Exception {
+        return service.getPlaceSuggestions(workspaceId, plannerId);
     }
 
     @GetMapping("/place-suggestions/preview")

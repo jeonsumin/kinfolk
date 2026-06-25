@@ -17,6 +17,7 @@ export interface PlaceSuggestionDTO extends PlacePreviewDTO {
 
 export interface CreatePlaceSuggestionRequest extends PlacePreviewDTO {
   workspaceId: string;
+  plannerId: string;
 }
 
 const BASE = "/api/v1.0/place-suggestions";
@@ -26,8 +27,8 @@ export async function resolvePlacePreview(sourceUrl: string): Promise<PlacePrevi
   return res.data;
 }
 
-export async function getPlaceSuggestions(workspaceId: string): Promise<PlaceSuggestionDTO[]> {
-  const res = await apiFetch<PlaceSuggestionDTO[]>(`${BASE}?workspaceId=${encodeURIComponent(workspaceId)}`);
+export async function getPlaceSuggestions(workspaceId: string, plannerId: string): Promise<PlaceSuggestionDTO[]> {
+  const res = await apiFetch<PlaceSuggestionDTO[]>(`${BASE}?workspaceId=${encodeURIComponent(workspaceId)}&plannerId=${encodeURIComponent(plannerId)}`);
   return res.data ?? [];
 }
 

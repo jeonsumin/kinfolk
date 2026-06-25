@@ -22,12 +22,14 @@
              , STATUS
         FROM SETTLEMENT_EXPENSE
         WHERE WS_ID = #{workspaceId, jdbcType=VARCHAR}
+          AND PLANNER_ID = #{plannerId, jdbcType=VARCHAR}
         ORDER BY REGIST_DT DESC
     </select>
 
     <insert id="insertSettlementExpense">
         INSERT INTO SETTLEMENT_EXPENSE ( EXPENSE_ID
                                        , WS_ID
+                                       , PLANNER_ID
                                        , EXPENSE_DATE
                                        , ITEM
                                        , PAYER
@@ -37,6 +39,7 @@
                                        , REGIST_ID)
         VALUES ( #{expenseId,   jdbcType=VARCHAR}
                , #{wsId,        jdbcType=VARCHAR}
+               , #{plannerId,   jdbcType=VARCHAR}
                , #{expenseDate, jdbcType=DATE}
                , #{item,        jdbcType=VARCHAR}
                , #{payer,       jdbcType=VARCHAR}

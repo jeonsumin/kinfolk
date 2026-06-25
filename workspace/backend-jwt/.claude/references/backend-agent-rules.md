@@ -24,7 +24,7 @@ STYLE_GUIDE.md와 함께 읽어야 한다. 이 파일이 동일 항목에서 더
 - [ ] XML namespace가 Mapper 인터페이스의 완전 수식 이름(FQCN)인가?
 - [ ] 다중 스칼라 파라미터는 `@Param`으로 명시했는가?
 - [ ] 1:N 관계 조회는 `<collection>`을 사용하고 N+1이 발생하지 않는가?
-- [ ] Enum 필드를 DB에 저장·조회할 때 `typeHandler`를 지정했는가?
+- [ ] Enum 필드를 DB에 저장·조회할 때 `typeHandler`를 지정하지 않았는가? (`EnumToStringTypeHandler`는 존재하지 않으므로 사용 금지)
 - [ ] `<foreach>`로 IN 절을 구성할 때 null/empty guard(`userIds != null and userIds.size() > 0`)를 추가했는가?
 - [ ] 쓰기 Service 메서드에 `@Transactional`이 있는가?
 
@@ -46,7 +46,9 @@ public enum AttendeesType {
 }
 ```
 - 코드 필드나 유틸 메서드가 없는 순수 상태 열거형
-- DB 저장/조회 시 XML에서 `typeHandler=org.apache.ibatis.type.EnumToStringTypeHandler` 지정
+- DB 저장/조회 시 XML에서 `typeHandler` 미지정. `#{field}` 또는 `#{field, jdbcType=VARCHAR}` 만 사용한다.
+- **`EnumToStringTypeHandler`는 MyBatis 표준 라이브러리에 존재하지 않으므로 절대 사용하지 않는다.**
+- MyBatis 기본 `EnumTypeHandler`가 자동으로 `enum.name()` ↔ VARCHAR 변환을 처리한다.
 
 ### 패턴 B: 코드 값과 유틸 메서드를 가진 Enum (기존 admin 도메인)
 ```java
